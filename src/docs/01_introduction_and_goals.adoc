@@ -3,11 +3,8 @@
 
 [role="arc42help"]
 ****
-Describes the relevant requirements and the driving forces that software architects and development team must consider. These include
-
-* underlying business goals, essential features and functional requirements for the system
-* quality goals for the architecture
-* relevant stakeholders and their expectations
+Este documento describe la creación de un DeChat, un chat
+descentralizado basado en Solid.
 ****
 
 === Requirements Overview
@@ -15,9 +12,17 @@ Describes the relevant requirements and the driving forces that software archite
 [role="arc42help"]
 ****
 .Contents
-Short description of the functional requirements, driving forces, extract (or abstract)
-of requirements. Link to (hopefully existing) requirements documents
-(with version number and information where to find it).
+El objetivo principal es lograr que los datos no pasen por un servidor
+central, si no que cada usuario guarde sus propios datos.
+Por tanto el sisema se basará en una arquitectura descentralizada donde el
+almacenamiento de datos se separa de la aplicación.
+
+* Los usuarios pueden almacenar sus datos de chat en sus propios pod's.
+* A través del chat, los usuarios podrán compartir fotos, vídeos, o cualquier tipo
+de archivo con sus amigos.
+* Cuando un usuario quiera chatear con un amigo, a este le llegará una notificación.
+* Pueden crearse grupos entre usuarios amigos para chatear.
+* Habrá chats grupales.
 
 .Motivation
 From the point of view of the end users a system is created or modified to
@@ -37,6 +42,23 @@ Keep these excerpts as short as possible. Balance readability of this document w
 .Contents
 The top three (max five) quality goals for the architecture whose fulfillment is of highest importance to the major stakeholders. We really mean quality goals for the architecture. Don't confuse them with project goals. They are not necessarily identical.
 
+.Objetivos de calidad
+|===
+|Nr |Calidad |Motivación
+
+|1
+|Seguridad
+|Column 3, row 1
+
+|2
+|Column 2, row 2
+|Column 3, row 2
+
+|3
+|Column 2, row 3
+|Column 3, row 3
+|===
+
 .Motivation
 You should know the quality goals of your most important stakeholders, since they will influence fundamental architectural decisions. Make sure to be very concrete about these qualities, avoid buzzwords.
 If you as an architect do not know how the quality of your work will be judged …
@@ -50,21 +72,30 @@ A table with quality goals and concrete scenarios, ordered by priorities
 [role="arc42help"]
 ****
 .Contents
-Explicit overview of stakeholders of the system, i.e. all person, roles or organizations that
+La siguiente tabla contiene a las personas más importantes e interasadas
+en esta aplicación.
 
-* should know the architecture
-* have to be convinced of the architecture
-* have to work with the architecture or with code
-* need the documentation of the architecture for their work
-* have to come up with decisions about the system or its development
+.Stakeholders
+|===
+|Stakeholder |Descripción |Expectativas, motivaciones
 
-.Motivation
-You should know all parties involved in development of the system or affected by the system.
-Otherwise, you may get nasty surprises later in the development process.
-These stakeholders determine the extent and the level of detail of your work and its results.
+|Usuario del chat
+|Column 2, row 1
+|Column 3, row 1
 
-.Form
-Table with role names, person names, and their expectations with respect to the architecture and its documentation.
+|La empresa Inrupt
+|Column 2, row 2
+|Column 3, row 2
+
+|José Emilio Labra Gayo
+|Column 2, row 3
+|Column 3, row 3
+
+|Equipo de desarrolo
+|Column 2, row 4
+|Column 3, row 4
+|===
+
 ****
 
 [options="header",cols="1,2,2"]
