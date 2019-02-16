@@ -5,21 +5,33 @@
 [role="arc42help"]
 ****
 .Contents
-System scope and context - as the name suggests - delimits your system (i.e. your scope) from all its communication partners
-(neighboring systems and users, i.e. the context of your system). It thereby specifies the external interfaces.
-
-If necessary, differentiate the business context (domain specific inputs and outputs) from the technical context (channels, protocols, hardware).
+En esta introducción describimos brevemente tanto los usuarios como los sistemas que están implicados en nuestra aplicación de chat descentralizado. Por una parte, el grupo de usuarios está compuesto por los propios que se registran y usan el chat, por los integrantes de este equipo como desarrolladores, y el jefe de proyecto como supervisor. Por otra parte, en el grupo de sistemas tenemos software como Java, JavaScript, Angular, Asciidoctor, Solid...(este grupo de sistemas puede variar a lo largo de la implementación del proyecto).
 
 .Motivation
-The domain interfaces and technical interfaces to communication partners are among your system's most critical aspects. Make sure that you completely understand them.
+Aquí describimos el porqué de cada uno de los programas que se encuentran en la lista anteriormente mencionada.
+
+* Java: porque su comodidad de uso por parte de los integrantes del equipo por los amplios conocimientos previos.
+
+* JavaScript: porque es recomendable su uso para aplicaciones con software Solid.
+
+* Angular: porque es un framework de JavaScript que agilizará el proceso de implementación de nuestra aplicación.
+
+* Asciidoctor: porque es el mejor editor de texto para generar la documentación del proyecto mediante ficheros de extensión asciidoc.
+
+* Solid: porque es un software de gestión de datos del cuál el jefe de proyecto nos ha aconsejado su uso.
 
 .Form
-Various options:
-
-* Context diagrams
-* Lists of communication partners and their interfaces.
+Aquí explicamos de una manera más gráfica la información detallada anteriormente.
 ****
-
+[options="header",cols="1,2,2"]
+|===
+|Nombre|Tipo de software|Razón de uso
+| Java | Lenguaje de programación | Comodidad de uso por amplios conocimientos previos
+| JavaScript | Lenguaje de programación | Recomendable su uso para aplicaciones con software Solid
+| Angular | Framework de JavaScript | Agilizar el proceso de implementación de nuestro chat
+| Asciidoctor | Editor de texto | Mejor editor de texto para generar nuestra documentación mediante ficheros asciidoc
+| Solid | Software de gestión de datos | Uso requerido por el jefe de proyecto
+|===
 
 === Business Context
 
