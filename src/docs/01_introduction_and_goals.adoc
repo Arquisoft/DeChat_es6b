@@ -3,30 +3,27 @@
 
 [role="arc42help"]
 ****
-Este documento describe la creación de un DeChat, un chat
-descentralizado basado en Solid.
+Our goal is to create DeChat, a descentralized chat app based on the https://solid.inrupt.com/[solid] specifications. This project will be developed by a team of five members.
 ****
 
 === Requirements Overview
 
 [role="arc42help"]
 ****
-.Contents
-El objetivo principal es lograr que los datos no pasen por un servidor
-central, si no que cada usuario guarde sus propios datos.
-Por tanto el sisema se basará en una arquitectura descentralizada donde el
-almacenamiento de datos se separa de la aplicación.
+The main objective is to ensure that the data does not pass through a central server, so each user saves its own data.
+Therefore the system will be based on a decentralized architecture where the
+data storage is separated from the application.
 
-* Los usuarios pueden almacenar sus datos de chat en sus propios pod's.
-* A través del chat, los usuarios podrán compartir fotos, vídeos, o cualquier tipo
-de archivo con sus amigos.
-* Cuando un usuario quiera chatear con un amigo, a este le llegará una notificación.
-* Pueden crearse grupos entre usuarios amigos para chatear.
-* Habrá chats grupales.
+.Essential features
 
-.Motivation
-From the point of view of the end users a system is created or modified to
-improve support of a business activity and/or improve the quality.
+* Users can store their chat data in their own pods.
+* The app will allow a user to share pictures, videos or other kinds of files with other friends through the chat.
+* A user can get notifications when some friend wants to chat with him.
+* Users can have groups of friends with whom they may want to chat.
+* It will be possible to have group chats where all members receive the messages.
+* Other optional features are:
+** Users can have live calls and videos.
+** Users can share their screens in the chat.
 
 .Form
 Short textual description, probably in tabular use-case format.
@@ -39,68 +36,64 @@ Keep these excerpts as short as possible. Balance readability of this document w
 
 [role="arc42help"]
 ****
-.Contents
-The top three (max five) quality goals for the architecture whose fulfillment is of highest importance to the major stakeholders. We really mean quality goals for the architecture. Don't confuse them with project goals. They are not necessarily identical.
 
-.Objetivos de calidad
+.Quality Goals
 |===
-|Nr |Calidad |Motivación
+|Nr |Quality |Motivation
 
 |1
-|Seguridad
-|Column 3, row 1
+|Security
+|A chat must be visible only by those involved in it. The information of a user must be private and innaccessible by other users.
 
 |2
-|Column 2, row 2
-|Column 3, row 2
+|Usability
+|A chat should be simple and easy to use by everyone. The application should have a simple learning curve.
 
 |3
-|Column 2, row 3
-|Column 3, row 3
+|Availability
+|Whenever there is internet, the user should be able to use all the features of the application.
+
+|4
+|Efficiency
+|Sended messages must reach the receiver as quick as possible. No message should be lost.
+
+|5
+|Reliability
+|The app should not fail in any specific action or circumstance, so the users will trust it.
+
+|6
+|Compatibility
+|The app must work for all browsers without distinction.
+
 |===
-
-.Motivation
-You should know the quality goals of your most important stakeholders, since they will influence fundamental architectural decisions. Make sure to be very concrete about these qualities, avoid buzzwords.
-If you as an architect do not know how the quality of your work will be judged …
-
-.Form
-A table with quality goals and concrete scenarios, ordered by priorities
 ****
 
 === Stakeholders
 
 [role="arc42help"]
 ****
-.Contents
-La siguiente tabla contiene a las personas más importantes e interasadas
-en esta aplicación.
+The following lists contains the most important personas for this application.
 
 .Stakeholders
 |===
-|Stakeholder |Descripción |Expectativas, motivaciones
+|Stakeholder |Description |Goal/Boundaries
 
-|Usuario del chat
-|Column 2, row 1
-|Column 3, row 1
+|DeChat User
+|Main user of the system. Interacts with the application and all its functionalities.
+|Send messages, all kinds of files, create group chats, send chat notifications, etc.
 
-|La empresa Inrupt
-|Column 2, row 2
-|Column 3, row 2
+|Inrupt company
+|Company interested in the app
+|They are interested in the following criteria: Ease of use by non-technical people, responsiveness of the application, online independence: no central control of data, security and privacy: no vulnerability points, aesthetics and friendliness of the application, originality of the solution and usability of technical documentation.
 
 |José Emilio Labra Gayo
-|Column 2, row 3
-|Column 3, row 3
+|Coordinator of the Software Architecture subject
+|He is the main tester of the application. Represents the client and its interests
 
-|Equipo de desarrolo
-|Column 2, row 4
-|Column 3, row 4
+|Solid new comers
+|Developers interested in Solid
+|People who want to see the benefits of solid and decentralized applications.
+
 |===
 
 ****
-
-[options="header",cols="1,2,2"]
-|===
-|Role/Name|Contact|Expectations
-| _<Role-1>_ | _<Contact-1>_ | _<Expectation-1>_
-| _<Role-2>_ | _<Contact-2>_ | _<Expectation-2>_
-|===
