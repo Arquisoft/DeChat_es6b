@@ -38,11 +38,12 @@ Aquí explicamos de una manera más gráfica la información detallada anteriorm
 [role="arc42help"]
 ****
 .Contents
-Specification of *all* communication partners (users, IT-systems, ...) with explanations of domain specific inputs and outputs or interfaces.
-Optionally you can add domain specific formats or communication protocols.
+The system is based in a decentralized chat in which the communication partners are basically other users of this system. In this system they are going to be able to exchange many kind of different information in a safe environment and in an efficient way.
+This project is aimed mainly at independent users, but it also can be used by enterprise people who may need sometimes to get some information sent as soon as possible in a secure way, so they would prefer this decentralized system rather than use a centralized one.
 
 .Motivation
-All stakeholders should understand which data are exchanged with the environment of the system.
+In this system the information exchanged will be only the one that the user in question wants to share, apart from the username. Personal information as well as personal data would be kept in the user's POD without access permission as long as the user wants to.
+Apart from this, on the chat the users will also be able to share text messages, audiovisual data such as images and videos, and other type of files.
 
 .Form
 All kinds of diagrams that show the system as a black box and specify the domain interfaces to communication partners.
