@@ -3,7 +3,7 @@
 
 [role="arc42help"]
 ****
-Our goal is to create DeChat, a descentralized chat app based on the https://solid.inrupt.com/[solid] specifications. This project will be developed by a team of five members.
+Our goal is to create DeChat, a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. This project will be developed by a team of five members.
 ****
 
 === Requirements Overview
@@ -16,7 +16,7 @@ data storage is separated from the application.
 
 .Essential features
 
-* Users can store their chat data in their own pods.
+* Users can store their chat data in their own https://solid.inrupt.com/get-a-solid-pod[pods].
 * The app will allow a user to share pictures, videos or other kinds of files with other friends through the chat.
 * A user can get notifications when some friend wants to chat with him.
 * Users can have groups of friends with whom they may want to chat.
@@ -25,7 +25,8 @@ data storage is separated from the application.
 ** Users can have live calls and videos.
 ** Users can share their screens in the chat.
 
-image:images/caso_uso.PNG[]Caso de uso
+.Use Cases
+image:images/caso_uso.PNG[]Users comunication throw the app.
 
 ****
 
@@ -33,6 +34,7 @@ image:images/caso_uso.PNG[]Caso de uso
 
 [role="arc42help"]
 ****
+Quality attributes qualify functionality of the application. This table contains the main features DeChat looks for.
 
 .Quality Goals
 |===
@@ -69,26 +71,26 @@ image:images/caso_uso.PNG[]Caso de uso
 
 [role="arc42help"]
 ****
-The following lists contains the most important personas for this application.
+The following table contains the most important personas for DeChat.
 
 .Stakeholders
 |===
 |Stakeholder |Description |Goal/Boundaries
 
 |DeChat User
-|Main user of the system. Interacts with the application and all its functionalities.
-|Send messages, all kinds of files, create group chats, send chat notifications, etc.
+|Main user of the system.
+|Interacts with the application and all its functionalities. Send messages, all kinds of files, create group chats, send chat notifications, etc.
 
 |Inrupt company
-|Company interested in the app
+|Company interested in the app.
 |They are interested in the following criteria: Ease of use by non-technical people, responsiveness of the application, online independence: no central control of data, security and privacy: no vulnerability points, aesthetics and friendliness of the application, originality of the solution and usability of technical documentation.
 
 |José Emilio Labra Gayo
-|Coordinator of the Software Architecture subject
-|He is the main tester of the application. Represents the client and its interests
+|Coordinator of the Software Architecture subject.
+|He is the main tester of the application. Represents the client and its interests.
 
 |Solid new comers
-|Developers interested in Solid
+|Developers interested in Solid.
 |People who want to see the benefits of solid and decentralized applications.
 
 |===
