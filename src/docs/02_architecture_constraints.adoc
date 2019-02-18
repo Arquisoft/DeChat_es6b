@@ -7,14 +7,14 @@
 
 [options="header"]
 |=======================
-|Restricción|Explicación
-|Presupuesto del proyecto    |No contar con un presupuesto para el proyecto limita los recursos disponibles para su realización
-|Documentación   |La documentación debe seguir la estructura definida en la plantilla Arc42
-|Tiempo disponible de desarrollo |El proyecto debe ser finalizado antes del 30 de abril de 2019
-|Arquitectura descentralizada    |El sistema se basará en una arquitectura descentralizada donde el almacenamiento de datos se separa de la aplicación
-|Uso de la tecnología Solid    |La descentralización de los datos debe realizarse mediante la tecnología Solid de Inrupt
-|Lenguajes   |Debido al requisito de usar Solid, el lenguaje de programación preferido para el desarrollo de la aplicación es Javascript, junto con los lenguajes HTML y CSS     
-|Control de versiones    | El control de versiones debe llevarse a cabo mediante el uso del servicio GIT
+|Constraint|Explanation
+|Project budget    |Not having a budget for the project limits the resources available for its implementation
+|Documentation   |The documentation must follow the structure defined in the Arc42 template
+|Available development time |The project must be completed by 30 April 2019
+|Decentralized architecture    |The system will be based on a decentralized architecture where data storage is separated from the application
+|Use of Solid technology    |Data decentralization must be done using Inrupt's Solid technology
+|Language   |Due to the requirement to use Solid, the preferred programming language for application development is Javascript, along with the HTML and CSS languages     
+|Version Control    | Version control must be carried out using the GIT service
 |=======================
 
 
