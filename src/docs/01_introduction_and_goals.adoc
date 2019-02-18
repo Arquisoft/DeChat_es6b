@@ -25,11 +25,8 @@ data storage is separated from the application.
 ** Users can have live calls and videos.
 ** Users can share their screens in the chat.
 
-.Form
-Short textual description, probably in tabular use-case format.
-If requirements documents exist this overview should refer to these documents.
+image:images/caso_uso.PNG[]Caso de uso
 
-Keep these excerpts as short as possible. Balance readability of this document with potential redundancy w.r.t to requirements documents.
 ****
 
 === Quality Goals
