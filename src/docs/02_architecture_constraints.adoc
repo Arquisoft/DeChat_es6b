@@ -4,16 +4,18 @@
 
 [role="arc42help"]
 ****
-.Contents
-Any requirement that constrains software architects in their freedom of design and implementation decisions or decision about the development process. These constraints sometimes go beyond individual systems and are valid for whole organizations and companies.
 
-.Motivation
-Architects should know exactly where they are free in their design decisions and where they must adhere to constraints.
-Constraints must always be dealt with; they may be negotiable, though.
+[options="header"]
+|=======================
+|Constraint|Explanation
+|Project budget    |Not having a budget for the project limits the resources available for its realization
+|Documentation   |The documentation must follow the structure defined in the arc42 template
+|Time limit |The project must be completed by April 30, 2019, and there must be a small functional prototype by March 12, 2019
+|Decentralized architecture    |The system will be based on a decentralized architecture where data storage is separated from the application
+|SOLID technology    |Data decentralization should be done using Inrupt's SOLID technology, whereby data is stored on personal PODs
+|Language   |Due to the requirement to use SOLID, the preferred programming language for application development is Javascript, along with the HTML and CSS languages     
+|Version Control    | Version control must be performed with Git, using the repository hosted in the GitHub service.
+|=======================
 
-.Form
-Simple tables of constraints with explanations.
-If needed you can subdivide them into
-technical constraints, organizational and political constraints and
-conventions (e.g. programming or versioning guidelines, documentation or naming conventions)
+
 ****

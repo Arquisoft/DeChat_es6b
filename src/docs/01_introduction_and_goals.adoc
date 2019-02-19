@@ -3,73 +3,96 @@
 
 [role="arc42help"]
 ****
-Describes the relevant requirements and the driving forces that software architects and development team must consider. These include
-
-* underlying business goals, essential features and functional requirements for the system
-* quality goals for the architecture
-* relevant stakeholders and their expectations
+Our goal is to create DeChat, a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. This project will be developed by a team of five members.
 ****
 
 === Requirements Overview
 
 [role="arc42help"]
 ****
-.Contents
-Short description of the functional requirements, driving forces, extract (or abstract)
-of requirements. Link to (hopefully existing) requirements documents
-(with version number and information where to find it).
+The main objective is to ensure that the data does not pass through a central server, so each user saves its own data.
+Therefore the system will be based on a decentralized architecture where the
+data storage is separated from the application.
 
-.Motivation
-From the point of view of the end users a system is created or modified to
-improve support of a business activity and/or improve the quality.
+.Essential features
 
-.Form
-Short textual description, probably in tabular use-case format.
-If requirements documents exist this overview should refer to these documents.
+* Users can store their chat data in their own https://solid.inrupt.com/get-a-solid-pod[pods].
+* The app will allow a user to share pictures, videos or other kinds of files with other friends through the chat.
+* A user can get notifications when some friend wants to chat with him.
+* Users can have groups of friends with whom they may want to chat.
+* It will be possible to have group chats where all members receive the messages.
+* Other optional features are:
+** Users can have live calls and videos.
+** Users can share their screens in the chat.
 
-Keep these excerpts as short as possible. Balance readability of this document with potential redundancy w.r.t to requirements documents.
+.Use Cases
+image:images/caso_uso.PNG[]Users comunication throw the app.
+
 ****
 
 === Quality Goals
 
 [role="arc42help"]
 ****
-.Contents
-The top three (max five) quality goals for the architecture whose fulfillment is of highest importance to the major stakeholders. We really mean quality goals for the architecture. Don't confuse them with project goals. They are not necessarily identical.
+Quality attributes qualify functionality of the application. This table contains the main features DeChat looks for.
 
-.Motivation
-You should know the quality goals of your most important stakeholders, since they will influence fundamental architectural decisions. Make sure to be very concrete about these qualities, avoid buzzwords.
-If you as an architect do not know how the quality of your work will be judged …
+.Quality Goals
+|===
+|Nr |Quality |Motivation
 
-.Form
-A table with quality goals and concrete scenarios, ordered by priorities
+|1
+|Security
+|A chat must be visible only by those involved in it. The information of a user must be private and innaccessible by other users.
+
+|2
+|Usability
+|A chat should be simple and easy to use by everyone. The application should have a simple learning curve.
+
+|3
+|Availability
+|Whenever there is internet, the user should be able to use all the features of the application.
+
+|4
+|Efficiency
+|Sended messages must reach the receiver as quick as possible. No message should be lost.
+
+|5
+|Reliability
+|The app should not fail in any specific action or circumstance, so the users will trust it.
+
+|6
+|Compatibility
+|The app must work for all browsers without distinction.
+
+|===
 ****
 
 === Stakeholders
 
 [role="arc42help"]
 ****
-.Contents
-Explicit overview of stakeholders of the system, i.e. all person, roles or organizations that
+The following table contains the most important personas for DeChat.
 
-* should know the architecture
-* have to be convinced of the architecture
-* have to work with the architecture or with code
-* need the documentation of the architecture for their work
-* have to come up with decisions about the system or its development
+.Stakeholders
+|===
+|Stakeholder |Description |Goal/Boundaries
 
-.Motivation
-You should know all parties involved in development of the system or affected by the system.
-Otherwise, you may get nasty surprises later in the development process.
-These stakeholders determine the extent and the level of detail of your work and its results.
+|DeChat User
+|Main user of the system.
+|Interacts with the application and all its functionalities. Send messages, all kinds of files, create group chats, send chat notifications, etc.
 
-.Form
-Table with role names, person names, and their expectations with respect to the architecture and its documentation.
+|Inrupt company
+|Company interested in the app.
+|They are interested in the following criteria: Ease of use by non-technical people, responsiveness of the application, online independence: no central control of data, security and privacy: no vulnerability points, aesthetics and friendliness of the application, originality of the solution and usability of technical documentation.
+
+|José Emilio Labra Gayo
+|Coordinator of the Software Architecture subject.
+|He is the main tester of the application. Represents the client and its interests.
+
+|Solid new comers
+|Developers interested in Solid.
+|People who want to see the benefits of solid and decentralized applications.
+
+|===
+
 ****
-
-[options="header",cols="1,2,2"]
-|===
-|Role/Name|Contact|Expectations
-| _<Role-1>_ | _<Contact-1>_ | _<Expectation-1>_
-| _<Role-2>_ | _<Contact-2>_ | _<Expectation-2>_
-|===
