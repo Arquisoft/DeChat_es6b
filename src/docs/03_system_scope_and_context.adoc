@@ -15,7 +15,7 @@ Here we describe why it has been decide to use the above mentioned programs.
 
 * Angular: Because it is a JavaScript framework that will speed up the implementation of our chat.
 
-* Asciidoctor: Because it is the best text editor to generate the project documentation through asciidoc documents.
+* Asciidoctor: Because it is the best processor editor to generate the project documentation through asciidoc documents.
 
 * Solid: Because it is a data management software whose use is adviced by the project manager.
 
@@ -28,7 +28,7 @@ Here we explain in a more graphical way the information detailed above.
 | Java | Programming language | Extensive previous knowledge of Java
 | JavaScript | Programming language | Recommended for applications with Solid software
 | Angular | JavaScript framework | Speed up the implementation of our project
-| Asciidoctor | Text editor | Best text editor to generate asciidoc documents
+| Asciidoctor | Text processor | Best text processor to generate asciidoc documents
 | Solid | Data management software | Use required by the project manager
 |===
 
