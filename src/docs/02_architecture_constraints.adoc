@@ -2,7 +2,7 @@
 == Architecture Constraints
 
 
-[role="arc42help"]
+
 ****
 
 [options="header"]

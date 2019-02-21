@@ -2,30 +2,24 @@
 == Glossary
 
 
-
-[role="arc42help"]
 ****
-.Contents
-The most important domain and technical terms that your stakeholders use when discussing the system.
 
-You can also see the glossary as source for translations if you work in multi-language teams.
+The most important domain and technical terms used in the system itself.
+Order alphabetically A-Z.
 
-.Motivation
-You should clearly define your terms, so that all stakeholders
-
-* have an identical understanding of these terms
-* do not use synonyms and homonyms
-
-.Form
-A table with columns <Term> and <Definition>.
-
-Potentially more columns in case you need translations.
-
-****
 
 [options="header"]
 |===
 | Term         | Definition
-| <Term-1>     | <definition-1>
-| <Term-2>     | <definition-2>
+|Angular | TypeScript based open source web application framework.
+| Decentralized | To keep data with yourself and not in an external server.
+| Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
+| POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
+| React | JavaScript library for bulding user interfaces.
+| Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee.
+| Stakeholders | All the people that, for certain reasons, are interested in a project.
+
+|
 |===
+
+****
