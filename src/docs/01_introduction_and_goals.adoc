@@ -25,9 +25,6 @@ data storage is separated from the application.
 ** Users can have live calls and videos.
 ** Users can share their screens in the chat.
 
-.Use Cases
-image:images/caso_uso.PNG[]Users comunication throw the app.
-
 ****
 
 === Quality Goals
