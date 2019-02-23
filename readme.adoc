@@ -11,11 +11,12 @@ DeDhat is a descentralized chat app based on the https://solid.mit.edu/[solid] s
 == Development Team
 
 This project is done by a team of 5 members:
-    * Carlos 
-    * Cristina Ruiz de Bucesta Crespo
-    * David Carballo Baz
-    * Iván Gómez Pinta
-    * Sara García Rodríguez
+
+* Carlos Álvarez Rábano.
+* Cristina Ruiz de Bucesta Crespo.
+* David Carballo Baz.
+* Iván Gómez Pinta.
+* Sara García Rodríguez.
 
 
 
