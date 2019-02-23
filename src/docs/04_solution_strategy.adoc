@@ -28,7 +28,7 @@ Angular tries to increase the number of browser-based applications with apabilit
 image::images/angularJS_MVC1.png[Modelo Vista Controlador con Angular]
 ****
 
-=== Decisiones organizativas
+=== Organizational decisions
 
 ****
 ****
