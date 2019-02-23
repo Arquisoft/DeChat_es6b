@@ -22,7 +22,13 @@ This project is done by a team of 5 members:
 
 
 
+== Generating documentation
 
+----
+gulp
+----
+
+Generates documentation in `docs` folder.
 
 
 
