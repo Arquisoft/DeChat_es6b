@@ -1,16 +1,4 @@
 language: node_js
 node_js:
-  - "10.4.1"
-sudo: true
-
-addons:
-  chrome: stable
-
-before_script:
-  - npm install -g @angular/cli
-
-script:
-  - yarn lint
-  - ng test --watch false --browsers ChromeHeadless
-  - ng e2e --protractor-config='e2e/protractor.ci.conf.js'
-  - yarn build --prod --base-href $base_href
+- "stable"
+after_success: npm run coverage
