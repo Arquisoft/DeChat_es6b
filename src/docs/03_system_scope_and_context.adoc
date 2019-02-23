@@ -1,5 +1,5 @@
 [[section-system-scope-and-context]]
-== System Scope and Context
+= System Scope and Context
 
 
 ****
@@ -21,7 +21,7 @@ Here we describe why it has been decide to use the above mentioned programs.
 
 .Form
 Here we explain in a more graphical way the information detailed above.
-****
+
 [options="header",cols="1,2,2"]
 |===
 |Name|Type of software|Reason for use
@@ -31,6 +31,8 @@ Here we explain in a more graphical way the information detailed above.
 | Asciidoctor | Text editor | Best text editor to generate asciidoc documents
 | Solid | Data management software | Use required by the project manager
 |===
+
+****
 
 === Business Context
 

@@ -1,9 +1,5 @@
 [[section-architecture-constraints]]
-== Architecture Constraints
-
-
-
-****
+= Architecture Constraints
 
 [options="header"]
 |=======================
@@ -17,5 +13,3 @@
 |Version Control    | Version control must be performed with Git, using the repository hosted in the GitHub service.
 |=======================
 
-
-****

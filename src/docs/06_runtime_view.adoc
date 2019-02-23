@@ -1,5 +1,5 @@
 [[section-runtime-view]]
-== Runtime View
+= Runtime View
 
 
 [role="arc42help"]

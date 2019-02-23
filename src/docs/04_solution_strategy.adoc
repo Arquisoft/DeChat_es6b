@@ -1,38 +1,36 @@
 [[section-solution-strategy]]
-== Solution Strategy
+= Solution Strategy
 
+=== Technological decisions and reaching the quality goals
 
 ****
-.Contents
-A short summary and explanation of the fundamental decisions and solution strategies, that shape the system's architecture. These include
+The main objective is to achieve a chat that meets all the quality requirements detailed in the first section. The first and great technological decision is to use SOLID. SOLID could be defined as a set of modular specifications, which are based on and extend the Internet's base technology (HTTP, REST, HTML). SOLID https://github.com/solid/solid-spec[specifications] are in GitHub.
 
-* technology decisions
-* decisions about the top-level decomposition of the system, e.g. usage of an architectural pattern or design pattern
-* decisions on how to achieve key quality goals
-* relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties.
+Within the SOLID ecosystem, users decide where to store the data and who accesses it. Photos, messages, contacts... are stored in your Solid POD. This POD is handled by you and can be moved at any time. You decide who has access rights to the data and the synchronization is not necessary, as the data remains with you. To make an analogy, a POD is like your own USB for the Web, which you access from anywhere (Availability). Thanks to its use, safety, which is our main quality goal, is highly encouraged. How the information is used depends exclusively on the user.
 
-.Decisiones tecnológicas y alcanzar los requisitos de calidad
-El principal objetivo es conseguir un chat que cumpla todos los requisitos de calidad detallados en el primer apartado. La primera y gran decisión tecnológica es utilizar SOLID. SOLID podría definirse como un conjunto de especificaciones modulares, que se basan y amplían la tecnología base de Internet (HTTP, REST, HTML). Las https://github.com/solid/solid-spec[especificaciones] de SOLID están en GitHub.
+Another decision is the use of TypeScript, a free and open source programming language developed and maintained by Microsoft. It is a superset of JavaScript, which essentially adds static typing and class-based objects. TypeScript can be used to develop JavaScript applications that will run on the client or server side (Node.js). This decision led to using https://angular.io/[Angular] as a framework for the web application. Among its advantages is speed and performance when generating code, it is universal, facilitates the division of code, increases productivity, etc. SOLID documentation recommends its use because of the large number of useful libraries it provides that facilitate development. All these advantages provided by Angular, guarantee us the efficiency and reliability of the app. Also the fact of being universal increases compatibility.
 
-Dentro del ecosistema de SOLID, tú decides donde almacenar los datos y quien accede a ellos. Fotos, mensajes, contactos... son almacenados en tus PODs de Solid. Estos PODs son manejados por ti y pueden ser movidos en cualquier momento. Tú decides quién tiene permisos de acceso a los datos y no es necesaria la sincronización, pues los datos permanecen contigo. Por hacer una analogía, un POD es como tu propio USB para la Web, a los que accedes desde cualquier sitio. Gracias a su uso la seguridad, que es nuestro principal requisito de calidad, se ve altamente fomentada. El cómo se use la información depende exclusivamente del usuario.
+Finally, we will explain Node.js, which is a Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Taking advantage of the V8 engine allows Node to provide a server-side execution environment that compiles and runs javascript at incredible speeds (Efficiency).
+****
 
-Otra decisión es el uso de TypeScript, un lenguaje de programación libre y de código abierto desarrollado y mantenido por Microsoft. Es un superconjunto de JavaScript, que esencialmente añade tipado estático y objetos basados en clases. TypeScript puede ser usado para desarrollar aplicaciones JavaScript que se ejecutarán en el lado del cliente o del servidor (Node.js). Esta decisión conllevó a utilizar https://angular.io/[Angular] como framework de la aplicación web. Entre sus ventajas está la velocidad y el rendimiento a la hora de generar código, es universal, facilita la división de código, aumenta la productividad, etc. Otro motivo del uso de Angular es que SOLID lo recomienda en su documentación, por la gran cantidad de librerías útiles que aporta y que facilitan el desarrollo. Todas estas ventajas aportadas por Angular, nos garantizan la eficiencia y confiabilidad de la app. A esto se le suma que sea universal, aumentando la compatibilidad. Todos estos, requisitos de calidad fundamentales de nuestra app.
+=== Design Patterns
 
-Por último, explicaremos Node.js, que es un entorno en tiempo de ejecución multiplataforma, de código abierto, para la capa del servidor (pero no limitándose a ello) basado en el lenguaje de programación ECMAScript, asíncrono, con I/O de datos en una arquitectura orientada a eventos y basado en el motor V8 de Google.
+****
 
-.Patrones de diseño
+Angular tries to increase the number of browser-based applications with apability of *Model View Controller (MVC)*. Our application will be based on this pattern as well, which separates the data and business logic of an application from its representation and the module in charge of managing events and communications. For this, we will distinguish three fundamental parts: the Model, the View and the Controller.
 
-Angular trata de aumentar el número de aplicaciones basadas en navegador con capacidad de Modelo Vista Controlador (MVC). Nuestra aplicación se basará en este patrón también, que separa los datos y la lógica de negocio de una aplicación de su representación y el módulo encargado de gestionar los eventos y las comunicaciones. Para ello, distiguiremos tres partes fundamentales: el Modelo, la Vista y el Controlador.
+* The *models* define the relevant mechanisms to manage the application data. The persistence system is accessed through the models and the data is created, modified or retrieved.
 
-* Los *modelos* definen los mecanismos pertinentes para gestionar los datos de la aplicación. A través de los modelos se accede al sistema de persistencia y se crean, modifican o recuperan los datos.
+* The *views* define the user interface aspect of the application, which is, the part that will be sent to the web browsers of the clients and therefore the information that the users will perceive. In most applications the views will be composed of HTML, CSS and JavaScript, and may also include small scripts of language executed on the server, which is usually used as a link between views and controllers.
 
-* Las *vistas* definen el aspecto de interfaz de usuario de la aplicación, es decir la parte que será enviada a los navegadores web de los clientes y por lo tanto la información que los usuarios van a percibir. En la mayor parte de aplicaciones las vistas estarán compuestas por código HTML, CSS y JavaScript, pudiendo incluir también pequeños scripts de lenguaje ejecutado en el servidor, que acostumbra a utilizarse como vínculo de unión entre las vistas y los controladores.
-
-* Los *controladores* son los encargados de ofertar el catálogo de acciones que la aplicación web es capaz de realizar (y que se corresponderá con la lógica de negocio implementada), cuando el usuario selecciona una de estas acciones el controlador debe ejecutar la lógica de negocio asociada y generar una respuesta, en muchos casos estas respuestas generarán un cambio en la vista actual de la aplicación.
+* The *controllers* are responsible for offering the catalog of actions that the web application is capable of (and that will correspond to the business logic implemented), when the user selects one of these actions the controller must execute the logic of the associate business and generate a response, in many cases these responses will generate a change in the current view of the application.
 
 image::images/angularJS_MVC1.png[Modelo Vista Controlador con Angular]
+****
 
-.Decisiones organizativas
-
+=== Decisiones organizativas
 
 ****
+****
+
+

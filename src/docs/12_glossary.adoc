@@ -1,8 +1,5 @@
 [[section-glossary]]
-== Glossary
-
-
-****
+= Glossary
 
 The most important domain and technical terms used in the system itself.
 Order alphabetically A-Z.
@@ -21,5 +18,3 @@ Order alphabetically A-Z.
 
 |
 |===
-
-****

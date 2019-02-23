@@ -1,10 +1,7 @@
 [[section-introduction-and-goals]]
-== Introduction and Goals
+= Introduction and Goals
 
-
-****
 Our goal is to create DeChat, a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. This project will be developed by a team of five members.
-****
 
 === Requirements Overview
 

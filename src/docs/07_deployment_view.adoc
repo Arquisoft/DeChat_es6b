@@ -1,7 +1,7 @@
 [[section-deployment-view]]
 
 
-== Deployment View
+= Deployment View
 
 [role="arc42help"]
 ****
