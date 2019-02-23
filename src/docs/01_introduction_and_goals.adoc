@@ -11,8 +11,7 @@ Our goal is to create DeChat, a descentralized chat app based on the https://sol
 
 ****
 The main objective is to ensure that the data does not pass through a central server, so each user saves its own data.
-Therefore the system will be based on a decentralized architecture where the
-data storage is separated from the application.
+Therefore the system will be based on a decentralized architecture where the data storage is separated from the application.
 
 .Essential features
 
