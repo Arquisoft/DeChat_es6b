@@ -2,7 +2,6 @@
 == Solution Strategy
 
 
-[role="arc42help"]
 ****
 .Contents
 A short summary and explanation of the fundamental decisions and solution strategies, that shape the system's architecture. These include
@@ -12,13 +11,28 @@ A short summary and explanation of the fundamental decisions and solution strate
 * decisions on how to achieve key quality goals
 * relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties.
 
-.Motivation
-These decisions form the cornerstones for your architecture. They are the basis for many other detailed decisions or implementation rules.
+.Decisiones tecnológicas y alcanzar los requisitos de calidad
+El principal objetivo es conseguir un chat que cumpla todos los requisitos de calidad detallados en el primer apartado. La primera y gran decisión tecnológica es utilizar SOLID. SOLID podría definirse como un conjunto de especificaciones modulares, que se basan y amplían la tecnología base de Internet (HTTP, REST, HTML). Las https://github.com/solid/solid-spec[especificaciones] de SOLID están en GitHub.
 
-.Form
-Keep the explanation of these key decisions short.
+Dentro del ecosistema de SOLID, tú decides donde almacenar los datos y quien accede a ellos. Fotos, mensajes, contactos... son almacenados en tus PODs de Solid. Estos PODs son manejados por ti y pueden ser movidos en cualquier momento. Tú decides quién tiene permisos de acceso a los datos y no es necesaria la sincronización, pues los datos permanecen contigo. Por hacer una analogía, un POD es como tu propio USB para la Web, a los que accedes desde cualquier sitio. Gracias a su uso la seguridad, que es nuestro principal requisito de calidad, se ve altamente fomentada. El cómo se use la información depende exclusivamente del usuario.
 
-Motivate what you have decided and why you decided that way,
-based upon your problem statement, the quality goals and key constraints.
-Refer to details in the following sections.
+Otra decisión es el uso de TypeScript, un lenguaje de programación libre y de código abierto desarrollado y mantenido por Microsoft. Es un superconjunto de JavaScript, que esencialmente añade tipado estático y objetos basados en clases. TypeScript puede ser usado para desarrollar aplicaciones JavaScript que se ejecutarán en el lado del cliente o del servidor (Node.js). Esta decisión conllevó a utilizar https://angular.io/[Angular] como framework de la aplicación web. Entre sus ventajas está la velocidad y el rendimiento a la hora de generar código, es universal, facilita la división de código, aumenta la productividad, etc. Otro motivo del uso de Angular es que SOLID lo recomienda en su documentación, por la gran cantidad de librerías útiles que aporta y que facilitan el desarrollo. Todas estas ventajas aportadas por Angular, nos garantizan la eficiencia y confiabilidad de la app. A esto se le suma sea universal también aporta una gran compatibilidad. Todos estos, requisitos de calidad fundamentales de nuestra app.
+
+Por último, explicaremos Node.js, que es un entorno en tiempo de ejecución multiplataforma, de código abierto, para la capa del servidor (pero no limitándose a ello) basado en el lenguaje de programación ECMAScript, asíncrono, con I/O de datos en una arquitectura orientada a eventos y basado en el motor V8 de Google.
+
+.Patrones de diseño
+
+Angular trata de aumentar el número de aplicaciones basadas en navegador con capacidad de Modelo Vista Controlador (MVC). Nuestra aplicación se basará en este patrón también, que separa los datos y la lógica de negocio de una aplicación de su representación y el módulo encargado de gestionar los eventos y las comunicaciones. Para ello, distiguiremos tres partes fundamentales: el Modelo, la Vista y el Controlador.
+
+* Los *modelos* definen los mecanismos pertinentes para gestionar los datos de la aplicación. A través de los modelos se accede al sistema de persistencia y se crean, modifican o recuperan los datos.
+
+* Las *vistas* definen el aspecto de interfaz de usuario de la aplicación, es decir la parte que será enviada a los navegadores web de los clientes y por lo tanto la información que los usuarios van a percibir. En la mayor parte de aplicaciones las vistas estarán compuestas por código HTML, CSS y JavaScript, pudiendo incluir también pequeños scripts de lenguaje ejecutado en el servidor, que acostumbra a utilizarse como vínculo de unión entre las vistas y los controladores.
+
+* Los *controladores* son los encargados de ofertar el catálogo de acciones que la aplicación web es capaz de realizar (y que se corresponderá con la lógica de negocio implementada), cuando el usuario selecciona una de estas acciones el controlador debe ejecutar la lógica de negocio asociada y generar una respuesta, en muchos casos estas respuestas generarán un cambio en la vista actual de la aplicación.
+
+image::images/angularJS_MVC1.png[Modelo Vista Controlador con Angular]
+
+.Decisiones organizativas
+
+
 ****

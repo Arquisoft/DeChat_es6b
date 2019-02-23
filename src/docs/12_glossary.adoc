@@ -11,7 +11,7 @@ Order alphabetically A-Z.
 [options="header"]
 |===
 | Term         | Definition
-|Angular | TypeScript based open source web application framework.
+| Angular | TypeScript based open source web application framework.
 | Decentralized | To keep data with yourself and not in an external server.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
 | POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
