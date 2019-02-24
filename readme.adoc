@@ -19,9 +19,6 @@ This project is done by a team of 5 members:
 * Sara García Rodríguez.
 
 
-
-
-
 == Generating documentation
 
 ----
@@ -31,6 +28,21 @@ gulp
 Generates documentation in `docs` folder.
 
 
+== Development server
+
+Run development server
+
+----
+ng serve
+----
+
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 
+== Running unit tests
 
+Run unit tests via [Karma](https://karma-runner.github.io).
+
+----
+ng test
+----
