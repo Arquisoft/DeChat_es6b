@@ -25,24 +25,37 @@ This project is done by a team of 5 members:
 gulp
 ----
 
-Generates documentation in `docs` folder.
+Generates documentation in `docs` folder. Previously you need to have installed gulp.js. For this run:
 
+----
+npm install gulp-cli -g
+----
 
 == Development server
 
-Run development server
+Run development server with:
 
 ----
 ng serve
 ----
 
-Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files. If you don't have Angular installed, use Node Package Manager:
+
+----
+npm run ng serve
+----
 
 
 == Running unit tests
 
-Run unit tests via [Karma](https://karma-runner.github.io).
+Run unit tests via [Karma](https://karma-runner.github.io):
 
 ----
 ng test
+----
+
+If you don't have Angular installed, use Node Package Manager:
+
+----
+npm run ng test
 ----
