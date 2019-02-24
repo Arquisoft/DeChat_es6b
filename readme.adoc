@@ -48,7 +48,7 @@ npm run ng serve
 
 == Running unit tests
 
-Run unit tests via [Karma](https://karma-runner.github.io):
+Run unit tests via (https://karma-runner.github.io)[Karma]:
 
 ----
 ng test
