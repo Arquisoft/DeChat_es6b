@@ -13,7 +13,7 @@ import { AuthService } from '../services/solid.auth.service';
 export class ChatComponent implements OnInit {
 
   constructor(private rdf: RdfService,
-    private route: ActivatedRoute, private auth: AuthService) { }
+    private route: ActivatedRoute, private auth: AuthService) {}
 
   ngOnInit() {
   }
