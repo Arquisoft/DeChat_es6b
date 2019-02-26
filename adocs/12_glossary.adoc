@@ -1,0 +1,20 @@
+[[section-glossary]]
+= Glossary
+
+The most important domain and technical terms used in the system itself.
+Order alphabetically A-Z.
+
+
+[options="header"]
+|===
+| Term         | Definition
+| Angular | TypeScript based open source web application framework.
+| Decentralized | To keep data with yourself and not in an external server.
+| Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
+| POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
+| React | JavaScript library for bulding user interfaces.
+| Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee.
+| Stakeholders | All the people that, for certain reasons, are interested in a project.
+
+|
+|===
