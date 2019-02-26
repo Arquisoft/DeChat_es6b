@@ -10,7 +10,7 @@ Within the SOLID ecosystem, users decide where to store the data and who accesse
 
 Another decision is the use of TypeScript, a free and open source programming language developed and maintained by Microsoft. It is a superset of JavaScript, which essentially adds static typing and class-based objects. TypeScript can be used to develop JavaScript applications that will run on the client or server side (Node.js). This decision led to using https://angular.io/[Angular] as a framework for the web application. Among its advantages is speed and performance when generating code, it is universal, facilitates the division of code, increases productivity, etc. SOLID documentation recommends its use because of the large number of useful libraries it provides that facilitate development. All these advantages provided by Angular, guarantee us the efficiency and reliability of the app. Also the fact of being universal increases compatibility.
 
-Finally, we will explain Node.js, which is a Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Taking advantage of the V8 engine allows Node to provide a server-side execution environment that compiles and runs javascript at incredible speeds (Efficiency).
+Finally, we will explain https://nodejs.org/es/[Node.js], which is a JavaScript runtime built on Chrome's V8 JavaScript engine. Taking advantage of the V8 engine allows Node to provide a server-side execution environment that compiles and runs javascript at incredible speeds (Efficiency).
 ****
 
 === Design Patterns
