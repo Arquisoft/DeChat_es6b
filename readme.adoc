@@ -32,7 +32,7 @@ Generates documentation in `docs` folder. Previously you need to have installed 
 npm install gulp-cli -g
 ----
 
-You also use the Node Package Manager by executing:
+You can also use the Node Package Manager by executing:
 
 ----
 npm run gulp
