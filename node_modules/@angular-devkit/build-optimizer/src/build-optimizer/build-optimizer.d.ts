@@ -7,5 +7,6 @@ export interface BuildOptimizerOptions {
     emitSourceMap?: boolean;
     strict?: boolean;
     isSideEffectFree?: boolean;
+    isAngularCoreFile?: boolean;
 }
 export declare function buildOptimizer(options: BuildOptimizerOptions): TransformJavascriptOutput;
