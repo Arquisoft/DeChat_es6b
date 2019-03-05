@@ -4,8 +4,8 @@ export class ChatChannel {
 
     id: string;
     title: string;
-    participants: string[]; // Array de WebIds
-    messages: Message[];
+    participants: string[] = new Array(); // Array de WebIds
+    messages: Message[] = new Array();;
 
     constructor(id, title) {
         this.id = id;

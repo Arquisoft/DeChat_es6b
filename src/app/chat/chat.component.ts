@@ -6,6 +6,9 @@ import { RdfService } from '../services/rdf.service';
 import { ChatService } from '../services/chat.service';
 import { AuthService } from '../services/solid.auth.service';
 
+import { ChatChannel } from '../models/chat-channel.model';
+import { Message } from '../models/message.model';
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -41,6 +44,41 @@ export class ChatComponent implements OnInit {
     // Ejemplo leer carpeta
     /* this.chatService.readFolder("https://dcarballob01.solid.community/public/").then(folder => {
       console.log(`Read ${folder.name}, it has ${folder.files.length} files. :` + folder.files)}); */
+
+
+      // PRUEBAS GUARDAR OBJETO
+
+      let canal = new ChatChannel("asdasd", "Prueba");
+      let msg1 = new Message("fgdfgd", "https://dcarballob01.solid.community", "HOLA MUNDO!");
+      let msg2 = new Message("fgdfgd", "https://dcarballob01.solid.community", "HOLA SOLID!");
+      canal.messages.push(msg1);
+      canal.messages.push(msg2);
+
+      let cn = JSON.stringify(canal);
+
+
+      // ------ COMO JSON NORMAL ------
+
+      //this.chatService.writeMessage("https://dcarballob01.solid.community/public/test_cnttl", cn, "text/plain");
+
+      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/public/test_cnttl.txt").then(file => { return(file) });
+      // console.log(temp);
+
+      // let recupCN:ChatChannel = JSON.parse(temp);
+      // console.log("Título: " + recupCN.title);
+
+
+      // ------ COMO LD + JSON ------
+
+      this.chatService.writeMessage("https://dcarballob01.solid.community/public/test_cnttl_json", cn, "application/ld+json");
+
+      let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/public/test_cnttl_json.jsonld").then(file => { return(file) });
+      console.log(temp);
+
+      let recupCN:ChatChannel = JSON.parse(temp);
+      console.log("Título: " + recupCN.title);
+      console.log("Mensajes: "); 
+      recupCN.messages.forEach(m => console.log(m.message));
   }
 
 }

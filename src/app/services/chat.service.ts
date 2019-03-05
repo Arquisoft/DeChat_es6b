@@ -20,8 +20,8 @@ export class ChatService {
    * 
    * @param newFile 
    */
-  async writeMessage(newFile) {
-    fileClient.createFile(newFile).then( fileCreated => {
+  async writeMessage(newFile, content?, contentType?) {
+    fileClient.createFile(newFile, content, contentType).then( fileCreated => {
       console.log(`Created file ${fileCreated}.`);
     }, err => console.log(err) );
   }
