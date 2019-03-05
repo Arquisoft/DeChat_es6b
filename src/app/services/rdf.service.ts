@@ -7,9 +7,28 @@ declare let $rdf: any;
 // TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { store } from '@angular/core/src/render3/instructions';
+
 
 const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+const SH = $rdf.Namespace('http://www.w3.org/ns/shacl#');
+const XSD = $rdf.Namespace('http://www.w3.org/2001/XMLSchema#');
+const SCHEMA = $rdf.Namespace('http://schema.org/');
+const DC = $rdf.Namespace('http://purl.org/dc/elements/1.1/');
+const TERMS = $rdf.Namespace('http://purl.org/dc/terms/');
+const FLOW = $rdf.Namespace('http://www.w3.org/2005/01/wf/flow#');
+const ICAL = $rdf.Namespace('http://www.w3.org/2002/12/cal/ical#');
+const MEE = $rdf.Namespace('http://www.w3.org/ns/pim/meeting#');
+const SIOC = $rdf.Namespace('http://rdfs.org/sioc/ns#');
+const SOLIDRDF = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
+const UI = $rdf.Namespace('http://www.w3.org/ns/ui#');
+const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+var LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
+
+const DEFAULT_CONTENT_TYPE = 'application/ld+json'
+const DEFAULT_ACCEPT = 'application/ld+json;q=0.9,text/turtle;q=0.8'
+const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
 
 /**
  * A service layer for RDF data manipulation using rdflib.js
@@ -327,4 +346,283 @@ export class RdfService {
     }
     return '';
   }
+
+
+
+
+
+
+
+
+
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  // Añadir
+  public newMessage() {
+    var link = 'http://www.w3.org/ns/ldp#Resource; rel=“type”';
+    var filename = "chat_" + Math.round(Math.random()*60000) + ".ttl";
+    
+    //const me = this.store.sym('https://dcarballob01.solid.community/inbox/chat_' + new Date().getTime() + '.ttl');
+    const me = this.store.sym('https://carballo09.solid.community/public/chat_test.ttl');
+    const profile = me.doc();
+
+    this.store.add(me, SIOC("user"), "David", profile);
+    this.store.add(me, SIOC("msg"), "MENSAJE", profile);
+    this.store.add(me, SIOC("msg"), "MENSAJE...2", profile);
+    
+    this.fetcher.putBack(me);
+  }
+
+   
+
+  // Cargar
+  public async loadMessages() {
+
+    const me = this.store.sym('https://dcarballob01.solid.community/public/CHAT_TEST.ttl');
+    const profile = me.doc();
+    
+
+    console.log("PROFILE: " + profile);
+
+
+    this.fetcher.load(profile).then(response => {
+      //var msg = this.store.any(me, SIOC("msg"));
+      var msg = this.store.each(me, SIOC("msg"));
+      console.log("Loaded { Mensaje: " + msg  + "}");
+      console.log("Tipo: " + (typeof msg));
+    }, err => {
+      console.log("Load failed " +  err);
+    });
+
+  }
+
+
+  // Cargar Inbox
+  public async getMessagesFromOtherPOD() {
+
+  }
+
+  // Actualizar
+  public async updateTest() {
+
+    const me = this.store.sym('https://dcarballob01.solid.community/public/chat_' + new Date().getTime() + '.ttl');
+    const doc = me.doc();
+
+    var ins = $rdf.st("PERSONA", FLOW("message"), "Mensaje_Nuevo", doc)
+    var del = []
+    
+    this.updateManager.update(del, ins, (uri, ok, message) => {
+      if (ok) console.log('Name changed to '+ "DAVID")
+      else alert(message)
+    })
+  }
+
+  // ----------------------------------------------------------------
+
+  
+  public test() {
+    //solid.auth.fetch("https://dcarballob01.solid.community/public/",{headers: {accept: "image/*;q=0.9, */*;q=0.1, application/rdf+xml;q=0.9, application/xhtml+xml, text/xml;q=0.5, application/xml;q=0.5, text/html;q=0.9, text/plain;q=0.5, text/n3;q=1.0, text/turtle;q=1"}}).
+
+    solid.auth.fetch("https://dcarballob01.solid.community/inbox/",{headers: {accept: DEFAULT_ACCEPT}}).
+    then(function(response){return response.text();}).
+    then(function(data){ console.log(data);})
+  }
+
+
+  public async getAllInbox(inboxUrl) {
+    /* const urlMsg = "https://dcarballob01.solid.community/inbox/3eb771b0-3c84-11e9-81a7-73e11fa71822.txt";
+    const inbox = "https://dcarballob01.solid.community/inbox/";
+
+    const me = this.store.sym('https://dcarballob01.solid.community/inbox/');
+    const doc = me.doc(); */
+
+    //var temp = this.store.match(null, null, doc, null);
+    //console.log(temp);
+
+    /* solid.auth.fetch("https://dcarballob01.solid.community/inbox/",{headers: {accept: DEFAULT_ACCEPT}}).
+    then(function(response){return response.text();}).
+    then(function(data){ console.log(data);}) */
+
+    /* solid.auth.fetch(inbox).then(response => {return response.text();
+    }).then(data => {console.log(data)}); */
+
+    //const inbox = "https://dcarballob01.solid.community/inbox/";
+
+    //this.checkInbox(inbox);
+    //this.sendToUserInbox("https://carballo09.solid.community/inbox", "test");
+ 
+
+    /* const userDataUrl = 'https://dcarballob01.solid.community/public/';
+    const otherUrl = "https://carballo09.solid.community/public/chat_test.ttl";
+
+    const folder = "https://dcarballob01.solid.community/public/chat"; */
+
+
+
+
+
+    /* // CARGAR CONTENIDO DE OTRO POD (PUBLIC)
+    inboxUrl = "https://carballo09.solid.community/public/chat_test.ttl";
+
+    await this.fetcher.load(inboxUrl);
+    let temp = this.store.match();
+    console.log(temp); */
+
+  }
+
+  
+
+
+
+  // ------------ FUNCIONES CASI VÁLIDAS ------------------
+
+  // Busca nuevas notificaciones de mensajes
+  async checkInbox(inboxUrl) {
+    let urls = await this.getAllUrlsResourcesInInbox(inboxUrl);
+    for (let index = 0; index < urls.length; index++) {
+      let content = await this.getContentInboxNotification(urls[index]);
+      
+      // Procesamos notificaciones de DeChat, una vez procesadas las borramos
+      if(content.includes('Prueba')) {
+        this.deleteFileForUser(urls[index]);
+        console.log(content);
+      }
+    }
+  }
+
+  // Devuelve las url de los documentos que hay en el inbox
+  async getAllUrlsResourcesInInbox(inboxUrl): Promise<any[]> {
+    await this.fetcher.load(inboxUrl);
+    return this.store.match(null, LDP('contains')).map(st => { return st.object.value });
+  }
+
+  // Devuelve el contenido de una notificación
+  // Devuelve Promise, por tanto ".then(data=>{console.log(data)});"
+  async getContentInboxNotification(urlNotificationInbox): Promise<any> {
+    return solid.auth.fetch(urlNotificationInbox).then(response => {return response.text();});
+  }
+
+
+  
+
+  // ------------ FUNCIONES VÁLIDAS ------------------
+
+  public uniqid(): string {
+    return '#' + Math.random().toString(36).substr(2, 9);
+  }
+
+  /**
+   * This method creates an empty file for the given url. It overwrites existing files.
+   * @param url: the url of the empty file
+   * @returns {Promise}: the promise from auth.fetch().
+   */
+  createEmptyFileForUser(url) {
+    var request = {
+      method: 'PUT',
+      body: ''
+    };
+    return solid.auth.fetch( url, request );
+  }
+
+  /**
+   * This method sends a notification to an inbox.
+   * @param url: the url of the inbox.
+   * @param data: the RDF data representing the notification.
+   * @returns {Promise}: the promise from auth.fetch().
+   */
+  sendToUserInbox(urlInbox, data) {
+    var request = {
+      method: 'POST',
+      body: data
+    }
+    return solid.auth.fetch( urlInbox, request );
+  }
+
+  /**
+   * This method deletes a file.
+   * @param url: the url of the file that needs to be deleted.
+   * @returns {Promise}: the promise from auth.fetch().
+   */
+  deleteFileForUser(urlFile) {
+    var request = {
+      method: 'DELETE'
+    }
+    return solid.auth.fetch( urlFile, request );
+  }
+
+  /**
+   * This method executes an SPARQL update on a file.
+   * @param url: the url of the file that needs to be updated.
+   * @param query: the SPARQL update query that needs to be executed.
+   * @returns {Promise}: the promise from auth.fetch().
+   */
+  executeSPARQLUpdateForUser(url, query) {
+    var request = {
+      method: 'PATCH',
+      body: query,
+      headers: {
+        'Content-Type': 'application/sparql-update'
+      }
+    };
+    return solid.auth.fetch( url, request );
+  }
+
+  /**
+   * This method checks if the current user has write access to a file.
+   * @param url: the url of the file to check.
+   * @returns {Promise<boolean>}: a promise that resolves with true if the user has write access, else false.
+   */
+  async writePermission(url) {
+    // TODO We should probably check the ACL of the parent folder to see if we can write if the file doesn't exist and
+    // if the file exists, we check the ACL of the file.
+    const response = await this.executeSPARQLUpdateForUser(url, 'INSERT DATA {}');
+    return response.status === 200;
+  }
+
+  // Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+  async generateUniqueUrlForResource(baseurl) {
+    let url = this.store.sym(baseurl + '#' + this.uniqid());
+
+    try {
+      this.fetcher.load(url).then(response => {
+        var d = this.store.each(url, RDF('type'));
+
+        // We assume that if this url doesn't have a type, the url is unused.
+        // Ok, this is not the most fail-safe thing.
+        // TODO: check if there are any triples at all.
+        while (d.length != 0) {
+          url = baseurl + '#' + this.uniqid();
+          d = this.store.each(url, RDF('type'));
+        }
+      }, err => {
+        console.log("Load failed " +  err);
+      });
+    } catch (e) {
+      // this means that response of data[url] returns a 404
+      // TODO might be called when you have no access, should check
+    } finally {
+      return url;
+    }
+  }
+
+  /* async generateInvitation(baseUrl, chatUrl, userWebId, opponentWebId) {
+    const invitationUrl = await this.generateUniqueUrlForResource(baseUrl);
+    const notification = `<${invitationUrl}> a ` + SCHEMA('InviteAction');
+    console.log(notification);
+    const sparqlUpdate = `
+    <${invitationUrl}> a <`+SCHEMA("InviteAction")+`>;
+      <`+SCHEMA("event")+`> <${chatUrl}>;
+      <`+SCHEMA("agent")+`> <${userWebId}>;
+      <`+SCHEMA("recipient")+`> <${opponentWebId}>.
+  `;
+
+    return {
+      notification,
+      sparqlUpdate
+    };
+  } */
+
 }
