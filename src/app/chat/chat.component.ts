@@ -28,7 +28,7 @@ export class ChatComponent implements OnInit {
     //this.chatService.writeMessage("https://dcarballob01.solid.community/public/TEST_CHAT.ttl");
 
     // Ejemplo leer
-    // this.chatService.readMessage("https://dcarballob01.solid.community/public/TEST_CHAT.ttl.txt.txt")
+    // this.chatService.readMessage("https://dcarballob01.solid.community/public/TEST_CHAT.ttl.txt.txt.txt.txt")
     //   .then(file => { console.log(file)});
 
     // Ejemplo actualizar
