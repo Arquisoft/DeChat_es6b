@@ -25,32 +25,32 @@ export class ChatComponent implements OnInit {
   
   async onSubmit () {
     // Ejemplo copiar
-    //this.chatService.copyFile("https://carballo09.solid.community/public/chat_test.ttl", "https://dcarballob01.solid.community/public/TESTTT.ttl");
+    //this.chatService.copyFile("https://gomezivann.solid.community/public/chat_test.ttl", "https://dcarballob01.solid.community/public/TESTTT.ttl");
     
     // Ejemplo escribir
-    //this.chatService.writeMessage("https://dcarballob01.solid.community/public/TEST_CHAT.ttl");
+    //this.chatService.writeMessage("https://gomezivann.solid.community/public/TEST_CHAT.ttl");
 
     // Ejemplo leer
-    // this.chatService.readMessage("https://dcarballob01.solid.community/public/TEST_CHAT.ttl.txt.txt.txt.txt")
+    // this.chatService.readMessage("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt.txt")
     //   .then(file => { console.log(file)});
 
     // Ejemplo actualizar
-    // this.chatService.updateFile("https://dcarballob01.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje prueba", "text/plain");
-    // this.chatService.updateFile("https://dcarballob01.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje de prueba");
+    // this.chatService.updateFile("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje prueba", "text/plain");
+    // this.chatService.updateFile("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje de prueba");
 
     // Ejemplo borrar
-    //this.chatService.deleteFile("https://dcarballob01.solid.community/public/TESTTT.ttl.txt");
+    //this.chatService.deleteFile("https://gomezivann.solid.community/public/TESTTT.ttl.txt");
 
     // Ejemplo leer carpeta
-    /* this.chatService.readFolder("https://dcarballob01.solid.community/public/").then(folder => {
+    /* this.chatService.readFolder("https://gomezivann.solid.community/public/").then(folder => {
       console.log(`Read ${folder.name}, it has ${folder.files.length} files. :` + folder.files)}); */
 
 
       // PRUEBAS GUARDAR OBJETO
 
       let canal = new ChatChannel("asdasd", "Prueba");
-      let msg1 = new Message("fgdfgd", "https://dcarballob01.solid.community", "HOLA MUNDO!");
-      let msg2 = new Message("fgdfgd", "https://dcarballob01.solid.community", "HOLA SOLID!");
+      let msg1 = new Message("fgdfgd", "https://gomezivann.inrupt.net", "HOLA MUNDO!");
+      let msg2 = new Message("fgdfgd", "https://gomezivann.inrupt.net", "HOLA SOLID!");
       canal.messages.push(msg1);
       canal.messages.push(msg2);
 
@@ -59,9 +59,9 @@ export class ChatComponent implements OnInit {
 
       // ------ COMO JSON NORMAL ------
 
-      //this.chatService.writeMessage("https://dcarballob01.solid.community/public/test_cnttl", cn, "text/plain");
+      //this.chatService.writeMessage("https://gomezivann.solid.community/public/test_cnttl", cn, "text/plain");
 
-      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/public/test_cnttl.txt").then(file => { return(file) });
+      // let temp = await this.chatService.readMessage("https://gomezivann.solid.community/public/test_cnttl.txt").then(file => { return(file) });
       // console.log(temp);
 
       // let recupCN:ChatChannel = JSON.parse(temp);
@@ -70,9 +70,9 @@ export class ChatComponent implements OnInit {
 
       // ------ COMO LD + JSON ------
 
-      this.chatService.writeMessage("https://dcarballob01.solid.community/public/test_cnttl_json", cn, "application/ld+json");
+      this.chatService.writeMessage("https://gomezivann.inrupt.net/public/test_cnttl_json", cn, "application/ld+json");
 
-      let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/public/test_cnttl_json.jsonld").then(file => { return(file) });
+      let temp = await this.chatService.readMessage("https://gomezivann.inrupt.net/public/test_cnttl_json.jsonld").then(file => { return(file) });
       console.log(temp);
 
       let recupCN:ChatChannel = JSON.parse(temp);
