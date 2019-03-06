@@ -5,9 +5,8 @@ export class Message {
     sendTime: Date = new Date();
     message: string;
 
-    constructor(id, makerWebId, message) {
+    constructor(id, message) {
         this.id = id;
-        this.makerWebId = makerWebId;
         this.message = message;
     }
 }

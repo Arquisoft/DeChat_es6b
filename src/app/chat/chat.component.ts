@@ -48,9 +48,9 @@ export class ChatComponent implements OnInit {
 
       // PRUEBAS GUARDAR OBJETO
 
-      let canal = new ChatChannel("asdasd", "Prueba");
-      let msg1 = new Message("fgdfgd", "https://gomezivann.inrupt.net", "HOLA MUNDO!");
-      let msg2 = new Message("fgdfgd", "https://gomezivann.inrupt.net", "HOLA SOLID!");
+      let canal = new ChatChannel("asdasda","Prueba");
+      let msg1 = new Message("https://gomezivann.inrupt.net", "HOLA MUNDO!");
+      let msg2 = new Message("https://gomezivann.inrupt.net", "HOLA SOLID!");
       canal.messages.push(msg1);
       canal.messages.push(msg2);
 
@@ -70,7 +70,7 @@ export class ChatComponent implements OnInit {
 
       // ------ COMO LD + JSON ------
 
-      this.chatService.writeMessage("https://gomezivann.inrupt.net/public/test_cnttl_json", cn, "application/ld+json");
+      /* this.chatService.writeMessage("https://gomezivann.inrupt.net/public/test_cnttl_json", cn, "application/ld+json");
 
       let temp = await this.chatService.readMessage("https://gomezivann.inrupt.net/public/test_cnttl_json.jsonld").then(file => { return(file) });
       console.log(temp);
@@ -78,7 +78,24 @@ export class ChatComponent implements OnInit {
       let recupCN:ChatChannel = JSON.parse(temp);
       console.log("Título: " + recupCN.title);
       console.log("Mensajes: "); 
-      recupCN.messages.forEach(m => console.log(m.message));
+      recupCN.messages.forEach(m => console.log(m.message)); */
+
+
+      // msg1.makerWebId = "https://dcarballob01.solid.community";
+      // let newMSG = JSON.stringify(msg1);
+      // this.chatService.writeMessage("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
+
+
+      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/private/dechat_es6b/fa22dbaf-f75a-4b3e-82cd-746f1023e8f4.jsonld")
+      //   .then(file => { return(file) });
+
+      // console.log(temp);
+
+      // let msg3 = new Message("https://dcarballob01.solid.community", "HOLA INBOX!");
+      // msg3.makerWebId = "https://dcarballob01.solid.community";
+      // this.chatService.sendMessage(canal, msg3);
+        
+      // console.log(temp);
   }
 
 }
