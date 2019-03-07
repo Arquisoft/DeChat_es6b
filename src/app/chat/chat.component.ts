@@ -81,12 +81,14 @@ export class ChatComponent implements OnInit {
       recupCN.messages.forEach(m => console.log(m.message)); */
 
 
-      // msg1.makerWebId = "https://dcarballob01.solid.community";
-      // let newMSG = JSON.stringify(msg1);
-      // this.chatService.writeMessage("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
+      // setInterval(() => {
+      //   msg1.makerWebId = "https://dcarballob01.solid.community";
+      //   let newMSG = JSON.stringify(msg1);
+      //   this.chatService.writeMessage("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
+      // }, 1000);
 
 
-      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/private/dechat_es6b/fa22dbaf-f75a-4b3e-82cd-746f1023e8f4.jsonld")
+      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/private/dechat_es6b/484879b9-915f-4a29-bb6f-dd5a01ad624b.jsonld")
       //   .then(file => { return(file) });
 
       // console.log(temp);
