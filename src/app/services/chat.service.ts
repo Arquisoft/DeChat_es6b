@@ -27,18 +27,20 @@ const MESSAGE_FILE_FORMAT = "jsonld";
 export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
+  uri: string;
 
   constructor(private rdf: RdfService, private auth: AuthService, ) { 
-    this.iniciarChat();
+    this.startChat();
   }
 
-  async iniciarChat() {
+  async startChat() {
+    this.uri = await this.getWebIdBase();
     await this.checkDeChatFolder();
     await this.loadChatChannels();
 
     // Comprobar Inbox cada x tiempo
-    setInterval(() => {
-      this.checkInbox();
+    setInterval(async () => {
+      await this.checkInbox();
     } , 1500);
   }
 
@@ -46,13 +48,10 @@ export class ChatService {
    * Crea la carpeta para almacenar los canales de chat si no está creada
    */
   async checkDeChatFolder() {
-    // Obtenemos el WebId base para las rutas
-    var uri = await this.getWebIdBase();
-
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.readFolder(uri + PRIVATE_CHAT_FOLDER);
+    let checkFolder = await this.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
     if (checkFolder === undefined) {
-      this.createFolder(uri + PRIVATE_CHAT_FOLDER);
+      this.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
     }
   }
 
@@ -60,8 +59,7 @@ export class ChatService {
    * 
    */
   async loadChatChannels() {
-    let uri = await this.getWebIdBase();
-    let folderContent = await this.readFolder(uri + PRIVATE_CHAT_FOLDER);
+    let folderContent = await this.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
 
     console.log("Loading chat channels...");
     for (const file of folderContent.files) {
@@ -88,17 +86,16 @@ export class ChatService {
   async sendMessage(chatChannel: ChatChannel, msg: Message) {
     if (this.chatChannels.includes(chatChannel)) {
       // Guardamos el mensaje
-      let uri = await this.getWebIdBase();
-      msg.makerWebId = uri;
+      msg.makerWebId = this.uri;
       chatChannel.messages.push(msg);
 
       // Actualizamos chat en POD propio
-      this.updateFile(uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
+      this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
 
       // Enviamos el mensaje a todos los participantes del chat
       let newMsg = JSON.stringify(msg);
-      chatChannel.participants.forEach(participante => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
-        this.writeMessage(participante + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+      chatChannel.participants.forEach(participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
+        this.writeMessage(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
       });
     }
   }
@@ -107,8 +104,7 @@ export class ChatService {
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
   async checkInbox() {
-    let uri = await this.getWebIdBase();
-    let folderContent = await this.readFolder(uri + INBOX_FOLDER);
+    let folderContent = await this.readFolder(this.uri + INBOX_FOLDER);
 
     console.log("Checking inbox...");
     for (const file of folderContent.files) {
@@ -126,7 +122,6 @@ export class ChatService {
    * @param urlFile 
    */
   private async processNewMessage(urlFile: any) {
-    let uri = await this.getWebIdBase();
     let jsonld = await this.readMessage(urlFile);
     let newMessage:Message = JSON.parse(jsonld);
 
@@ -136,7 +131,7 @@ export class ChatService {
       channel.messages.push(newMessage);
 
       // Actualizamos chat en POD propio
-      this.updateFile(uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
+      this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
     } else {
       // Si no hay canal asociado creamos uno
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), "Prueba_chat_inbox");
@@ -145,7 +140,7 @@ export class ChatService {
       this.chatChannels.push(newChatChannel);
 
       // Añadimos chat a POD propio
-      this.writeMessage(uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      this.writeMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
     }
   }
 
@@ -158,7 +153,6 @@ export class ChatService {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
     
     if (channel === null) {
-      let uri = await this.getWebIdBase();
       title = (title === undefined)? "Prueba_chat_inbox" : title;
 
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
@@ -166,7 +160,7 @@ export class ChatService {
       newChatChannel.participants.push(webId);
 
       this.chatChannels.push(newChatChannel);
-      this.writeMessage(uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      this.writeMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
 
       return newChatChannel;
     }
