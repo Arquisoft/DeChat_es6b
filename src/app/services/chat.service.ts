@@ -85,18 +85,23 @@ export class ChatService {
    * @param chatChannel 
    * @param msg 
    */
-  async sendMessage(chatChannel: ChatChannel, msg: Message) {
-    if (this.chatChannels.includes(chatChannel)) {
-      // Guardamos el mensaje
-      msg.makerWebId = this.uri;
-      chatChannel.messages.push(msg);
+  async sendMessage(chatChannel: ChatChannel, msg: string) {
+    // this.uri = await this.getWebIdBase();
+    // await this.loadChatChannels();
+    // Comprobamos que el canal exista
+    let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
+    if (channel != null) {
+      // Creamos y guardamos el mensaje
+      let message = new Message(msg);
+      message.makerWebId = this.uri;
+      chatChannel.messages.push(message);
 
-      // Actualizamos chat en POD propio
-      this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
+      // Actualizamos canal de chat en POD propio
+      await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
 
       // Enviamos el mensaje a todos los participantes del chat
       let newMsg = JSON.stringify(msg);
-      chatChannel.participants.forEach(participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
+      chatChannel.participants.forEach(async participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
         this.writeMessage(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
       });
     }
@@ -147,21 +152,24 @@ export class ChatService {
   }
 
   /**
+   * Método destinado a permitir añadir nuevos canales de chat desde la inferfaz
    * 
    * @param webId 
    * @param title 
    */
   public async createNewChatChannel(webId: string, title?: string, message?: Message): Promise<ChatChannel> {
+    // this.uri = await this.getWebIdBase();
+    // await this.loadChatChannels();
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
-    
-    if (channel === null) {
-      title = (title === undefined)? "Prueba_chat_inbox" : title;
 
+    if (channel == null) {
+      title = (title == undefined)? "Prueba_chat_inbox" : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
       if (message != undefined) { newChatChannel.messages.push(message); }
-      newChatChannel.participants.push(webId);
 
+      newChatChannel.participants.push(webId);
       this.chatChannels.push(newChatChannel);
+      
       this.writeMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
 
       return newChatChannel;
@@ -178,6 +186,19 @@ export class ChatService {
   public searchChatChannelByParticipantWebid(webId: string): ChatChannel {
     for (const channel of this.chatChannels) {
       if (channel.participants.includes(webId)) {
+        return channel;
+      } 
+    }
+    return null;    
+  }
+
+  /**
+   * 
+   * @param id 
+   */
+  public searchChatChannelById(id: string): ChatChannel {
+    for (const channel of this.chatChannels) {
+      if (channel.id == id) {
         return channel;
       } 
     }
@@ -216,9 +237,8 @@ export class ChatService {
    * @param newFile 
    */
   async writeMessage(newFile, content?, contentType?) {
-    fileClient.createFile(newFile, content, contentType).then( fileCreated => {
-      console.log(`Created file ${fileCreated}.`);
-    }, err => console.log(err) );
+    fileClient.createFile(newFile, content, contentType)
+      .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
   }
 
   /**
@@ -236,7 +256,8 @@ export class ChatService {
    * @param contentType 
    */
   async updateFile(url, newContent, contentType?: string) {
-    fileClient.updateFile( url, newContent, contentType ).then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
+    await fileClient.updateFile( url, newContent, contentType )
+      .then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
   }
 
   /**
@@ -244,9 +265,8 @@ export class ChatService {
    * @param url 
    */
   async deleteFile(url) {
-    fileClient.deleteFile(url).then(success => {
-      console.log(`Deleted ${url}.`);
-    }, err => console.log(err) );
+    await fileClient.deleteFile(url)
+      .then(success => { console.log(`Deleted ${url}.`); }, err => console.log(err) );
   }
 
   /**
@@ -268,9 +288,8 @@ export class ChatService {
    * @param url 
    */
   async createFolder(url: string) {
-    fileClient.createFolder(url).then(success => {
-      console.log(`Created folder ${url}.`);
-    }, err => console.log(err) );
+    await fileClient.createFolder(url)
+      .then(success => { console.log(`Created folder ${url}.`); }, err => console.log(err) );
   }
 
   /**
