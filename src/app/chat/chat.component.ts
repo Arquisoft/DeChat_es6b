@@ -16,6 +16,8 @@ import { Message } from '../models/message.model';
 })
 export class ChatComponent implements OnInit {
 
+  selectedChatChannel: ChatChannel;
+
   constructor(private rdf: RdfService,
     private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {}
 
@@ -92,34 +94,25 @@ export class ChatComponent implements OnInit {
       // setInterval(() => {
       //   msg1.makerWebId = "https://dcarballob01.solid.community";
       //   let newMSG = JSON.stringify(msg1);
-      //   this.chatService.writeMessage("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
+      //   this.chatService.createFile("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
       // }, 1000);
 
 
-
+      
 
       // this.chatService.createNewChatChannel("https://davidcarballo.solid.community");
+      // this.chatService.createNewChatChannel("https://dcarballob01.solid.community");
 
-      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/3c5dccef-c1cf-4bb6-b883-663353a3918c.jsonld")
+
+      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/76116c47-1dda-41f5-902b-6d585c1fb146.jsonld")
       //   .then(file => { return(file) });
       // let recupCN:ChatChannel = JSON.parse(temp);
 
-      // await this.chatService.sendMessage(recupCN, "PRIMER MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEGUNDO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "TERCER MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "CUARTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "QUINTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEXTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEPTIMO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "OCTAVO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "PRIMER MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEGUNDO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "TERCER MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "CUARTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "QUINTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEXTO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "SEPTIMO MENSAJE ENVIADO DESDE MÉTODO!!");
-      // await this.chatService.sendMessage(recupCN, "OCTAVO MENSAJE ENVIADO DESDE MÉTODO!!");
+
+      // for (let index = 0; index < 60; index++) {
+      //   await this.chatService.sendMessage(recupCN, "HOLA MUNDO");
+      // }
+      
 
       // console.log("Título: " + recupCN.title);
       // console.log("Mensajes: "); 
