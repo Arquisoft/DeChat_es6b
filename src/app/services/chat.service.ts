@@ -30,7 +30,7 @@ export class ChatService {
   uri: string;
 
   constructor(private rdf: RdfService, private auth: AuthService, ) { 
-    this.startChat();
+    //this.startChat();
   }
 
   /**
@@ -65,7 +65,7 @@ export class ChatService {
 
     console.log("Loading chat channels...");
     for (const file of folderContent.files) {
-      let channelJsonld = await this.readMessage(file.url);
+      let channelJsonld = await this.readFile(file.url);
       let channel:ChatChannel = JSON.parse(channelJsonld);
       this.chatChannels.push(channel);
     }
@@ -86,8 +86,6 @@ export class ChatService {
    * @param msg 
    */
   async sendMessage(chatChannel: ChatChannel, msg: string) {
-    // this.uri = await this.getWebIdBase();
-    // await this.loadChatChannels();
     // Comprobamos que el canal exista
     let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
     if (channel != null) {
@@ -102,7 +100,7 @@ export class ChatService {
       // Enviamos el mensaje a todos los participantes del chat
       let newMsg = JSON.stringify(msg);
       chatChannel.participants.forEach(async participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
-        this.writeMessage(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+        this.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
       });
     }
   }
@@ -129,7 +127,7 @@ export class ChatService {
    * @param urlFile 
    */
   private async processNewMessage(urlFile: any) {
-    let jsonld = await this.readMessage(urlFile);
+    let jsonld = await this.readFile(urlFile);
     let newMessage:Message = JSON.parse(jsonld);
 
     // Añadimos el mensaje al canal correspondiente si ya existe
@@ -147,7 +145,7 @@ export class ChatService {
       this.chatChannels.push(newChatChannel);
 
       // Añadimos chat a POD propio
-      this.writeMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
     }
   }
 
@@ -158,8 +156,6 @@ export class ChatService {
    * @param title 
    */
   public async createNewChatChannel(webId: string, title?: string, message?: Message): Promise<ChatChannel> {
-    // this.uri = await this.getWebIdBase();
-    // await this.loadChatChannels();
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
 
     if (channel == null) {
@@ -170,7 +166,7 @@ export class ChatService {
       newChatChannel.participants.push(webId);
       this.chatChannels.push(newChatChannel);
       
-      this.writeMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
 
       return newChatChannel;
     }
@@ -236,7 +232,7 @@ export class ChatService {
    * 
    * @param newFile 
    */
-  async writeMessage(newFile, content?, contentType?) {
+  async createFile(newFile, content?, contentType?) {
     fileClient.createFile(newFile, content, contentType)
       .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
   }
@@ -245,7 +241,7 @@ export class ChatService {
    * 
    * @param file 
    */
-  async readMessage(file) {
+  async readFile(file) {
     return fileClient.readFile(file).then(body => { return(body) }, err => console.log(err) );
   }
 

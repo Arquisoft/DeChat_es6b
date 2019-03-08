@@ -20,8 +20,16 @@ export class ChatComponent implements OnInit {
     private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {}
 
   ngOnInit() {
+    this.init();
+  }
+
+  async init() {
+    await this.chatService.startChat();
     this.onSubmit();
   }
+  
+  
+
   
   async onSubmit () {
     // Ejemplo copiar
@@ -92,7 +100,7 @@ export class ChatComponent implements OnInit {
 
       // this.chatService.createNewChatChannel("https://davidcarballo.solid.community");
 
-      // let temp = await this.chatService.readMessage("https://dcarballob01.solid.community/private/dechat_es6b/3c5dccef-c1cf-4bb6-b883-663353a3918c.jsonld")
+      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/3c5dccef-c1cf-4bb6-b883-663353a3918c.jsonld")
       //   .then(file => { return(file) });
       // let recupCN:ChatChannel = JSON.parse(temp);
 
@@ -116,7 +124,6 @@ export class ChatComponent implements OnInit {
       // console.log("Título: " + recupCN.title);
       // console.log("Mensajes: "); 
       // recupCN.messages.forEach(m => console.log(m.message)); 
-
 
 
 
