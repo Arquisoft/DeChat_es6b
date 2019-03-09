@@ -6,19 +6,19 @@ import { SolidProfile } from '../models/solid-profile.model';
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 
-import * as fileClient from "solid-file-client";
+import * as fileClient from 'solid-file-client';
 import * as uuid from 'uuid';
 import { getBodyNode } from '@angular/animations/browser/src/render/shared';
 import { IfStmt } from '@angular/compiler';
 
 
-const CHAT_CHANNEL_CONTENT_TYPE = "application/ld+json";
-const MESSAGE_CONTENT_TYPE = "application/ld+json";
-const PRIVATE_CHAT_FOLDER = "/private/dechat_es6b";
-const INBOX_FOLDER = "/inbox/";
-const BASE_NAME_MESSAGES = "dechat_msg";
-const PROFILE_CARD_FOLDER = "/profile/card#me";
-const MESSAGE_FILE_FORMAT = "jsonld";
+const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
+const MESSAGE_CONTENT_TYPE = 'application/ld+json';
+const PRIVATE_CHAT_FOLDER = '/private/dechat_es6b';
+const INBOX_FOLDER = '/inbox/';
+const BASE_NAME_MESSAGES = 'dechat_msg';
+const PROFILE_CARD_FOLDER = '/profile/card#me';
+const MESSAGE_FILE_FORMAT = 'jsonld';
 
 
 @Injectable({
@@ -34,7 +34,7 @@ export class ChatService {
   startExternally = () => { this.stoppedExternally = false }
 
   constructor(private rdf: RdfService, private auth: AuthService, ) {
-    //this.startChat();
+    // this.startChat();
   }
 
   /**
@@ -165,11 +165,11 @@ export class ChatService {
   }
 
   /**
-   * 
+   *
    * @param ChatChannel chat
    */
   public async showChatMessages(chat: ChatChannel) {
-      for(const m in chat.messages) {
+      for (const m in chat.messages) {
         console.log(m.toString);
       }
   }

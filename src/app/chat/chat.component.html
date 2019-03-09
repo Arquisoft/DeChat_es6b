@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list active_chat">
+            <div class="chat_list active_chat" >
               <div class="chat_people">
                 <div class="chat_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
                 <div class="chat_ib">
@@ -42,13 +42,13 @@
               <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
               <div class="received_msg">
                 <div class="received_withd_msg">
-                  <p>Hola!</p>
+                  <p *ngIf="messageReceived">{{getChatMessages(selectedChatChannel)}}</p>
                   <span class="time_date"> 11:01 PM    |    Yesterday</span></div>
               </div>
             </div>
             <div class="outgoing_msg">
               <div class="sent_msg">
-                <p>Holaaaa, q tal?</p>
+                <p *ngIf="messageSent">{{getChatMessages(selectedChatChannel)}}</p>
                 <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
             </div>
             <div class="incoming_msg">
