@@ -347,6 +347,24 @@ export class RdfService {
     return '';
   }
 
+  getFriends = () =>
+  {
+    const user = this.session.webId;
+    const amigos = this.store.each($rdf.sym(user), FOAF('knows'));
+    const lista_amigos = [];
+    try {
+      let i=0;
+      for (i=0; i<amigos.length; i++)
+      {
+        lista_amigos.push(amigos[i].value);
+      }
+      return lista_amigos;
+    } catch (error) {
+      console.log(`Error fetching data: ${error}`);
+    }
+  }
+
+
 
 
 

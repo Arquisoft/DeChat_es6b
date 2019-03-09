@@ -17,6 +17,7 @@ export class CardComponent implements OnInit  {
   profile: SolidProfile;
   profileImage: string;
   loadingProfile: Boolean;
+  amigos: Array<any>;
   chatComponent: ChatComponent;
 
   @ViewChild('f') cardForm: NgForm;
@@ -58,6 +59,16 @@ export class CardComponent implements OnInit  {
     }
     catch (err){
       console.log(`Error: ${err}`);
+    }
+  }
+
+  async loadFriends() {
+    try {
+      const list_friends = await this.rdf.getFriends();
+      if(list_friends)
+        this.amigos = list_friends;
+    }catch (error) {
+      console.log(`Error: ${error}`);
     }
   }
 

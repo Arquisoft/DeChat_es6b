@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgForm } from '@angular/forms';
-import { SolidProfile } from '../models/solid-profile.model';
+import {NgForm } from '@angular/forms';
+import {SolidProfile} from "../models/solid-profile.model";
 import { RdfService } from '../services/rdf.service';
 import { ChatService } from '../services/chat.service';
 import { AuthService } from '../services/solid.auth.service';
@@ -20,7 +20,6 @@ export class ChatComponent implements OnInit {
 
   constructor(private rdf: RdfService,
     private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {}
-
   ngOnInit() {
     this.init();
   }
@@ -29,10 +28,7 @@ export class ChatComponent implements OnInit {
     await this.chatService.startChat();
     this.onSubmit();
   }
-  
-  
 
-  
   async onSubmit () {
     // Ejemplo copiar
     //this.chatService.copyFile("https://gomezivann.solid.community/public/chat_test.ttl", "https://dcarballob01.solid.community/public/TESTTT.ttl");
