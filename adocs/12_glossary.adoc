@@ -9,6 +9,7 @@ Order alphabetically A-Z.
 |===
 | Term         | Definition
 | Angular | TypeScript based open source web application framework.
+| Arc42 |  Template for architecture communication and documentation.
 | Decentralized | To keep data with yourself and not in an external server.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
 | POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
