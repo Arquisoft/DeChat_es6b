@@ -11,6 +11,7 @@ Order alphabetically A-Z.
 | Angular | TypeScript based open source web application framework.
 | Arc42 |  Template for architecture communication and documentation.
 | Decentralized | To keep data with yourself and not in an external server.
+| Integration testing | Is a level of software testing where individual units are combined and tested as a group. The purpose of this level of testing is to expose faults in the interaction between integrated units.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
 | POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
 | React | JavaScript library for bulding user interfaces.
