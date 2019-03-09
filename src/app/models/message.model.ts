@@ -9,4 +9,8 @@ export class Message {
         // this.id = id;
         this.message = message;
     }
+
+    // public toString(): String {
+    //     return this.makerWebId + ": " + this.message + ". Enviado: " + this.sendTime.toDateString;
+    // }
 }

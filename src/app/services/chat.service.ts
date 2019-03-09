@@ -165,6 +165,16 @@ export class ChatService {
   }
 
   /**
+   * 
+   * @param ChatChannel chat
+   */
+  public async showChatMessages(chat: ChatChannel) {
+      for(const m in chat.messages) {
+        console.log(m.toString);
+      }
+  }
+
+  /**
    * Método destinado a permitir añadir nuevos canales de chat desde la inferfaz
    *
    * @param webId
