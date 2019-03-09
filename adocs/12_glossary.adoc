@@ -13,8 +13,8 @@ Order alphabetically A-Z.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
 | POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
 | React | JavaScript library for bulding user interfaces.
-| Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee.
+| Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee, the inventor of the World Wide Web.
 | Stakeholders | All the people that, for certain reasons, are interested in a project.
-
-|
+| TypeScrip | A free and open source programming language developed and maintained by Microsoft. It is a superset of JavaScript, which has added optional types
+to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS
 |===
