@@ -25,12 +25,12 @@
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list active_chat">
+            <div class="chat_list active_chat" *ngFor="let channel of this.chatService.chatChannels">
               <div class="chat_people">
                 <div class="chat_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
                 <div class="chat_ib">
-                  <h5>Usuario random <span class="chat_date">Mar 5</span></h5>
-                  <p>Prueba de mensaje en el chat.</p>
+                  <h5> {{ channel.participants[0] }} <span class="chat_date">{{ getDayAndMonthLastMessage(channel) }}</span></h5>
+                  <p> {{ getLastMessageText(channel) }} </p>
                 </div>
               </div>
             </div>

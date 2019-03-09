@@ -29,6 +29,20 @@ export class ChatComponent implements OnInit {
     await this.chatService.startChat();
     this.onSubmit();
   }
+
+  getLastMessage(channel: ChatChannel): Message {
+    return (channel.messages[channel.messages.length-1] != undefined)? (channel.messages[channel.messages.length-1]) : null;
+  }
+
+  getLastMessageText(channel: ChatChannel): string {
+    return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
+  }
+
+  getDayAndMonthLastMessage(channel: ChatChannel) {
+    let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+    return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
+      + " " + new Date(this.getLastMessage(channel).sendTime).getUTCDay() : "";
+  }
   
   
 
@@ -104,10 +118,12 @@ export class ChatComponent implements OnInit {
       // this.chatService.createNewChatChannel("https://dcarballob01.solid.community");
 
 
-      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/76116c47-1dda-41f5-902b-6d585c1fb146.jsonld")
+      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/16654efa-17cd-43c0-bd09-9a8e62b70581.jsonld")
+      // let temp = await this.chatService.readFile("https://davidcarballo.solid.community/private/dechat_es6b/941fc14f-ed87-44d7-a58e-fc24e8cbbd22.jsonld")
       //   .then(file => { return(file) });
       // let recupCN:ChatChannel = JSON.parse(temp);
 
+      // await this.chatService.sendMessage(recupCN, "MENSAJE_8");
 
       // for (let index = 0; index < 60; index++) {
       //   await this.chatService.sendMessage(recupCN, "HOLA MUNDO");
@@ -115,6 +131,7 @@ export class ChatComponent implements OnInit {
       
 
       // console.log("Título: " + recupCN.title);
+      // console.log("Participante: " + recupCN.participants[0]);
       // console.log("Mensajes: "); 
       // recupCN.messages.forEach(m => console.log(m.message)); 
 
