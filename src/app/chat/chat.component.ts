@@ -121,7 +121,6 @@ export class ChatComponent implements OnInit {
       // let msg3 = new Message("https://dcarballob01.solid.community", "HOLA INBOX!");
       // msg3.makerWebId = "https://dcarballob01.solid.community";
       // this.chatService.sendMessage(canal, msg3);
-        
       // console.log(temp);
   }
 
