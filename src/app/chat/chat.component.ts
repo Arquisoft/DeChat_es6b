@@ -17,15 +17,14 @@ import { Message } from '../models/message.model';
 export class ChatComponent implements OnInit {
 
     selectedChatChannel: ChatChannel;
-    messageSent: String;
-    messageReceived: String;
-
-
 
     constructor(private rdf: RdfService,
                 private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {
     }
 
+    getChatService() {
+        return this.chatService;
+    }
     ngOnInit() {
         this.init();
     }
@@ -116,7 +115,6 @@ export class ChatComponent implements OnInit {
         // console.log("Mensajes: ");
         // recupCN.messages.forEach(m => console.log(m.message));
 
-
         // console.log(temp);
 
         // let msg3 = new Message("https://dcarballob01.solid.community", "HOLA INBOX!");
@@ -124,18 +122,4 @@ export class ChatComponent implements OnInit {
         // this.chatService.sendMessage(canal, msg3);
         // console.log(temp);
     }
-
-    getChatMessages(chat: ChatChannel) {
-        this.selectedChatChannel = chat;
-        for (const c of this.selectedChatChannel.messages) {
-            if (c.makerWebId === this.chatService.uri) {
-                this.messageSent = c.message.toString();
-                return this.messageSent;
-            } else {
-                this.messageReceived =  c.message.toString();
-                return this.messageReceived;
-            }
-        }
-    }
-
 }

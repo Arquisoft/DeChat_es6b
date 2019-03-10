@@ -86,6 +86,10 @@ export class ChatService {
     return s.replace(PROFILE_CARD_FOLDER, "");
   }
 
+  getUri(): string {
+    return this.uri;
+  }
+
   /**
    * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio y envía el mensaje al Inbox de los participantes del chat
    *
