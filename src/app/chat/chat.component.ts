@@ -31,6 +31,14 @@ export class ChatComponent implements OnInit {
     this.onSubmit();
   }
 
+  async currentTime(){
+    let today = new Date();
+    let h = today.getHours;
+    let m = today.getMinutes;
+    let s = today.getSeconds;
+    document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
+  }
+
 
   async sendMessage(msg: string) {
     this.chatService.sendMessage(this.selectedChatChannel, msg);
