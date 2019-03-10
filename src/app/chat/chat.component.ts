@@ -8,6 +8,7 @@ import { AuthService } from '../services/solid.auth.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
+import { templateJitUrl } from '@angular/compiler';
 
 @Component({
   selector: 'app-chat',
@@ -28,6 +29,11 @@ export class ChatComponent implements OnInit {
   async init() {
     await this.chatService.startChat();
     this.onSubmit();
+  }
+
+
+  async sendMessage(msg: string) {
+    this.chatService.sendMessage(this.selectedChatChannel, msg);
   }
   
   

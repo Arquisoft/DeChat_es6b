@@ -62,7 +62,10 @@
             <div class="outgoing_msg">
               <div class="sent_msg">
                 <p>Pues tb genial, q tal por la uni?</p>
-                <span class="time_date"> 8:01 AM    |    Today</span> </div>
+                <strong>
+                  <span id="time"></span>
+                </strong>
+              </div>
             </div>
             <div class="incoming_msg">
               <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
@@ -76,7 +79,7 @@
           <div class="type_msg">
             <div class="input_msg_write">
               <input type="text" class="write_msg" placeholder="Type a message" />
-              <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+              <button class="msg_send_btn" (click)="sendMessage(active_chat, text)" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>
