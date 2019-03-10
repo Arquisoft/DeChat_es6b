@@ -9,6 +9,7 @@ import { AuthService } from '../services/solid.auth.service';
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 import { templateJitUrl } from '@angular/compiler';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-chat',
@@ -40,7 +41,9 @@ export class ChatComponent implements OnInit {
   }
 
 
-  async sendMessage(msg: string) {
+  async sendMessage() {
+    const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+    const msg: string = inputElement.value;
     this.chatService.sendMessage(this.selectedChatChannel, msg);
   }
   
