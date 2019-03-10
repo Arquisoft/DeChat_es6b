@@ -31,11 +31,11 @@ export class ChatComponent implements OnInit {
     this.onSubmit();
   }
 
-  async currentTime(){
-    let today = new Date();
-    let h = today.getHours;
-    let m = today.getMinutes;
-    let s = today.getSeconds;
+  async messageTime(msg: Message){
+    let messageTime = msg.sendTime;
+    let h = messageTime.getHours;
+    let m = messageTime.getMinutes;
+    let s = messageTime.getSeconds;
     document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
   }
 

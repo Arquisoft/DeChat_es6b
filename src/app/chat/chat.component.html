@@ -62,9 +62,7 @@
             <div class="outgoing_msg">
               <div class="sent_msg">
                 <p>Pues tb genial, q tal por la uni?</p>
-                <strong>
-                  <span id="time"></span>
-                </strong>
+                  <span class="time_date" id="time"></span>
               </div>
             </div>
             <div class="incoming_msg">
@@ -79,7 +77,7 @@
           <div class="type_msg">
             <div class="input_msg_write">
               <input type="text" class="write_msg" placeholder="Type a message" />
-              <button class="msg_send_btn" (click)="sendMessage(active_chat, text)" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+              <button class="msg_send_btn" (click)="sendMessage(text)" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>
