@@ -46,18 +46,18 @@
         <div class="mesgs">
           <div class="msg_history" *ngFor="let msg of getMessagesSelectedChatChannel()">
 
-            <div class="incoming_msg">
+            <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().uri">
               <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
               <div class="received_msg">
-                <div class="received_withd_msg" >
-                  <p *ngIf="msg.makerWebId != getChatService().uri">Distinto</p>
+                <div class="received_withd_msg">
+                  <p>{{ msg.message }}</p>
                   <span class="time_date"> 11:01 PM    |    Yesterday</span></div>
               </div>
             </div>
 
-            <div class="outgoing_msg">
+            <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().uri">
               <div class="sent_msg" >
-                <p *ngIf="msg.makerWebId == getChatService().uri">IGUAL</p>
+                <p>{{ msg.message }}</p>
                 <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
             </div>
 
