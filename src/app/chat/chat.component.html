@@ -29,13 +29,14 @@
               <div class="chat_people">
                 <div class="chat_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
                 <div class="chat_ib">
-                  <h5>Usuario random <span class="chat_date">Mar 5</span></h5>
+                  <h5>Usuario random <span class="time_date" id="time"></span></h5>
                   <p>Prueba de mensaje en el chat.</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div class="mesgs">
           <div class="msg_history">
             <div class="incoming_msg">
@@ -43,20 +44,20 @@
               <div class="received_msg">
                 <div class="received_withd_msg">
                   <p>Hola!</p>
-                  <span class="time_date"> 11:01 PM    |    Yesterday</span></div>
+                  <span class="time_date" id="time"></span></div>
               </div>
             </div>
             <div class="outgoing_msg">
               <div class="sent_msg">
                 <p>Holaaaa, q tal?</p>
-                <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
+                <span class="time_date" id="time"></span></div>
             </div>
             <div class="incoming_msg">
               <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
               <div class="received_msg">
                 <div class="received_withd_msg">
                   <p>Bien!! Y tu?</p>
-                  <span class="time_date"> 8:00 AM    |    Today</span></div>
+                  <span class="time_date" id="time"></span></div>
               </div>
             </div>
             <div class="outgoing_msg">
@@ -70,17 +71,20 @@
               <div class="received_msg">
                 <div class="received_withd_msg">
                   <p>Bueno ahí fatal xd</p>
-                  <span class="time_date"> 8:02 AM    |    Today</span></div>
+                  <span class="time_date" id="time"></span></div>
               </div>
             </div>
           </div>
+
           <div class="type_msg">
             <div class="input_msg_write">
               <input type="text" class="write_msg" id ="input_text" placeholder="Type a message" />
               <button class="msg_send_btn" (click)="sendMessage()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
+          
         </div>
+
       </div>
     </div></div>
     </body>
