@@ -28,7 +28,7 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
-  esperar = false; // AÑADIDO NUEVO
+  waitForCheckInbox = false;
 
   stoppedExternally = false;
   stopExternally = () => { this.stoppedExternally = true }
@@ -49,11 +49,11 @@ export class ChatService {
     this.interval(async (i, stop) => {
       if (!this.stoppedExternally) {
         //stop();
-        this.esperar = true;
+        this.waitForCheckInbox = true;
         await this.checkInbox();
-        this.esperar = false;
+        this.waitForCheckInbox = false;
       }
-    }, 2000);
+    }, 1000);
   }
   
   /**
@@ -119,7 +119,7 @@ export class ChatService {
 
         // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
         // ya que puede ocurrir que intentemos actualizar algo que el checkInbox() ha borrado en ese momento
-        while (this.esperar) {
+        while (this.waitForCheckInbox) {
           await this.delay(300);
         }
 
