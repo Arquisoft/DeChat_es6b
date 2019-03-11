@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="inbox_chat">
-            <div class="chat_list active_chat" *ngFor="let channel of this.chatService.chatChannels">
+            <div class="chat_list active_chat" *ngFor="let channel of getChatChannels()">
               <div class="chat_people">
                 <div class="chat_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
                 <div class="chat_ib">

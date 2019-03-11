@@ -43,5 +43,9 @@ export class ChatComponent implements OnInit {
     return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
       + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
   }
+
+  getChatChannels(): ChatChannel[] {
+    return this.chatService.chatChannels;
+  }
   
 }
