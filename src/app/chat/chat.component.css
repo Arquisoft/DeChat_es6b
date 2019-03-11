@@ -1,5 +1,9 @@
 
 h2[id="DeChatTitle"] {
+  font-family: 'Roboto Slab', serif;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
   margin-top: 10px; 
   color: #7C4DFF;
 }
@@ -20,7 +24,10 @@ img {
   overflow: hidden;
 }
 .top_spac{ margin: 20px 0 0;}
-.recent_heading {float: left; width:40%;}
+.recent_heading {
+  float: left;
+  width:40%;
+}
 .srch_bar {
   display: inline-block;
   text-align: right;
@@ -31,7 +38,10 @@ img {
 }
 .recent_heading h4 {
   color: #7C4DFF;
+  font-family: 'Roboto Slab', serif;
   font-size: 21px;
+  font-weight: bold;
+  text-transform: uppercase;
   margin: auto;
 }
 .search-bar:focus { outline:0 !important; }

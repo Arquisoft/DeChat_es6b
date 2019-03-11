@@ -58,7 +58,6 @@ export class ChatComponent implements OnInit {
     this.chatService.createNewChatChannel(webid);
   }
   
-  
   search() {
     const inputElement: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
     const name: string = inputElement.value;
