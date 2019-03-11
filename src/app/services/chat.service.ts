@@ -28,6 +28,7 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
+  waitForCheckInbox = false;
 
   stoppedExternally = false;
   stopExternally = () => { this.stoppedExternally = true }
@@ -35,6 +36,10 @@ export class ChatService {
 
   constructor(private rdf: RdfService, private auth: AuthService, ) {
     // this.startChat();
+  }
+
+  setChatChannels(chatChannels: ChatChannel[]){
+    this.chatChannels=chatChannels;
   }
 
   /**
@@ -46,11 +51,13 @@ export class ChatService {
     await this.loadChatChannels();
 
     this.interval(async (i, stop) => {
-      if (this.stoppedExternally) {
-        await stop();
+      if (!this.stoppedExternally) {
+        //stop();
+        this.waitForCheckInbox = true;
+        await this.checkInbox();
+        this.waitForCheckInbox = false;
       }
-      await this.checkInbox();
-    }, 2000);
+    }, 1000);
   }
 
   /**
@@ -86,6 +93,14 @@ export class ChatService {
     return s.replace(PROFILE_CARD_FOLDER, "");
   }
 
+  /**
+   * 
+   * @param ms 
+   */
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
   getUri(): string {
     return this.uri;
   }
@@ -106,16 +121,23 @@ export class ChatService {
       if (channel != null) {
         // Creamos y guardamos el mensaje
         let message = new Message(msg);
+
         message.makerWebId = this.uri;
         chatChannel.messages.push(message);
+
+        // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
+        // ya que puede ocurrir que intentemos actualizar algo que el checkInbox() ha borrado en ese momento
+        while (this.waitForCheckInbox) {
+          await this.delay(300);
+        }
 
         // Actualizamos canal de chat en POD propio
         await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
 
         // Enviamos el mensaje a todos los participantes del chat
-        let newMsg = JSON.stringify(msg);
+        let newMsg = JSON.stringify(message);
         chatChannel.participants.forEach(async participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
-          this.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+          await this.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
         });
       }
     } finally {
@@ -153,9 +175,10 @@ export class ChatService {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
     if (channel != null) {
       channel.messages.push(newMessage);
+      channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
       // Actualizamos chat en POD propio
-      this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
+      await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
     } else {
       // Si no hay canal asociado creamos uno
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), "Prueba_chat_inbox");
@@ -164,7 +187,7 @@ export class ChatService {
       this.chatChannels.push(newChatChannel);
 
       // Añadimos chat a POD propio
-      this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      await this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
     }
   }
 
