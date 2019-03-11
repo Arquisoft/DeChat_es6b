@@ -19,6 +19,8 @@ Here we describe why it has been decide to use the above mentioned programs.
 
 * Solid: Because it is a data management software whose use is adviced by the project manager.
 
+* TypeScript: Because it is a super-set of JavaScript, very useful for our project.
+
 
 Here we explain in a more graphical way the information detailed above.
 
@@ -30,6 +32,7 @@ Here we explain in a more graphical way the information detailed above.
 | Angular | JavaScript framework | Speed up the implementation of our project
 | Asciidoctor | Text processor | Best text processor to generate asciidoc documents
 | Solid | Data management software | Use required by the project manager
+| TypeScript| Programming language| Super-set of JavaScript very useful for our project
 |===
 
 ****
