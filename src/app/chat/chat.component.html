@@ -43,45 +43,24 @@
             </div>
           </div>
         </div>
-        <div class="mesgs" *ngFor="let chat of selectedChatChannel.messages; let i = index">
-          <div class="msg_history">
+        <div class="mesgs">
+          <div class="msg_history" *ngFor="let msg of getMessagesSelectedChatChannel()">
+
             <div class="incoming_msg">
               <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
               <div class="received_msg">
-
                 <div class="received_withd_msg" >
-                  <p *ngIf="chat[i].makerWebId != getChatService().uri">{{chat.message.toString()}} </p>
+                  <p *ngIf="msg.makerWebId != getChatService().uri">Distinto</p>
                   <span class="time_date"> 11:01 PM    |    Yesterday</span></div>
               </div>
             </div>
+
             <div class="outgoing_msg">
               <div class="sent_msg" >
-                <p *ngIf="chat[i].makerWebId == getChatService().uri">{{chat.message.toString()}} </p>
+                <p *ngIf="msg.makerWebId == getChatService().uri">IGUAL</p>
                 <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
+            </div>
 
-            </div>
-            <div class="incoming_msg">
-              <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
-              <div class="received_msg">
-                <div class="received_withd_msg">
-                  <p>Bien!! Y tu?</p>
-                  <span class="time_date" id="time"></span></div>
-              </div>
-            </div>
-            <div class="outgoing_msg">
-              <div class="sent_msg">
-                <p>Pues tb genial, q tal por la uni?</p>
-                  <span class="time_date" id="time"></span>
-              </div>
-            </div>
-            <div class="incoming_msg">
-              <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
-              <div class="received_msg">
-                <div class="received_withd_msg">
-                  <p>Bueno ahí fatal xd</p>
-                  <span class="time_date" id="time"></span></div>
-              </div>
-            </div>
           </div>
 
           <div class="type_msg">
@@ -90,10 +69,10 @@
               <button class="msg_send_btn" (click)="sendMessage()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
-          
         </div>
 
       </div>
-    </div></div>
-    </body>
-    </html>
+    </div>
+  </div>
+</body>
+</html>
