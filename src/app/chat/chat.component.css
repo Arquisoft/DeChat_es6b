@@ -4,7 +4,7 @@ h2[id="DeChatTitle"] {
   color: #7C4DFF;
 }
 .container{max-width:1170px; margin:auto;}
-img{ 
+img { 
   max-width:100%;
   border-radius: 150px;
 }
@@ -44,6 +44,8 @@ img{
   font-size: 18px;
 }
 .srch_bar .input-group-addon { margin: 0 0 0 -27px;}
+.lens:active { box-shadow: 0px 1px 1px 0px black; }
+.lens:focus { outline:0 !important; }
 
 .chat_ib h5{ font-size:15px; color:#464646; margin:0 0 8px 0;}
 .chat_ib h5 span{ font-size:13px; float:right;}
@@ -59,6 +61,8 @@ img{
 }
 
 .chat_people{ overflow:hidden; clear:both;}
+.chat_people:hover{ background-color: rgb(186, 161, 255); }
+.chat_people:active { box-shadow: 0px 1px 1px 0px black; }
 .chat_list {
   border-bottom: 1px solid #c4c4c4;
   margin: 0;

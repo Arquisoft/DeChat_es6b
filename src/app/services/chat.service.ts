@@ -38,6 +38,10 @@ export class ChatService {
     //this.startChat();
   }
 
+  setChatChannels(chatChannels: ChatChannel[]){
+    this.chatChannels=chatChannels;
+  }
+
   /**
    * 
    */

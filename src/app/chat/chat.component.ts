@@ -30,6 +30,10 @@ export class ChatComponent implements OnInit {
     //this.onSubmit();
   }
 
+  setSelectedChatChannel(selectedChatChannel: ChatChannel){
+    this.selectedChatChannel = selectedChatChannel;
+  }
+
   getLastMessage(channel: ChatChannel): Message {
     return (channel.messages[channel.messages.length-1] != undefined)? (channel.messages[channel.messages.length-1]) : null;
   }
@@ -54,4 +58,16 @@ export class ChatComponent implements OnInit {
     this.chatService.createNewChatChannel(webid);
   }
   
+  
+  search() {
+    const inputElement: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
+    const name: string = inputElement.value;
+
+    var newChatChannels: ChatChannel[] = new Array();
+    for (let channel of this.chatService.chatChannels) {
+      if ( channel.participants[0].toLowerCase() === name.toLowerCase()  || channel.participants[0].includes(name) )
+        newChatChannels.push(channel);
+    }
+    this.chatService.setChatChannels(newChatChannels);
+  }
 }
