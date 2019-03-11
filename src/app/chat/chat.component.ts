@@ -27,7 +27,7 @@ export class ChatComponent implements OnInit {
 
   async init() {
     await this.chatService.startChat();
-    this.onSubmit();
+    //this.onSubmit();
   }
 
   getLastMessage(channel: ChatChannel): Message {
@@ -41,109 +41,7 @@ export class ChatComponent implements OnInit {
   getDayAndMonthLastMessage(channel: ChatChannel) {
     let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
     return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
-      + " " + new Date(this.getLastMessage(channel).sendTime).getUTCDay() : "";
+      + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
   }
   
-  
-
-  
-  async onSubmit () {
-    // Ejemplo copiar
-    //this.chatService.copyFile("https://gomezivann.solid.community/public/chat_test.ttl", "https://dcarballob01.solid.community/public/TESTTT.ttl");
-    
-    // Ejemplo escribir
-    //this.chatService.writeMessage("https://gomezivann.solid.community/public/TEST_CHAT.ttl");
-
-    // Ejemplo leer
-    // this.chatService.readMessage("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt.txt")
-    //   .then(file => { console.log(file)});
-
-    // Ejemplo actualizar
-    // this.chatService.updateFile("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje prueba", "text/plain");
-    // this.chatService.updateFile("https://gomezivann.solid.community/public/TEST_CHAT.ttl.txt.txt.txt", "Mensaje de prueba");
-
-    // Ejemplo borrar
-    //this.chatService.deleteFile("https://gomezivann.solid.community/public/TESTTT.ttl.txt");
-
-    // Ejemplo leer carpeta
-    /* this.chatService.readFolder("https://gomezivann.solid.community/public/").then(folder => {
-      console.log(`Read ${folder.name}, it has ${folder.files.length} files. :` + folder.files)}); */
-
-
-      // PRUEBAS GUARDAR OBJETO
-
-      let canal = new ChatChannel("asdasda","Prueba");
-      let msg1 = new Message("HOLA MUNDO!");
-      let msg2 = new Message("HOLA SOLID!");
-      canal.messages.push(msg1);
-      canal.messages.push(msg2);
-
-      let cn = JSON.stringify(canal);
-
-
-      // ------ COMO JSON NORMAL ------
-
-      //this.chatService.writeMessage("https://gomezivann.solid.community/public/test_cnttl", cn, "text/plain");
-
-      // let temp = await this.chatService.readMessage("https://gomezivann.solid.community/public/test_cnttl.txt").then(file => { return(file) });
-      // console.log(temp);
-
-      // let recupCN:ChatChannel = JSON.parse(temp);
-      // console.log("Título: " + recupCN.title);
-
-
-      // ------ COMO LD + JSON ------
-
-      /* this.chatService.writeMessage("https://gomezivann.inrupt.net/public/test_cnttl_json", cn, "application/ld+json");
-
-      let temp = await this.chatService.readMessage("https://gomezivann.inrupt.net/public/test_cnttl_json.jsonld").then(file => { return(file) });
-      console.log(temp);
-
-      let recupCN:ChatChannel = JSON.parse(temp);
-      console.log("Título: " + recupCN.title);
-      console.log("Mensajes: "); 
-      recupCN.messages.forEach(m => console.log(m.message)); */
-
-
-      // setInterval(() => {
-      //   msg1.makerWebId = "https://dcarballob01.solid.community";
-      //   let newMSG = JSON.stringify(msg1);
-      //   this.chatService.createFile("https://dcarballob01.solid.community/inbox/dechat_msg", newMSG, "application/ld+json");
-      // }, 1000);
-
-
-      
-
-      // this.chatService.createNewChatChannel("https://davidcarballo.solid.community");
-      // this.chatService.createNewChatChannel("https://dcarballob01.solid.community");
-
-
-      // let temp = await this.chatService.readFile("https://dcarballob01.solid.community/private/dechat_es6b/16654efa-17cd-43c0-bd09-9a8e62b70581.jsonld")
-      // let temp = await this.chatService.readFile("https://davidcarballo.solid.community/private/dechat_es6b/941fc14f-ed87-44d7-a58e-fc24e8cbbd22.jsonld")
-      //   .then(file => { return(file) });
-      // let recupCN:ChatChannel = JSON.parse(temp);
-
-      // await this.chatService.sendMessage(recupCN, "MENSAJE_8");
-
-      // for (let index = 0; index < 60; index++) {
-      //   await this.chatService.sendMessage(recupCN, "HOLA MUNDO");
-      // }
-      
-
-      // console.log("Título: " + recupCN.title);
-      // console.log("Participante: " + recupCN.participants[0]);
-      // console.log("Mensajes: "); 
-      // recupCN.messages.forEach(m => console.log(m.message)); 
-
-
-
-      // console.log(temp);
-
-      // let msg3 = new Message("https://dcarballob01.solid.community", "HOLA INBOX!");
-      // msg3.makerWebId = "https://dcarballob01.solid.community";
-      // this.chatService.sendMessage(canal, msg3);
-        
-      // console.log(temp);
-  }
-
 }

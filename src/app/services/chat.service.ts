@@ -28,6 +28,7 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
+  esperar = false; // AÑADIDO NUEVO
 
   stoppedExternally = false;
   stopExternally = () => { this.stoppedExternally = true }
@@ -46,10 +47,12 @@ export class ChatService {
     await this.loadChatChannels();
 
     this.interval(async (i, stop) => {
-      if (this.stoppedExternally) {
-        stop();
+      if (!this.stoppedExternally) {
+        //stop();
+        this.esperar = true;
+        await this.checkInbox();
+        this.esperar = false;
       }
-      await this.checkInbox();
     }, 2000);
   }
   
@@ -84,7 +87,15 @@ export class ChatService {
   async getWebIdBase(): Promise<string> {
     let s = await fileClient.checkSession().then( session => { return(session.webId) }, err => console.log(err) );
     return s.replace(PROFILE_CARD_FOLDER, "");
-  }  
+  }
+
+  /**
+   * 
+   * @param ms 
+   */
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
 
   /**
    * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio y envía el mensaje al Inbox de los participantes del chat
@@ -105,6 +116,12 @@ export class ChatService {
 
         message.makerWebId = this.uri;
         chatChannel.messages.push(message);
+
+        // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
+        // ya que puede ocurrir que intentemos actualizar algo que el checkInbox() ha borrado en ese momento
+        while (this.esperar) {
+          await this.delay(300);
+        }
 
         // Actualizamos canal de chat en POD propio
         await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
