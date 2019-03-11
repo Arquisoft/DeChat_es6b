@@ -6,19 +6,19 @@ import { SolidProfile } from '../models/solid-profile.model';
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 
-import * as fileClient from "solid-file-client";
+import * as fileClient from 'solid-file-client';
 import * as uuid from 'uuid';
 import { getBodyNode } from '@angular/animations/browser/src/render/shared';
 import { IfStmt } from '@angular/compiler';
 
 
-const CHAT_CHANNEL_CONTENT_TYPE = "application/ld+json";
-const MESSAGE_CONTENT_TYPE = "application/ld+json";
-const PRIVATE_CHAT_FOLDER = "/private/dechat_es6b";
-const INBOX_FOLDER = "/inbox/";
-const BASE_NAME_MESSAGES = "dechat_msg";
-const PROFILE_CARD_FOLDER = "/profile/card#me";
-const MESSAGE_FILE_FORMAT = "jsonld";
+const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
+const MESSAGE_CONTENT_TYPE = 'application/ld+json';
+const PRIVATE_CHAT_FOLDER = '/private/dechat_es6b';
+const INBOX_FOLDER = '/inbox/';
+const BASE_NAME_MESSAGES = 'dechat_msg';
+const PROFILE_CARD_FOLDER = '/profile/card#me';
+const MESSAGE_FILE_FORMAT = 'jsonld';
 
 
 @Injectable({
@@ -34,8 +34,8 @@ export class ChatService {
   stopExternally = () => { this.stoppedExternally = true }
   startExternally = () => { this.stoppedExternally = false }
 
-  constructor(private rdf: RdfService, private auth: AuthService, ) { 
-    //this.startChat();
+  constructor(private rdf: RdfService, private auth: AuthService, ) {
+    // this.startChat();
   }
 
   setChatChannels(chatChannels: ChatChannel[]){
@@ -43,7 +43,7 @@ export class ChatService {
   }
 
   /**
-   * 
+   *
    */
   async startChat() {
     this.uri = await this.getWebIdBase();
@@ -59,7 +59,7 @@ export class ChatService {
       }
     }, 1000);
   }
-  
+
   /**
    * Crea la carpeta para almacenar los canales de chat si no está creada
    */
@@ -72,7 +72,7 @@ export class ChatService {
   }
 
   /**
-   * 
+   *
    */
   async loadChatChannels() {
     let folderContent = await this.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
@@ -101,11 +101,15 @@ export class ChatService {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
+  getUri(): string {
+    return this.uri;
+  }
+
   /**
    * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio y envía el mensaje al Inbox de los participantes del chat
-   * 
-   * @param chatChannel 
-   * @param msg 
+   *
+   * @param chatChannel
+   * @param msg
    */
   async sendMessage(chatChannel: ChatChannel, msg: string) {
     try {
@@ -160,8 +164,8 @@ export class ChatService {
   /**
    * - Si ya existe canal de chat con el participante añade el nuevo mensaje al canal existente
    * - Si no existe canal de chat con el participante crea el canal correspondiente y lo añade al nuevo canal
-   * 
-   * @param urlFile 
+   *
+   * @param urlFile
    */
   private async processNewMessage(urlFile: any) {
     let jsonld = await this.readFile(urlFile);
@@ -188,10 +192,20 @@ export class ChatService {
   }
 
   /**
+   *
+   * @param ChatChannel chat
+   */
+  public async showChatMessages(chat: ChatChannel) {
+      for (const m in chat.messages) {
+        console.log(m.toString);
+      }
+  }
+
+  /**
    * Método destinado a permitir añadir nuevos canales de chat desde la inferfaz
-   * 
-   * @param webId 
-   * @param title 
+   *
+   * @param webId
+   * @param title
    */
   public async createNewChatChannel(webId: string, title?: string, message?: Message): Promise<ChatChannel> {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
@@ -203,7 +217,7 @@ export class ChatService {
 
       newChatChannel.participants.push(webId);
       this.chatChannels.push(newChatChannel);
-      
+
       this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
 
       return newChatChannel;
@@ -214,33 +228,33 @@ export class ChatService {
 
   /**
    * <<MÉTODO SOLO VÁLIDO PARA CHATS INDIVIDUALES - ADAPTAR PARA IMPLEMENTACIÓN DE CHATS GRUPALES>>
-   * 
-   * @param webId 
+   *
+   * @param webId
    */
   public searchChatChannelByParticipantWebid(webId: string): ChatChannel {
     for (const channel of this.chatChannels) {
       if (channel.participants.includes(webId)) {
         return channel;
-      } 
+      }
     }
-    return null;    
+    return null;
   }
 
   /**
-   * 
-   * @param id 
+   *
+   * @param id
    */
   public searchChatChannelById(id: string): ChatChannel {
     for (const channel of this.chatChannels) {
       if (channel.id == id) {
         return channel;
-      } 
+      }
     }
-    return null;    
+    return null;
   }
 
   /**
-   * 
+   *
    */
   private getUniqueChatChannelID(): string {
     let isUnique: boolean = false;
@@ -251,7 +265,7 @@ export class ChatService {
       this.chatChannels.forEach(channel => {
         if (channel.id == id) {
           isUnique = false;
-        }      
+        }
       });
     }
 
@@ -267,63 +281,63 @@ export class ChatService {
 
   /**
    * Crea un fichero vacío
-   * 
-   * @param newFile 
+   *
+   * @param newFile
    */
   async createFile(newFile, content?, contentType?) {
     fileClient.createFile(newFile, content, contentType)
-      .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
+        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
   }
 
   /**
-   * 
-   * @param file 
+   *
+   * @param file
    */
   async readFile(file) {
     return fileClient.readFile(file).then(body => { return(body) }, err => console.log(err) );
   }
 
   /**
-   * 
-   * @param url 
-   * @param newContent 
-   * @param contentType 
+   *
+   * @param url
+   * @param newContent
+   * @param contentType
    */
   async updateFile(url, newContent, contentType?: string) {
     await fileClient.updateFile( url, newContent, contentType )
-      .then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
+        .then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
   }
 
   /**
-   * 
-   * @param url 
+   *
+   * @param url
    */
   async deleteFile(url) {
     await fileClient.deleteFile(url)
-      .then(success => { console.log(`Deleted ${url}.`); }, err => console.log(err) );
+        .then(success => { console.log(`Deleted ${url}.`); }, err => console.log(err) );
   }
 
   /**
    * URL FICHERO ORIGEN ---> URL FICHERO DESTINO
-   * 
-   * @param oldFile 
-   * @param newFile 
+   *
+   * @param oldFile
+   * @param newFile
    */
   async copyFile(oldFile,newFile) {
     fileClient.readFile(oldFile).then( content => {
       fileClient.createFile(newFile,content).then( res => {
-            return(res);
-        }, err => {throw new Error("copy upload error  "+err)});
+        return(res);
+      }, err => {throw new Error("copy upload error  "+err)});
     }, err => {throw new Error("copy download error  "+err)});
   }
 
   /**
-   * 
-   * @param url 
+   *
+   * @param url
    */
   async createFolder(url: string) {
     await fileClient.createFolder(url)
-      .then(success => { console.log(`Created folder ${url}.`); }, err => console.log(err) );
+        .then(success => { console.log(`Created folder ${url}.`); }, err => console.log(err) );
   }
 
   /**
@@ -339,8 +353,8 @@ export class ChatService {
          files : // an array of files in the folder
        folders : // an array of sub-folders in the folder,
       }
-   * 
-   * @param url 
+   *
+   * @param url
    */
   async readFolder(url) {
     return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
@@ -349,135 +363,135 @@ export class ChatService {
 
 
 
-  
+
 
 
 // ---------------------- INTERVAL-PROMISE LIBRARY ---------------------- //
 
-    /**
+  /**
    * @param {function} func - function to execute
    * @param {number|function(number):number} intervalLength - length in ms to wait before executing again
    * @param {{iterations: Infinity|number, stopOnError: boolean}} [options]
-   * 
+   *
    * @returns {Promise} Promise object with no result
    */
-  interval(func, intervalLength, options = {}) {    
+  interval(func, intervalLength, options = {}) {
 
     this.validateArgs(func, intervalLength, options)
 
     const defaults = {
-        iterations: Infinity,
-        stopOnError: true
+      iterations: Infinity,
+      stopOnError: true
     }
     const settings = Object.assign(defaults, options)
 
     return new Promise((rootPromiseResolve, rootPromiseReject) => {
 
-        const callFunction = currentIteration => {
-            
-            // Set up a way to track if a "stop" was requested by the user function
-            let stopRequested = false
-            const stop = () => {
-                stopRequested = true
-            }
-        
-            // Set up a function to call the next iteration. This is abstracted so it can be called by .then(), or in .catch(), if options allow.
-            const callNext = () => {
-                // If we've hit the desired number of iterations, or stop was called, resolve the root promise and return
-                if (currentIteration === settings.iterations || stopRequested) {
-                    rootPromiseResolve()
-                    return
-                }
-        
-                // Otherwise, call the next iteration
-                callFunction(currentIteration + 1)
-            }
+      const callFunction = currentIteration => {
 
-            // Calculate our interval length
-            const calculatedIntervalLength = (typeof intervalLength === 'function') ? intervalLength(currentIteration) : intervalLength
-            
-            // If the interval length was calculated, validate the result
-            if (typeof intervalLength === 'function') {
-                if (!Number.isInteger(calculatedIntervalLength) || calculatedIntervalLength < 0) {
-                    rootPromiseReject(new Error('Function for "intervalLength" argument must return a non-negative integer.'))
-                    return 
-                }
-            }
-                
-            // Call the user function after the desired interval length. After, call the next iteration (and/or handle error)
-            setTimeout(() => {
-
-                const returnVal = func(currentIteration, stop)
-
-                if (!(returnVal instanceof Promise)) {
-                    rootPromiseReject(new Error('Return value of "func" must be a Promise.'))
-                    return
-                }
-
-                returnVal.then(callNext).catch(err => {
-                    if (!settings.stopOnError) {
-                        callNext()
-                        return
-                    }
-        
-                    rootPromiseReject(err)
-                })
-            }, calculatedIntervalLength)
+        // Set up a way to track if a "stop" was requested by the user function
+        let stopRequested = false
+        const stop = () => {
+          stopRequested = true
         }
 
-        callFunction(1)        
+        // Set up a function to call the next iteration. This is abstracted so it can be called by .then(), or in .catch(), if options allow.
+        const callNext = () => {
+          // If we've hit the desired number of iterations, or stop was called, resolve the root promise and return
+          if (currentIteration === settings.iterations || stopRequested) {
+            rootPromiseResolve()
+            return
+          }
+
+          // Otherwise, call the next iteration
+          callFunction(currentIteration + 1)
+        }
+
+        // Calculate our interval length
+        const calculatedIntervalLength = (typeof intervalLength === 'function') ? intervalLength(currentIteration) : intervalLength
+
+        // If the interval length was calculated, validate the result
+        if (typeof intervalLength === 'function') {
+          if (!Number.isInteger(calculatedIntervalLength) || calculatedIntervalLength < 0) {
+            rootPromiseReject(new Error('Function for "intervalLength" argument must return a non-negative integer.'))
+            return
+          }
+        }
+
+        // Call the user function after the desired interval length. After, call the next iteration (and/or handle error)
+        setTimeout(() => {
+
+          const returnVal = func(currentIteration, stop)
+
+          if (!(returnVal instanceof Promise)) {
+            rootPromiseReject(new Error('Return value of "func" must be a Promise.'))
+            return
+          }
+
+          returnVal.then(callNext).catch(err => {
+            if (!settings.stopOnError) {
+              callNext()
+              return
+            }
+
+            rootPromiseReject(err)
+          })
+        }, calculatedIntervalLength)
+      }
+
+      callFunction(1)
     })
   }
 
   /**
-  * A helper function to validate the arguments passed to interval(...)
-  * 
-  * @param {*} func 
-  * @param {*} intervalLength 
-  * @param {*} options
-  */
+   * A helper function to validate the arguments passed to interval(...)
+   *
+   * @param {*} func
+   * @param {*} intervalLength
+   * @param {*} options
+   */
   validateArgs(func, intervalLength, options) {
 
     // Validate "func"
     if (typeof func !== 'function') {
-        throw new TypeError('Argument 1, "func", must be a function.')
+      throw new TypeError('Argument 1, "func", must be a function.')
     }
 
     // Validate "intervalLength"
     if (typeof intervalLength === 'number') {
-        if (!Number.isInteger(intervalLength) || intervalLength < 0) {
-            throw new TypeError('Argument 2, "intervalLength", must be a non-negative integer or a function that returns a non-negative integer.')
-        }
-    } else if (typeof intervalLength !== 'function') {
+      if (!Number.isInteger(intervalLength) || intervalLength < 0) {
         throw new TypeError('Argument 2, "intervalLength", must be a non-negative integer or a function that returns a non-negative integer.')
+      }
+    } else if (typeof intervalLength !== 'function') {
+      throw new TypeError('Argument 2, "intervalLength", must be a non-negative integer or a function that returns a non-negative integer.')
     }
 
     // Validate options...
     if (typeof options !== 'object') {
-        throw new TypeError('Argument 3, "options", must be an object.')
+      throw new TypeError('Argument 3, "options", must be an object.')
     }
 
     // Validate passed keys
     const allowedKeys = ['iterations', 'stopOnError']
 
     Object.keys(options).forEach(key => {
-        if (!allowedKeys.includes(key)) {
-            throw new TypeError('Option "' + key + '" is not a valid option.')
-        }
+      if (!allowedKeys.includes(key)) {
+        throw new TypeError('Option "' + key + '" is not a valid option.')
+      }
     })
-    
+
     // validate "iterations" option (if passed)
     if (options.hasOwnProperty('iterations')) {
-        if (options.iterations !== Infinity && (!Number.isInteger(options.iterations) || options.iterations < 1)) {
-            throw new TypeError('Option "iterations" must be Infinity or an integer greater than 0.')
-        }
+      if (options.iterations !== Infinity && (!Number.isInteger(options.iterations) || options.iterations < 1)) {
+        throw new TypeError('Option "iterations" must be Infinity or an integer greater than 0.')
+      }
     }
-    
+
     // validate "stopOnError" option (if passed)
     if (options.hasOwnProperty('stopOnError')) {
-        if (typeof options.stopOnError !== 'boolean') {
-            throw new TypeError('Option "stopOnError" must be a boolean.')
-        }
+      if (typeof options.stopOnError !== 'boolean') {
+        throw new TypeError('Option "stopOnError" must be a boolean.')
+      }
     }
   }
 

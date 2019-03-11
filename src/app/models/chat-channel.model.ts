@@ -1,4 +1,4 @@
-import { Message } from '../models/message.model';
+import { Message } from './message.model';
 
 export class ChatChannel {
 
