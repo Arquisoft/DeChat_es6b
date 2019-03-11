@@ -8,6 +8,8 @@ import { AuthService } from '../services/solid.auth.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
+import { templateJitUrl } from '@angular/compiler';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-chat',
@@ -30,6 +32,20 @@ export class ChatComponent implements OnInit {
     //this.onSubmit();
   }
 
+  async messageTime(msg: Message){
+    let messageTime = msg.sendTime;
+    let h = messageTime.getHours;
+    let m = messageTime.getMinutes;
+    let s = messageTime.getSeconds;
+    document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
+  }
+  
+  async sendMessage() {
+    const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+    const msg: string = inputElement.value;
+    this.chatService.sendMessage(this.selectedChatChannel, msg);
+  }
+  
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
   }
