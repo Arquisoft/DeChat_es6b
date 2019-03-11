@@ -55,6 +55,11 @@ export class ChatComponent implements OnInit {
     this.selectedChatChannel = selectedChatChannel;
   }
 
+  getMessagesSelectedChatChannel() {
+    return (this.selectedChatChannel == undefined)? new Array() : this.selectedChatChannel.messages;
+    
+  }
+
   getLastMessage(channel: ChatChannel): Message {
     return (channel.messages[channel.messages.length-1] != undefined)? (channel.messages[channel.messages.length-1]) : null;
   }

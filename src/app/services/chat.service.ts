@@ -14,6 +14,7 @@ import { IfStmt } from '@angular/compiler';
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
 const MESSAGE_CONTENT_TYPE = 'application/ld+json';
+const PRIVATE_FOLDER = '/private';
 const PRIVATE_CHAT_FOLDER = '/private/dechat_es6b';
 const INBOX_FOLDER = '/inbox/';
 const BASE_NAME_MESSAGES = 'dechat_msg';
@@ -47,6 +48,7 @@ export class ChatService {
    */
   async startChat() {
     this.uri = await this.getWebIdBase();
+    await this.checkPrivateFolder();
     await this.checkDeChatFolder();
     await this.loadChatChannels();
 
@@ -58,6 +60,17 @@ export class ChatService {
         this.waitForCheckInbox = false;
       }
     }, 1000);
+  }
+
+  /**
+   * Crea la carpeta /private
+   */
+  async checkPrivateFolder() {
+    // Si no esta creada la carpeta para almacenar los canales de chat la creamos
+    let checkFolder = await this.readFolder(this.uri + PRIVATE_FOLDER);
+    if (checkFolder === undefined) {
+      this.createFolder(this.uri + PRIVATE_FOLDER);
+    }
   }
 
   /**
