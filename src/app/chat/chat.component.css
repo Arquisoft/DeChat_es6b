@@ -135,6 +135,9 @@ img {
   min-height: 48px;
   width: 100%;
 }
+.write_msg:focus { 
+  outline:0 !important; 
+}
 .type_msg {
   border-top: 1px solid #c4c4c4;
   position: relative;
