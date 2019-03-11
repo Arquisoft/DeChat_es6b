@@ -50,6 +50,14 @@ export class ChatComponent implements OnInit {
     const msg: string = inputElement.value;
     this.chatService.sendMessage(this.selectedChatChannel, msg);
   }
+
+  async emptyText(){
+    let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+    let msg: string = inputElement.value;
+    msg = "";
+    inputElement.value = msg;
+  }
+
   
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
