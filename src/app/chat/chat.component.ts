@@ -47,5 +47,11 @@ export class ChatComponent implements OnInit {
   getChatChannels(): ChatChannel[] {
     return this.chatService.chatChannels;
   }
+
+  addNewChatChannel() {
+    const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
+    const webid: string = inputElement.value;
+    this.chatService.createNewChatChannel(webid);
+  }
   
 }
