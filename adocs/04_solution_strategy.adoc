@@ -1,5 +1,5 @@
 [[section-solution-strategy]]
-= Solution Strategy
+== Solution Strategy
 
 === Technological decisions and reaching the quality goals
 

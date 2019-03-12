@@ -29,7 +29,7 @@ include::config.adoc[]
 // horizontal line
 ***
 
-[role="arc42help"]
+
 ****
 [NOTE]
 ====
