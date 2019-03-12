@@ -57,16 +57,16 @@
 
             <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().uri">
               <div class="sent_msg" >
-                <p>{{ msg.message }}</p>
-                <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
+                <p>{{ msg.message }} </p>
+                <span class="time_date"  id="time"></span> </div>
             </div>
 
           </div>
 
           <div class="type_msg">
             <div class="input_msg_write">
-              <input type="text" class="write_msg" id ="input_text" placeholder="Type a message" />
-              <button class="msg_send_btn" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+              <input type="text" class="write_msg" id ="input_text" placeholder="Type a message"/>
+              <button class="msg_send_btn" id="button" (click)="sendMessage()" (click)="emptyTextInput()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>

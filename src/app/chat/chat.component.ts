@@ -39,22 +39,28 @@ export class ChatComponent implements OnInit {
 
   async messageTime(msg: Message){
     let messageTime = msg.sendTime;
-    let h = messageTime.getHours;
-    let m = messageTime.getMinutes;
-    let s = messageTime.getSeconds;
-    document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
+    let h = messageTime.getHours();
+    let m = messageTime.getMinutes();
+    let s = messageTime.getSeconds();
+
+    let outputElement: HTMLOutputElement = document.getElementById('time') as HTMLOutputElement;
+    let time: string = h + ":" + m + ":" + s
+    outputElement.value = time;
   }
   
   async sendMessage() {
     const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
     const msg: string = inputElement.value;
+
+    let mssage: Message = new Message(msg);
+    
     this.chatService.sendMessage(this.selectedChatChannel, msg);
+    this.messageTime(mssage);
   }
 
-  async emptyText(){
+  async emptyTextInput(){
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
-    let msg: string = inputElement.value;
-    msg = "";
+    let msg: string = "";
     inputElement.value = msg;
   }
 
