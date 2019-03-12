@@ -1,0 +1,70 @@
+[[section-system-scope-and-context]]
+== System Scope and Context
+
+
+****
+.Way of working
+In this introduction, we briefly describe the users and systems involved in our application. On the one hand, as users are the customers who register in the chat, the team members as developers, and the project manager as supervisor. On the other hand, for the systems we have software as Java, JavaScript, Angular, Asciidoctor, Solid... (the group of systems may vary). 
+
+.What we work with
+Here we describe why it has been decide to use the above mentioned programs.
+
+* Java: Because of the team members' extensive Java background.
+
+* JavaScript: Because it is recommended to use them for applications with Solid software.
+
+* Angular: Because it is a JavaScript framework that will speed up the implementation of our chat.
+
+* AsciiDoctor: Because it is the best processor editor to generate the project documentation through asciidoc documents.
+
+* Solid: Because it is a data management software whose use is adviced by the project manager.
+
+* TypeScript: Because it is a super-set of JavaScript, very useful for our project.
+
+
+Here we explain in a more graphical way the information detailed above.
+
+[options="header",cols="1,2,2"]
+|===
+|Name|Type of software|Reason for use
+| Java | Programming language | Extensive previous knowledge of Java
+| JavaScript | Programming language | Recommended for applications with Solid software
+| Angular | JavaScript framework | Speed up the implementation of our project
+| Asciidoctor | Text processor | Best text processor to generate asciidoc documents
+| Solid | Data management software | Use required by the project manager
+| TypeScript| Programming language| Super-set of JavaScript very useful for our project
+|===
+
+****
+
+=== Business Context
+
+****
+
+.Behaviour
+The system is based in a decentralized chat in which the communication partners are basically other users of this system. In this system they are going to be able to exchange many kind of different information in a safe environment and in an efficient way.
+This project is aimed mainly at independent users, but it also can be used by enterprise people who may need sometimes to get some information sent as soon as possible in a secure way, so they would prefer this decentralized system rather than use a centralized one.
+
+.How it works
+In this system the information exchanged will be only the one that the user in question wants to share, apart from the username. Personal information as well as personal data would be kept in the user's POD without access permission as long as the user wants to.
+Apart from this, on the chat the users will also be able to share text messages, audiovisual data such as images or videos, and other type of files.
+
+****
+
+
+=== Technical Context
+
+
+****
+
+The channel and transmission between a user and their partner is somehow direct, it does not take place in any server. They both have their own information and messages stored in their own PODs.
+
+In the following diagram we can find represented the input/output and their relationship with the communication channel in out system of the decentralized chat:
+
+
+image::images/03_scope_and_context_diagram.PNG["Technical diagram of the system"]
+
+We also can see that there is a direct connection between the PODs, as descripted previously, and there are no external servers.
+
+****
+
