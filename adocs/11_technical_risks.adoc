@@ -2,7 +2,7 @@
 == Risks and Technical Debts
 
 
-[role="arc42help"]
+
 ****
 .Contents
 In this document we will describe some of the problems and risks that may arise during the development of the project, ordered by priority.
