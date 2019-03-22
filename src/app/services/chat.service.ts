@@ -133,9 +133,7 @@ export class ChatService {
       let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
-        let message = new Message(msg);
-
-        message.makerWebId = this.uri;
+        let message = new Message(this.uri, msg);
         chatChannel.messages.push(message);
 
         // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
@@ -145,7 +143,8 @@ export class ChatService {
         }
 
         // Actualizamos canal de chat en POD propio
-        await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
+        //await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
+        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);

@@ -372,7 +372,7 @@ export class RdfService {
    * @param folderUri Example: https://yourpod.solid.community/private/
    * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
    */
-  public saveNewChatChannel(folderUri: String, newChatChannel: ChatChannel) {
+  async saveNewChatChannel(folderUri: String, newChatChannel: ChatChannel) {
     let chatUri = folderUri + newChatChannel.id;
     let channel = this.store.sym(chatUri);
 
@@ -381,6 +381,21 @@ export class RdfService {
     this.store.add(channel, FLOW("participation"), newChatChannel.participants, channel.doc());
 
     this.fetcher.putBack(channel);
+  }
+
+  /**
+   * @param chatUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
+   * @param msg Mensaje a guardar en el POD
+   */
+  async saveMessage(chatUri: String, message: Message) {
+    let msgUri = await this.generateUniqueUrlForResource(chatUri);
+    let msg = this.store.sym(msgUri);
+
+    this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
+    this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
+    this.store.add(msg, SIOC("content"), message.message, msg.doc());
+
+    this.fetcher.putBack(msg);
   }
 
 
