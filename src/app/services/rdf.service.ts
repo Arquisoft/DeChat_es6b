@@ -5,9 +5,11 @@ declare let $rdf: any;
 //import * as $rdf from 'rdflib'
 
 // TODO: Remove any UI interaction from this service
+import * as uuid from 'uuid';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { store } from '@angular/core/src/render3/instructions';
+import { Message } from '../models/message.model';
 
 
 const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
@@ -380,18 +382,34 @@ export class RdfService {
 
   // Añadir
   public newMessage() {
+    console.log("PROBANDO RDF");
+
     var link = 'http://www.w3.org/ns/ldp#Resource; rel=“type”';
     var filename = "chat_" + Math.round(Math.random()*60000) + ".ttl";
     
     //const me = this.store.sym('https://dcarballob01.solid.community/inbox/chat_' + new Date().getTime() + '.ttl');
-    const me = this.store.sym('https://carballo09.solid.community/public/chat_test.ttl');
+    const me = this.store.sym('https://dcarballob01.solid.community/private/testChat.ttl');
     const profile = me.doc();
 
-    this.store.add(me, SIOC("user"), "David", profile);
-    this.store.add(me, SIOC("msg"), "MENSAJE", profile);
-    this.store.add(me, SIOC("msg"), "MENSAJE...2", profile);
+    //let info = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#info");
+    let me1 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dkfdjs3");
+    let me2 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dasdad2");
+    let me3 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dasdda4");
+
+
+    this.store.add(me, SIOC("id"), uuid.v4(), me.doc());
+    this.store.add(me, SIOC("user"), "David", me.doc());
+
+    this.store.add(me1, SIOC("msg"), "MENSAJE +¨^{", me1.doc());
+    this.store.add(me2, SIOC("msg"), "MENSAJE... 2", me2.doc());
+
+    this.store.add(me3, SIOC("msg"), "HOLA MUNDO", me3.doc());
+    this.store.add(me3, SIOC("hora"), new Date(), me3.doc());
     
     this.fetcher.putBack(me);
+    this.fetcher.putBack(me1);
+    this.fetcher.putBack(me2);
+    this.fetcher.putBack(me3);
   }
 
    
@@ -399,18 +417,48 @@ export class RdfService {
   // Cargar
   public async loadMessages() {
 
-    const me = this.store.sym('https://dcarballob01.solid.community/public/CHAT_TEST.ttl');
+    const me = this.store.sym('https://dcarballob01.solid.community/private/testChat.ttl');
     const profile = me.doc();
-    
 
-    console.log("PROFILE: " + profile);
+    //this.fetcher.updater.addDownstreamChangeListener(doc, refreshFunction)
+    let folder = $rdf.sym('https://dcarballob01.solid.community/private/testChat.ttl');  // NOTE: Ends in a slash
+
+    let temp = new Array();
+
+    this.fetcher.load(profile).then( async response => {
+      // var msg = this.store.any(me, SIOC("msg"));
+      //var msg = this.store.each(me,  SIOC("msg"));
+
+      // Obtener todos los elementos
+      //var msg = this.store.match(null, null, null, me.doc()).map(st => temp.push(st.object));
+
+      // Obtener URL de los elementos
+      //var msg = this.store.match(null, null, null, me.doc()).map(st => temp.push(st.subject.value));
+      var msg = this.store.match(null, SIOC("msg"), null, me.doc()).map(st => temp.push(st.subject.value));
+      console.log(temp);
+
+      var url = await this.generateUniqueUrlForResource("https://dcarballob01.solid.community/private/testChat.ttl");
+      console.log("URL UNICA: " + url);
+
+      // Solucionado: comprobando SIOC("msg") ya nos aseguramos de que sean URLs de mensajes y no se repiten tampoco
+
+      // --> Problema: Se repiten las URL al obtenerlas debido a los diferentes campos
+      // --> Solución: Comprobar que no esten ya en el array
+      // --> Además, también obtiene URLs que no contienen "#"
+
+      // for (let index = 0; index < temp.length; index++) {
+      //   let test = this.store.sym(temp[index]);
+
+      //   this.fetcher.load(test.doc()).then(response => {
+      //     console.log("MENSAJE: " + temp[index]);
+      //     this.store.match(test, SIOC("msg"), null, test.doc()).map(st => console.log("CONTENIDO: " + st.object.value));
+      //   });
+
+      // }
+      
 
 
-    this.fetcher.load(profile).then(response => {
-      //var msg = this.store.any(me, SIOC("msg"));
-      var msg = this.store.each(me, SIOC("msg"));
-      console.log("Loaded { Mensaje: " + msg  + "}");
-      console.log("Tipo: " + (typeof msg));
+      //console.log("Tipo: " + (typeof msg));
     }, err => {
       console.log("Load failed " +  err);
     });
@@ -602,18 +650,20 @@ export class RdfService {
 
   // Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
   async generateUniqueUrlForResource(baseurl) {
-    let url = this.store.sym(baseurl + '#' + this.uniqid());
+    let url = this.store.sym(baseurl + '#' + uuid.v4());
 
     try {
-      this.fetcher.load(url).then(response => {
-        var d = this.store.each(url, RDF('type'));
+      await this.fetcher.load(url.doc()).then(async response => {
+        //var d = this.store.each(url, RDF('type'));
+        var d = this.store.each(url);
 
         // We assume that if this url doesn't have a type, the url is unused.
         // Ok, this is not the most fail-safe thing.
         // TODO: check if there are any triples at all.
         while (d.length != 0) {
-          url = baseurl + '#' + this.uniqid();
-          d = this.store.each(url, RDF('type'));
+          url = baseurl + '#' + uuid.v4();
+          //d = this.store.each(url, RDF('type'));
+          d = await this.store.each(url);
         }
       }, err => {
         console.log("Load failed " +  err);

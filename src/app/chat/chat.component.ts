@@ -26,6 +26,8 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
       this.init();
+      //this.rdf.newMessage();
+      this.rdf.loadMessages();
   }
   
   async init() {
