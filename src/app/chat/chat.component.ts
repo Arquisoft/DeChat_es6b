@@ -27,17 +27,16 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
       this.init();
       //this.rdf.newMessage();
-      this.rdf.loadMessages();
+      //this.rdf.loadMessages();
   }
   
   async init() {
     await this.chatService.startChat();
-    //this.onSubmit();
   }
 
   getChatService() {
-        return this.chatService;
-    }
+    return this.chatService;
+  }
 
   async messageTime(msg: Message){
     let messageTime = msg.sendTime;

@@ -228,10 +228,13 @@ export class ChatService {
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
       if (message != undefined) { newChatChannel.messages.push(message); }
 
+      // Añadimos el chat a la lista de chats en memoria
       newChatChannel.participants.push(webId);
       this.chatChannels.push(newChatChannel);
 
-      this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      // Guardamos el chat a nuestro POD
+      //this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      await this.rdf.saveNewChatChannel(this.uri + PRIVATE_CHAT_FOLDER + "/", newChatChannel);
 
       return newChatChannel;
     }

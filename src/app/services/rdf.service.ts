@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { store } from '@angular/core/src/render3/instructions';
 import { Message } from '../models/message.model';
+import { ChatChannel } from '../models/chat-channel.model';
 
 
 const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
@@ -367,9 +368,20 @@ export class RdfService {
   }
 
 
+  /**
+   * @param folderUri Example: https://yourpod.solid.community/private/
+   * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
+   */
+  public saveNewChatChannel(folderUri: String, newChatChannel: ChatChannel) {
+    let chatUri = folderUri + newChatChannel.id;
+    let channel = this.store.sym(chatUri);
 
+    this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
+    this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
+    this.store.add(channel, FLOW("participation"), newChatChannel.participants, channel.doc());
 
-
+    this.fetcher.putBack(channel);
+  }
 
 
 
