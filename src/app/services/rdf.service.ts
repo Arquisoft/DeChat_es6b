@@ -445,6 +445,70 @@ export class RdfService {
     return chatChannels;
   }
 
+
+   /***************************************************************/
+
+  /**
+   * Crea un fichero vacío
+   *
+   * @param newFile
+   */
+  async createFile(newFile, content?, contentType?) {
+    fileClient.createFile(newFile, content, contentType)
+        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
+  }
+
+  /**
+   *
+   * @param file
+   */
+  async readFile(file) {
+    return fileClient.readFile(file).then(body => { return(body) }, err => console.log(err) );
+  }
+
+  /**
+   *
+   * @param url
+   * @param newContent
+   * @param contentType
+   */
+  async updateFile(url, newContent, contentType?: string) {
+    await fileClient.updateFile( url, newContent, contentType )
+        .then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
+  }
+
+  /**
+   *
+   * @param url
+   */
+  async deleteFile(url) {
+    await fileClient.deleteFile(url)
+        .then(success => { console.log(`Deleted ${url}.`); }, err => console.log(err) );
+  }
+
+  /**
+   * URL FICHERO ORIGEN ---> URL FICHERO DESTINO
+   *
+   * @param oldFile
+   * @param newFile
+   */
+  async copyFile(oldFile,newFile) {
+    fileClient.readFile(oldFile).then( content => {
+      fileClient.createFile(newFile,content).then( res => {
+        return(res);
+      }, err => {throw new Error("copy upload error  "+err)});
+    }, err => {throw new Error("copy download error  "+err)});
+  }
+
+  /**
+   *
+   * @param url
+   */
+  async createFolder(url: string) {
+    await fileClient.createFolder(url)
+        .then(success => { console.log(`Created folder ${url}.`); }, err => console.log(err) );
+  }
+
   /**
    * {
           type : "folder",
@@ -465,6 +529,8 @@ export class RdfService {
     return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
   }
 
+
+  
 
 
 

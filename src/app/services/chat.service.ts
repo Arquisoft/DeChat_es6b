@@ -29,11 +29,6 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
-  // waitForCheckInbox = false;
-
-  // stoppedExternally = false;
-  // stopExternally = () => { this.stoppedExternally = true }
-  // startExternally = () => { this.stoppedExternally = false }
 
   constructor(private rdf: RdfService, private auth: AuthService, ) {
     // this.startChat();
@@ -52,13 +47,8 @@ export class ChatService {
     await this.checkDeChatFolder();
     await this.loadChatChannels();
 
-    this.interval(async (i, stop) => {
-      // if (!this.stoppedExternally) {
-        //stop();
-        // this.waitForCheckInbox = true;
+    this.interval(async () => {
         await this.checkInbox();
-        // this.waitForCheckInbox = false;
-      // }
     }, 1000);
   }
 
@@ -67,9 +57,9 @@ export class ChatService {
    */
   async checkPrivateFolder() {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.readFolder(this.uri + PRIVATE_FOLDER);
+    let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_FOLDER);
     if (checkFolder === undefined) {
-      this.createFolder(this.uri + PRIVATE_FOLDER);
+      this.rdf.createFolder(this.uri + PRIVATE_FOLDER);
     }
   }
 
@@ -78,9 +68,9 @@ export class ChatService {
    */
   async checkDeChatFolder() {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
+    let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
     if (checkFolder === undefined) {
-      this.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
+      this.rdf.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
     }
   }
 
@@ -91,7 +81,7 @@ export class ChatService {
     console.log("Loading chat channels...");
     this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER);
 
-    // Ordenamos los mensajes del canal
+    // Ordenamos los mensajes de cada canal de chat
     for (const c of this.chatChannels) {
       c.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
     }
@@ -124,10 +114,6 @@ export class ChatService {
    * @param msg
    */
   async sendMessage(chatChannel: ChatChannel, msg: string) {
-    try {
-      // Detenemos la comprobación del inbox temporalmente
-      // this.stopExternally();
-
       // Comprobamos que el canal exista
       let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
@@ -135,39 +121,28 @@ export class ChatService {
         let message = new Message(this.uri, msg);
         chatChannel.messages.push(message);
 
-        // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
-        // ya que puede ocurrir que intentemos actualizar algo que el checkInbox() ha borrado en ese momento
-        // while (this.waitForCheckInbox) {
-        //   await this.delay(300);
-        // }
-
         // Actualizamos canal de chat en POD propio
-        //await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
         await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
-        chatChannel.participants.forEach(async participant => {  // <<En este momento solo está implementado para cada persona distinta un chat distinto>>
-          await this.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+        chatChannel.participants.forEach(async participant => {  // << En este momento solo está implementado para cada persona distinta un chat distinto >>
+          await this.rdf.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
         });
       }
-    } finally {
-      // Reanudamos la comprobación del inbox
-      // this.startExternally();
-    }
   }
 
   /**
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
   async checkInbox() {
-    let folderContent = await this.readFolder(this.uri + INBOX_FOLDER);
+    let folderContent = await this.rdf.readFolder(this.uri + INBOX_FOLDER);
 
     console.log("Checking inbox...");
     for (const file of folderContent.files) {
       if (file.type == MESSAGE_CONTENT_TYPE && file.label.includes(BASE_NAME_MESSAGES)) {
         await this.processNewMessage(file.url);
-        await this.deleteFile(file.url);
+        await this.rdf.deleteFile(file.url);
       }
     }
   }
@@ -179,7 +154,7 @@ export class ChatService {
    * @param urlFile
    */
   private async processNewMessage(urlFile: any) {
-    let jsonld = await this.readFile(urlFile);
+    let jsonld = await this.rdf.readFile(urlFile);
     let newMessage:Message = JSON.parse(jsonld);
 
     // Añadimos el mensaje al canal correspondiente si ya existe
@@ -188,25 +163,16 @@ export class ChatService {
       channel.messages.push(newMessage);
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
-      // Actualizamos chat en POD propio
-      // await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
-
-      // Guardamos el mensaje en el chat en el POD propio
+       // Guardamos el mensaje en el chat en el POD propio
       await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
+
     } else {
       // Si no hay canal asociado creamos uno
       let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
       newChannel.messages.push(newMessage);
 
+      // Guardamos el mensaje en el chat en el POD propio
       await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChannel.id, newMessage);
-
-      // let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), "Prueba_chat_inbox");
-      // newChatChannel.participants.push(newMessage.makerWebId);
-      // newChatChannel.messages.push(newMessage);
-      // this.chatChannels.push(newChatChannel);
-
-      // // Añadimos chat a POD propio
-      // await this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
     }
   }
 
@@ -238,7 +204,6 @@ export class ChatService {
       this.chatChannels.push(newChatChannel);
 
       // Guardamos el chat a nuestro POD
-      //this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
       await this.rdf.saveNewChatChannel(this.uri + PRIVATE_CHAT_FOLDER + "/", newChatChannel);
 
       return newChatChannel;
@@ -291,94 +256,6 @@ export class ChatService {
     }
 
     return id;
-  }
-
-
-
-
-
-
-  /***************************************************************/
-
-  /**
-   * Crea un fichero vacío
-   *
-   * @param newFile
-   */
-  async createFile(newFile, content?, contentType?) {
-    fileClient.createFile(newFile, content, contentType)
-        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
-  }
-
-  /**
-   *
-   * @param file
-   */
-  async readFile(file) {
-    return fileClient.readFile(file).then(body => { return(body) }, err => console.log(err) );
-  }
-
-  /**
-   *
-   * @param url
-   * @param newContent
-   * @param contentType
-   */
-  async updateFile(url, newContent, contentType?: string) {
-    await fileClient.updateFile( url, newContent, contentType )
-        .then( success => { console.log( `Updated ${url}.`) }, err => console.log(err) );
-  }
-
-  /**
-   *
-   * @param url
-   */
-  async deleteFile(url) {
-    await fileClient.deleteFile(url)
-        .then(success => { console.log(`Deleted ${url}.`); }, err => console.log(err) );
-  }
-
-  /**
-   * URL FICHERO ORIGEN ---> URL FICHERO DESTINO
-   *
-   * @param oldFile
-   * @param newFile
-   */
-  async copyFile(oldFile,newFile) {
-    fileClient.readFile(oldFile).then( content => {
-      fileClient.createFile(newFile,content).then( res => {
-        return(res);
-      }, err => {throw new Error("copy upload error  "+err)});
-    }, err => {throw new Error("copy download error  "+err)});
-  }
-
-  /**
-   *
-   * @param url
-   */
-  async createFolder(url: string) {
-    await fileClient.createFolder(url)
-        .then(success => { console.log(`Created folder ${url}.`); }, err => console.log(err) );
-  }
-
-  /**
-   * {
-          type : "folder",
-          name : // folder name (without path),
-           url : // full URL of the resource,
-      modified : // dcterms:modified date
-         mtime : // stat:mtime
-          size : // stat:size
-        parent : // parentFolder or undef if none,
-       content : // raw content of the folder's turtle representation,
-         files : // an array of files in the folder
-       folders : // an array of sub-folders in the folder,
-      }
-   *
-   * @param url
-   */
-  async readFolder(url) {
-    return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
   }
 
 
