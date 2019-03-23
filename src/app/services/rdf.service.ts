@@ -379,7 +379,9 @@ export class RdfService {
 
     this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
     this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
-    this.store.add(channel, FLOW("participation"), newChatChannel.participants, channel.doc());
+    newChatChannel.participants.forEach(element => {
+      this.store.add(channel, FLOW("participation"), element, channel.doc());
+    });
 
     this.fetcher.putBack(channel);
   }
@@ -416,7 +418,7 @@ export class RdfService {
         let id = file.url.split('/').pop();
         let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
         let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
-        let participation = this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(st => { return (st.object.elements[0].value) }); // Comprobar al añadir grupos
+        let participation = this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(st => { return (st.object.value) });
         let messages: Message[] = new Array();
 
         // Recorremos los mensajes del chat

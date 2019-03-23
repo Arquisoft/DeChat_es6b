@@ -29,11 +29,11 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
-  waitForCheckInbox = false;
+  // waitForCheckInbox = false;
 
-  stoppedExternally = false;
-  stopExternally = () => { this.stoppedExternally = true }
-  startExternally = () => { this.stoppedExternally = false }
+  // stoppedExternally = false;
+  // stopExternally = () => { this.stoppedExternally = true }
+  // startExternally = () => { this.stoppedExternally = false }
 
   constructor(private rdf: RdfService, private auth: AuthService, ) {
     // this.startChat();
@@ -53,12 +53,12 @@ export class ChatService {
     await this.loadChatChannels();
 
     this.interval(async (i, stop) => {
-      if (!this.stoppedExternally) {
+      // if (!this.stoppedExternally) {
         //stop();
-        this.waitForCheckInbox = true;
+        // this.waitForCheckInbox = true;
         await this.checkInbox();
-        this.waitForCheckInbox = false;
-      }
+        // this.waitForCheckInbox = false;
+      // }
     }, 1000);
   }
 
@@ -126,7 +126,7 @@ export class ChatService {
   async sendMessage(chatChannel: ChatChannel, msg: string) {
     try {
       // Detenemos la comprobación del inbox temporalmente
-      this.stopExternally();
+      // this.stopExternally();
 
       // Comprobamos que el canal exista
       let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
@@ -137,9 +137,9 @@ export class ChatService {
 
         // Si entró en el checkInbox() esperamos a que finalice para evitar problemas, 
         // ya que puede ocurrir que intentemos actualizar algo que el checkInbox() ha borrado en ese momento
-        while (this.waitForCheckInbox) {
-          await this.delay(300);
-        }
+        // while (this.waitForCheckInbox) {
+        //   await this.delay(300);
+        // }
 
         // Actualizamos canal de chat en POD propio
         //await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(chatChannel));
@@ -153,7 +153,7 @@ export class ChatService {
       }
     } finally {
       // Reanudamos la comprobación del inbox
-      this.startExternally();
+      // this.startExternally();
     }
   }
 
@@ -189,16 +189,24 @@ export class ChatService {
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
       // Actualizamos chat en POD propio
-      await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
+      // await this.updateFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id + "." + MESSAGE_FILE_FORMAT, JSON.stringify(channel));
+
+      // Guardamos el mensaje en el chat en el POD propio
+      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
     } else {
       // Si no hay canal asociado creamos uno
-      let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), "Prueba_chat_inbox");
-      newChatChannel.participants.push(newMessage.makerWebId);
-      newChatChannel.messages.push(newMessage);
-      this.chatChannels.push(newChatChannel);
+      let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
+      newChannel.messages.push(newMessage);
 
-      // Añadimos chat a POD propio
-      await this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
+      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChannel.id, newMessage);
+
+      // let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), "Prueba_chat_inbox");
+      // newChatChannel.participants.push(newMessage.makerWebId);
+      // newChatChannel.messages.push(newMessage);
+      // this.chatChannels.push(newChatChannel);
+
+      // // Añadimos chat a POD propio
+      // await this.createFile(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChatChannel.id, JSON.stringify(newChatChannel), CHAT_CHANNEL_CONTENT_TYPE);
     }
   }
 
@@ -218,13 +226,12 @@ export class ChatService {
    * @param webId
    * @param title
    */
-  public async createNewChatChannel(webId: string, title?: string, message?: Message): Promise<ChatChannel> {
+  public async createNewChatChannel(webId: string, title?: string): Promise<ChatChannel> {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
 
     if (channel == null) {
       title = (title == undefined)? "Prueba_chat_inbox" : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
-      if (message != undefined) { newChatChannel.messages.push(message); }
 
       // Añadimos el chat a la lista de chats en memoria
       newChatChannel.participants.push(webId);
