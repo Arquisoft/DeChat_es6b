@@ -4,12 +4,17 @@ export class ChatChannel {
 
     id: string;
     title: string;
-    participants: string[] = new Array(); // Array de WebIds
-    created: Date = new Date();
-    messages: Message[] = new Array();
+    created: Date;
+    participants: string[]; // Array de WebIds
+    messages: Message[];
 
-    constructor(id, title) {
+    constructor(id: string, title: string, created: Date = new Date(),
+            participants: string[] = new Array(), messages: Message[] = new Array()) {
+
         this.id = id;
         this.title = title;
+        this.created = created
+        this.participants = participants;
+        this.messages = messages;
     }
 }

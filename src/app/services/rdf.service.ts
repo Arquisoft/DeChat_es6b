@@ -6,6 +6,7 @@ declare let $rdf: any;
 
 // TODO: Remove any UI interaction from this service
 import * as uuid from 'uuid';
+import * as fileClient from 'solid-file-client';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { store } from '@angular/core/src/render3/instructions';
@@ -396,6 +397,70 @@ export class RdfService {
     this.store.add(msg, SIOC("content"), message.message, msg.doc());
 
     this.fetcher.putBack(msg);
+  }
+
+  /**
+   * 
+   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b
+   */
+  async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
+     const folderContent = await this.readFolder(chatChannelsFolderUri);
+     let chatChannels: ChatChannel[] = new Array();
+
+     // Recorremos los canales de chat
+    for (const file of folderContent.files) {
+      let fileUri = this.store.sym(file.url);
+      
+      // Obtenemos los datos del chat
+      await this.fetcher.load(fileUri.doc()).then(async response => {
+        let id = file.url.split('/').pop();
+        let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
+        let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
+        let participation = this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(st => { return (st.object.elements[0].value) }); // Comprobar al añadir grupos
+        let messages: Message[] = new Array();
+
+        // Recorremos los mensajes del chat
+        let listUrisMessages = this.store.match(null, SIOC("content"), null, fileUri.doc()).map(st => { return (st.subject.value) });
+        for (const message of listUrisMessages) {
+          let messageUri = this.store.sym(message);
+
+          // Obtenemos los datos de cada mensaje del chat
+          this.fetcher.load(messageUri.doc()).then(response => {
+            let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
+            let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
+            let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
+            
+            messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
+          });
+        }
+
+        // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
+        let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), participation, messages);
+        chatChannels.push(chatChannel);
+      });      
+    }
+
+    return chatChannels;
+  }
+
+  /**
+   * {
+          type : "folder",
+          name : // folder name (without path),
+           url : // full URL of the resource,
+      modified : // dcterms:modified date
+         mtime : // stat:mtime
+          size : // stat:size
+        parent : // parentFolder or undef if none,
+       content : // raw content of the folder's turtle representation,
+         files : // an array of files in the folder
+       folders : // an array of sub-folders in the folder,
+      }
+   *
+   * @param url
+   */
+  async readFolder(url) {
+    return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
   }
 
 

@@ -88,13 +88,12 @@ export class ChatService {
    *
    */
   async loadChatChannels() {
-    let folderContent = await this.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
-
     console.log("Loading chat channels...");
-    for (const file of folderContent.files) {
-      let channelJsonld = await this.readFile(file.url);
-      let channel:ChatChannel = JSON.parse(channelJsonld);
-      this.chatChannels.push(channel);
+    this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER);
+
+    // Ordenamos los mensajes del canal
+    for (const c of this.chatChannels) {
+      c.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
     }
   }
 
