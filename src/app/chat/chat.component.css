@@ -92,10 +92,13 @@ img {
 
 .active_chat{ background:#ebebeb;}
 
+.incoming_msg {
+  margin: 10px 0;
+}
+
 .incoming_msg_img {
   display: inline-block;
   width: 6%;
-  margin: 5px 0 5px;
 }
 .received_msg {
   display: inline-block;
@@ -134,7 +137,7 @@ img {
   height: 100%;
   overflow-wrap: break-word;
 }
-.outgoing_msg{ overflow:hidden; margin: 5px 0 5px;}
+.outgoing_msg{overflow:hidden; margin: 10px 0;}
 .sent_msg {
   float: right;
   width: 46%;

@@ -52,14 +52,14 @@
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ msg.message }}</p>
-                    <span class="time_date"> 11:01 PM    |    Yesterday</span></div>
+                    <span class="time_date">{{ messageTime(msg) }}</span></div>
                 </div>
               </div>
 
               <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().webid">
                 <div class="sent_msg" >
                   <p>{{ msg.message }}</p>
-                  <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
+                  <span class="time_date">{{ messageTime(msg) }}</span> </div>
               </div>
 
             </div>

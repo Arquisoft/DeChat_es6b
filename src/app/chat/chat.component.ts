@@ -36,12 +36,12 @@ export class ChatComponent implements OnInit {
     return this.chatService;
   }
 
-  async messageTime(msg: Message){
+  messageTime(msg: Message): string {
     let messageTime = msg.sendTime;
-    let h = messageTime.getHours;
-    let m = messageTime.getMinutes;
-    let s = messageTime.getSeconds;
-    document.getElementById("time").innerHTML = h + ":" + m + ":" + s;
+    let h = messageTime.getHours();
+    let m = messageTime.getMinutes();
+    let s = messageTime.getSeconds();
+    return h + ":" + m + ":" + s;
   }
   
   async sendMessage() {
