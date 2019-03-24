@@ -445,7 +445,19 @@ export class RdfService {
     return chatChannels;
   }
 
+  async getVCardName(webid: string) {
+    let me = this.store.sym(webid);
+    let name = "";
+    
+    await this.fetcher.load(me.doc()).then(response => {
+      this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { name = st.object.value });
+    });
 
+    return name;
+  }
+
+
+  
    /***************************************************************/
 
   /**

@@ -192,16 +192,18 @@ export class ChatService {
   }
 
   /**
-   * Método destinado a permitir añadir nuevos canales de chat desde la inferfaz
+   * Método para crear nuevos canales, el nuevo canal será creado en el POD propio y añadido a la
+   * lista de canales de chat.
    *
-   * @param webId
+   * @param webId WebId del contacto (Example: https://yourpod.solid.community/profile/card#me)
    * @param title
    */
-  public async createNewChatChannel(webId: string, title?: string): Promise<ChatChannel> {
+  public async createNewChatChannel(webId: string, title: string = "Canal de chat"): Promise<ChatChannel> {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
+    let nameParticipant = await this.rdf.getVCardName(webId);
 
     if (channel == null) {
-      title = (title == undefined)? "Prueba_chat_inbox" : title;
+      title = (nameParticipant.length != 0)? nameParticipant : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
 
       // Añadimos el chat a la lista de chats en memoria
