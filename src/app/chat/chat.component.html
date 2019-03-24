@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="mesgs">
-          <div class="msg_history">
+          <div class="msg_history" #scrollMe [scrollTop]="scrollMe.scrollHeight">
             <div *ngFor="let msg of getMessagesSelectedChatChannel()">
 
               <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().uri">
