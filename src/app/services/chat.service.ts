@@ -29,6 +29,7 @@ export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
   uri: string;
+  webid: string
 
   constructor(private rdf: RdfService, private auth: AuthService, ) {
     // this.startChat();
@@ -42,7 +43,9 @@ export class ChatService {
    *
    */
   async startChat() {
-    this.uri = await this.getWebIdBase();
+    this.webid = await this.getWebId();
+    this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
+
     await this.checkPrivateFolder();
     await this.checkDeChatFolder();
     await this.loadChatChannels();
@@ -90,9 +93,9 @@ export class ChatService {
   /**
    * Example result: https://yourpod.solid.community
    */
-  async getWebIdBase(): Promise<string> {
+  async getWebId(): Promise<string> {
     let s = await fileClient.checkSession().then( session => { return(session.webId) }, err => console.log(err) );
-    return s.replace(PROFILE_CARD_FOLDER, "");
+    return s;
   }
 
   /**
@@ -118,7 +121,8 @@ export class ChatService {
       let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
-        let message = new Message(this.uri, msg);
+        let tmpMakerWebId = await this.getWebId();
+        let message = new Message(tmpMakerWebId, msg);
         chatChannel.messages.push(message);
 
         // Actualizamos canal de chat en POD propio
@@ -127,7 +131,8 @@ export class ChatService {
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
         chatChannel.participants.forEach(async participant => {  // << En este momento solo está implementado para cada persona distinta un chat distinto >>
-          await this.rdf.createFile(participant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+          let tmpParticipant = participant.replace(PROFILE_CARD_FOLDER, "");
+          await this.rdf.createFile(tmpParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
         });
       }
   }

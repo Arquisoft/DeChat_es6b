@@ -20,14 +20,12 @@ export class ChatComponent implements OnInit {
 
   selectedChatChannel: ChatChannel;
 
-  constructor(private rdf: RdfService,
-              private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {
+  constructor(private rdf: RdfService, private route: ActivatedRoute, 
+              private auth: AuthService, private chatService: ChatService) {
   }
 
   ngOnInit() {
       this.init();
-      //this.rdf.newMessage();
-      //this.rdf.loadMessages();
   }
   
   async init() {

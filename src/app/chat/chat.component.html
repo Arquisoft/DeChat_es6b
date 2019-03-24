@@ -47,7 +47,7 @@
           <div class="msg_history" #scrollMe [scrollTop]="scrollMe.scrollHeight">
             <div *ngFor="let msg of getMessagesSelectedChatChannel()">
 
-              <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().uri">
+              <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().webid">
                 <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
@@ -56,7 +56,7 @@
                 </div>
               </div>
 
-              <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().uri">
+              <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().webid">
                 <div class="sent_msg" >
                   <p>{{ msg.message }}</p>
                   <span class="time_date"> 11:02 PM    |    Yesterday</span> </div>
