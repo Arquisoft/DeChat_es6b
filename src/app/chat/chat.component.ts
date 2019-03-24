@@ -90,7 +90,9 @@ export class ChatComponent implements OnInit {
   addNewChatChannel() {
     const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
     const webid: string = inputElement.value;
-    this.chatService.createNewChatChannel(webid);
+    if (webid.length > 0) {
+      this.chatService.createNewChatChannel(webid);
+    }
   }
   
   search() {
