@@ -28,9 +28,13 @@
           <div class="inbox_chat">
             <div class="chat_list active_chat" *ngFor="let channel of getChatChannels()">
               <div class="chat_people" (click)="setSelectedChatChannel(channel)">
-                <div class="chat_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
+                <div class="chat_img">
+                  <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
+                  <img [src]="imagesChannels[channel.id]" alt="sunil"> 
+                </div>
                 <div class="chat_ib">
-                  <h5> {{ channel.title }} <span class="chat_date">{{ getDayAndMonthLastMessage(channel) }}</span></h5>
+                  <h5 *ngIf="!getLastMessage(channel)"> {{ channel.title }} <span class="chat_date"></span></h5>
+                  <h5 *ngIf="getLastMessage(channel)"> {{ channel.title }} <span class="chat_date">{{ getLastMessage(channel).sendTime | date:'LLL d' }}</span></h5>
                   <p> {{ getLastMessageText(channel) }} </p>
                 </div>
               </div>
@@ -48,18 +52,20 @@
             <div *ngFor="let msg of getMessagesSelectedChatChannel()">
 
               <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().webid">
-                <div class="incoming_msg_img"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div>
+                <div class="incoming_msg_img"> 
+                  <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
+                  <img [src]="imagesParticipants[msg.makerWebId]" alt="sunil"> </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ msg.message }}</p>
-                    <span class="time_date">{{ messageTime(msg) }}</span></div>
+                    <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span></div>
                 </div>
               </div>
 
               <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().webid">
                 <div class="sent_msg" >
                   <p>{{ msg.message }}</p>
-                  <span class="time_date">{{ messageTime(msg) }}</span> </div>
+                  <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span> </div>
               </div>
 
             </div>

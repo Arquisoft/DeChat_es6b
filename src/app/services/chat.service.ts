@@ -203,7 +203,7 @@ export class ChatService {
     let nameParticipant = await this.rdf.getVCardName(webId);
 
     if (channel == null) {
-      title = (nameParticipant != undefined && nameParticipant.length != 0)? nameParticipant : title;
+      title = (nameParticipant != undefined && nameParticipant.length > 0)? nameParticipant : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
 
       // Añadimos el chat a la lista de chats en memoria

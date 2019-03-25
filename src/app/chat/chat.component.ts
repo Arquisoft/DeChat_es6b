@@ -18,7 +18,12 @@ import { stringify } from 'querystring';
 })
 export class ChatComponent implements OnInit {
 
+  defaultImage = "assets/images/default.jpg";
+
   selectedChatChannel: ChatChannel;
+  imagesChannels = {};
+  imagesParticipants = {};
+  
 
   constructor(private rdf: RdfService, private route: ActivatedRoute, 
               private auth: AuthService, private chatService: ChatService) {
@@ -30,6 +35,7 @@ export class ChatComponent implements OnInit {
   
   async init() {
     await this.chatService.startChat();
+    await this.setupImages();
   }
 
   getChatService() {
@@ -50,14 +56,13 @@ export class ChatComponent implements OnInit {
     this.chatService.sendMessage(this.selectedChatChannel, msg);
   }
 
-  async emptyText(){
+  async emptyText() {
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
     let msg: string = inputElement.value;
     msg = "";
     inputElement.value = msg;
   }
 
-  
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
   }
@@ -75,21 +80,24 @@ export class ChatComponent implements OnInit {
     return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
   }
 
-  getDayAndMonthLastMessage(channel: ChatChannel) {
+  /* getDayAndMonthLastMessage(channel: ChatChannel) {
     let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
     return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
       + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
-  }
+  } */
 
   getChatChannels(): ChatChannel[] {
     return this.chatService.chatChannels;
   }
 
-  addNewChatChannel() {
+  async addNewChatChannel() {
     const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
     const webid: string = inputElement.value;
     if (webid.length > 0) {
-      this.chatService.createNewChatChannel(webid);
+      let channel = await this.chatService.createNewChatChannel(webid);
+
+      // Cargamos la imagen del nuevo canal
+      this.addImageToImages(channel);
     }
   }
   
@@ -104,4 +112,26 @@ export class ChatComponent implements OnInit {
     }
     this.chatService.setChatChannels(newChatChannels);
   }
+
+  // Método que carga las imágenes de los canales al inicio y las guarda en un HashMap
+  async setupImages() {
+    for (const channel of this.chatService.chatChannels) {
+      this.addImageToImages(channel);
+    }
+  }
+
+  // Método auxiliar para añadir las imágenes a los HashMap "imagesChannels" e "imagesParticipants"
+  async addImageToImages(channel: ChatChannel) {
+    if (channel.participants[0]) {
+      let imageChannelURL = await this.rdf.getVCardImage(channel.participants[0]);
+      this.imagesChannels[channel.id] = (imageChannelURL.length > 0) ? imageChannelURL : this.defaultImage;
+
+      // Recorremos los participantes y añadimos sus imágenes a "imagesParticipants"
+      for (const participant of channel.participants) {
+        let imageParticipantURL = await this.rdf.getVCardImage(participant);
+        this.imagesParticipants[participant] = (imageParticipantURL.length > 0) ? imageParticipantURL : this.defaultImage;
+      }
+    }
+  }
+
 }

@@ -456,6 +456,17 @@ export class RdfService {
     return name;
   }
 
+  async getVCardImage(webid: string) {
+    let me = this.store.sym(webid);
+    let image = "";
+    
+    await this.fetcher.load(me.doc()).then(response => {
+      this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { image = st.object.value });
+    });
+
+    return image;
+  }
+
 
   
    /***************************************************************/
