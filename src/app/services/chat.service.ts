@@ -48,11 +48,17 @@ export class ChatService {
 
     await this.checkPrivateFolder()
       .then(async () => { await this.checkDeChatFolder() })
-      .then(async () => { await this.loadChatChannels() });
+      .then(async () => { await this.loadChatChannels() })
+      .then(async () => { await this.checkInbox() });
 
-    this.interval(async () => {
-        await this.checkInbox();
-    }, 1000);
+    // Abrimos WebSocket al inbox, cualquier modificación en él hará que se ejecute "checkInbox()"
+    let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
+    await this.rdf.fetcher.load(updateUri.doc());
+    this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => { await this.checkInbox() });
+
+    // this.interval(async () => {
+    //     await this.checkInbox();
+    // }, 1000);
   }
 
   /**
