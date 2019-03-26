@@ -46,9 +46,9 @@ export class ChatService {
     this.webid = await this.getWebId();
     this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
 
-    await this.checkPrivateFolder();
-    await this.checkDeChatFolder();
-    await this.loadChatChannels();
+    await this.checkPrivateFolder()
+      .then(async () => { await this.checkDeChatFolder() })
+      .then(async () => { await this.loadChatChannels() });
 
     this.interval(async () => {
         await this.checkInbox();
@@ -62,7 +62,8 @@ export class ChatService {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
     let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_FOLDER);
     if (checkFolder === undefined) {
-      this.rdf.createFolder(this.uri + PRIVATE_FOLDER);
+      console.log("The 'private' folder does not exist, creating it...");
+      await this.rdf.createFolder(this.uri + PRIVATE_FOLDER);
     }
   }
 
@@ -73,7 +74,8 @@ export class ChatService {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
     let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
     if (checkFolder === undefined) {
-      this.rdf.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
+      console.log("The 'dechat_es6b' folder does not exist, creating it...");
+      await this.rdf.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
     }
   }
 
