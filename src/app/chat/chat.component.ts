@@ -100,7 +100,7 @@ export class ChatComponent implements OnInit {
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.participants[0].toLowerCase() === name.toLowerCase()  || channel.participants[0].includes(name) )
+      if ( channel.title.toLowerCase() === name.toLowerCase()  || channel.title.includes(name) )
         newChatChannels.push(channel);
     }
     this.chatService.setChatChannels(newChatChannels);
