@@ -9,7 +9,6 @@ import * as uuid from 'uuid';
 import * as fileClient from 'solid-file-client';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { store } from '@angular/core/src/render3/instructions';
 import { Message } from '../models/message.model';
 import { ChatChannel } from '../models/chat-channel.model';
 
@@ -369,6 +368,10 @@ export class RdfService {
   }
 
 
+  /*********************************/
+  /* CÓDIGO NUEVO A PARTIR DE AQUÍ */
+  /*********************************/
+
   /**
    * @param folderUri Example: https://yourpod.solid.community/private/
    * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
@@ -406,8 +409,8 @@ export class RdfService {
    * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b
    */
   async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
-     const folderContent = await this.readFolder(chatChannelsFolderUri);
-     let chatChannels: ChatChannel[] = new Array();
+    const folderContent = await this.readFolder(chatChannelsFolderUri);
+    let chatChannels: ChatChannel[] = new Array();
 
      // Recorremos los canales de chat
     for (const file of folderContent.files) {
@@ -470,6 +473,14 @@ export class RdfService {
 
   
    /***************************************************************/
+
+  /**
+   * Example result: https://yourpod.solid.community
+   */
+  async getWebId(): Promise<string> {
+    let s = await fileClient.checkSession().then( session => { return(session.webId) }, err => console.log(err) );
+    return s;
+  }
 
   /**
    * Crea un fichero vacío

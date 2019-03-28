@@ -1,15 +1,9 @@
-import {Component, getModuleFactory, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {NgForm } from '@angular/forms';
-import {SolidProfile} from '../models/solid-profile.model';
+import {Component, OnInit} from '@angular/core';
 import { RdfService } from '../services/rdf.service';
 import { ChatService } from '../services/chat.service';
-import { AuthService } from '../services/solid.auth.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { templateJitUrl } from '@angular/compiler';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-chat',
@@ -25,8 +19,7 @@ export class ChatComponent implements OnInit {
   imagesParticipants = {};
   
 
-  constructor(private rdf: RdfService, private route: ActivatedRoute, 
-              private auth: AuthService, private chatService: ChatService) {
+  constructor(private rdf: RdfService, private chatService: ChatService) {
   }
 
   ngOnInit() {

@@ -1,15 +1,9 @@
-import { Injectable, Predicate } from '@angular/core';
-import { SolidSession } from '../models/solid-session.model';
+import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
-import { AuthService } from '../services/solid.auth.service';
-import { SolidProfile } from '../models/solid-profile.model';
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 
-import * as fileClient from 'solid-file-client';
 import * as uuid from 'uuid';
-import { getBodyNode } from '@angular/animations/browser/src/render/shared';
-import { IfStmt } from '@angular/compiler';
 
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
@@ -31,19 +25,15 @@ export class ChatService {
   uri: string;
   webid: string
 
-  constructor(private rdf: RdfService, private auth: AuthService, ) {
+  constructor(private rdf: RdfService ) {
     // this.startChat();
   }
 
-  setChatChannels(chatChannels: ChatChannel[]){
-    this.chatChannels=chatChannels;
-  }
-
   /**
-   *
+   * Método para iniciar la ejecución del chat
    */
-  async startChat() {
-    this.webid = await this.getWebId();
+  public async startChat() {
+    this.webid = await this.rdf.getWebId();
     this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
 
     await this.checkPrivateFolder()
@@ -55,16 +45,12 @@ export class ChatService {
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => { await this.checkInbox() });
-
-    // this.interval(async () => {
-    //     await this.checkInbox();
-    // }, 1000);
   }
 
   /**
    * Crea la carpeta /private
    */
-  async checkPrivateFolder() {
+  private async checkPrivateFolder() {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
     let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_FOLDER);
     if (checkFolder === undefined) {
@@ -76,7 +62,7 @@ export class ChatService {
   /**
    * Crea la carpeta para almacenar los canales de chat si no está creada
    */
-  async checkDeChatFolder() {
+  private async checkDeChatFolder() {
     // Si no esta creada la carpeta para almacenar los canales de chat la creamos
     let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
     if (checkFolder === undefined) {
@@ -88,7 +74,7 @@ export class ChatService {
   /**
    *
    */
-  async loadChatChannels() {
+  private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER);
 
@@ -99,11 +85,11 @@ export class ChatService {
   }
 
   /**
-   * Example result: https://yourpod.solid.community
+   * 
+   * @param chatChannels 
    */
-  async getWebId(): Promise<string> {
-    let s = await fileClient.checkSession().then( session => { return(session.webId) }, err => console.log(err) );
-    return s;
+  setChatChannels(chatChannels: ChatChannel[]){
+    this.chatChannels = chatChannels;
   }
 
   /**
@@ -114,6 +100,9 @@ export class ChatService {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
+  /**
+   * 
+   */
   getUri(): string {
     return this.uri;
   }
@@ -124,12 +113,12 @@ export class ChatService {
    * @param chatChannel
    * @param msg
    */
-  async sendMessage(chatChannel: ChatChannel, msg: string) {
+  public async sendMessage(chatChannel: ChatChannel, msg: string) {
       // Comprobamos que el canal exista
       let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
-        let tmpMakerWebId = await this.getWebId();
+        let tmpMakerWebId = await this.rdf.getWebId();
         let message = new Message(tmpMakerWebId, msg);
         chatChannel.messages.push(message);
 
@@ -148,7 +137,7 @@ export class ChatService {
   /**
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
-  async checkInbox() {
+  private async checkInbox() {
     let folderContent = await this.rdf.readFolder(this.uri + INBOX_FOLDER);
 
     console.log("Checking inbox...");
@@ -271,141 +260,6 @@ export class ChatService {
     }
 
     return id;
-  }
-
-
-
-
-
-
-
-// ---------------------- INTERVAL-PROMISE LIBRARY ---------------------- //
-
-  /**
-   * @param {function} func - function to execute
-   * @param {number|function(number):number} intervalLength - length in ms to wait before executing again
-   * @param {{iterations: Infinity|number, stopOnError: boolean}} [options]
-   *
-   * @returns {Promise} Promise object with no result
-   */
-  interval(func, intervalLength, options = {}) {
-
-    this.validateArgs(func, intervalLength, options)
-
-    const defaults = {
-      iterations: Infinity,
-      stopOnError: true
-    }
-    const settings = Object.assign(defaults, options)
-
-    return new Promise((rootPromiseResolve, rootPromiseReject) => {
-
-      const callFunction = currentIteration => {
-
-        // Set up a way to track if a "stop" was requested by the user function
-        let stopRequested = false
-        const stop = () => {
-          stopRequested = true
-        }
-
-        // Set up a function to call the next iteration. This is abstracted so it can be called by .then(), or in .catch(), if options allow.
-        const callNext = () => {
-          // If we've hit the desired number of iterations, or stop was called, resolve the root promise and return
-          if (currentIteration === settings.iterations || stopRequested) {
-            rootPromiseResolve()
-            return
-          }
-
-          // Otherwise, call the next iteration
-          callFunction(currentIteration + 1)
-        }
-
-        // Calculate our interval length
-        const calculatedIntervalLength = (typeof intervalLength === 'function') ? intervalLength(currentIteration) : intervalLength
-
-        // If the interval length was calculated, validate the result
-        if (typeof intervalLength === 'function') {
-          if (!Number.isInteger(calculatedIntervalLength) || calculatedIntervalLength < 0) {
-            rootPromiseReject(new Error('Function for "intervalLength" argument must return a non-negative integer.'))
-            return
-          }
-        }
-
-        // Call the user function after the desired interval length. After, call the next iteration (and/or handle error)
-        setTimeout(() => {
-
-          const returnVal = func(currentIteration, stop)
-
-          if (!(returnVal instanceof Promise)) {
-            rootPromiseReject(new Error('Return value of "func" must be a Promise.'))
-            return
-          }
-
-          returnVal.then(callNext).catch(err => {
-            if (!settings.stopOnError) {
-              callNext()
-              return
-            }
-
-            rootPromiseReject(err)
-          })
-        }, calculatedIntervalLength)
-      }
-
-      callFunction(1)
-    })
-  }
-
-  /**
-   * A helper function to validate the arguments passed to interval(...)
-   *
-   * @param {*} func
-   * @param {*} intervalLength
-   * @param {*} options
-   */
-  validateArgs(func, intervalLength, options) {
-
-    // Validate "func"
-    if (typeof func !== 'function') {
-      throw new TypeError('Argument 1, "func", must be a function.')
-    }
-
-    // Validate "intervalLength"
-    if (typeof intervalLength === 'number') {
-      if (!Number.isInteger(intervalLength) || intervalLength < 0) {
-        throw new TypeError('Argument 2, "intervalLength", must be a non-negative integer or a function that returns a non-negative integer.')
-      }
-    } else if (typeof intervalLength !== 'function') {
-      throw new TypeError('Argument 2, "intervalLength", must be a non-negative integer or a function that returns a non-negative integer.')
-    }
-
-    // Validate options...
-    if (typeof options !== 'object') {
-      throw new TypeError('Argument 3, "options", must be an object.')
-    }
-
-    // Validate passed keys
-    const allowedKeys = ['iterations', 'stopOnError']
-
-    Object.keys(options).forEach(key => {
-      if (!allowedKeys.includes(key)) {
-        throw new TypeError('Option "' + key + '" is not a valid option.')
-      }
-    })
-
-    // validate "iterations" option (if passed)
-    if (options.hasOwnProperty('iterations')) {
-      if (options.iterations !== Infinity && (!Number.isInteger(options.iterations) || options.iterations < 1)) {
-        throw new TypeError('Option "iterations" must be Infinity or an integer greater than 0.')
-      }
-    }
-
-    // validate "stopOnError" option (if passed)
-    if (options.hasOwnProperty('stopOnError')) {
-      if (typeof options.stopOnError !== 'boolean') {
-        throw new TypeError('Option "stopOnError" must be a boolean.')
-      }
-    }
   }
 
 }
