@@ -470,17 +470,18 @@ export class RdfService {
     return image;
   }
 
-
-  
-   /***************************************************************/
-
   /**
    * Example result: https://yourpod.solid.community
    */
   async getWebId(): Promise<string> {
-    let s = await fileClient.checkSession().then( session => { return(session.webId) }, err => console.log(err) );
-    return s;
+    var sess = await solid.auth.currentSession();
+    if (sess) return sess.webId;
+    else throw new Error("No current session!");
   }
+
+
+  
+   /***************************************************************/
 
   /**
    * Crea un fichero vacío

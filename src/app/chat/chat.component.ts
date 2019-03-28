@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
 import { RdfService } from '../services/rdf.service';
 import { ChatService } from '../services/chat.service';
 
@@ -10,7 +10,8 @@ import { Message } from '../models/message.model';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollMe') private scrollMe: ElementRef;
 
   defaultImage = "assets/images/default.jpg";
 
@@ -24,6 +25,10 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
       this.init();
+  }
+
+  ngAfterViewChecked() {
+    this.moveChatScrollToBottom();
   }
   
   async init() {
@@ -125,6 +130,11 @@ export class ChatComponent implements OnInit {
         this.imagesParticipants[participant] = (imageParticipantURL.length > 0) ? imageParticipantURL : this.defaultImage;
       }
     }
+  }
+
+  // Ajusta el scroll del chat a la parte inferior de este
+  moveChatScrollToBottom() {
+    this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
   }
 
 }
