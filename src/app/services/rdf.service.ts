@@ -10,6 +10,7 @@ import * as fileClient from 'solid-file-client';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Message } from '../models/message.model';
+import { Participant } from '../models/participant.model';
 import { ChatChannel } from '../models/chat-channel.model';
 
 
@@ -383,7 +384,7 @@ export class RdfService {
     this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
     this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
     newChatChannel.participants.forEach(element => {
-      this.store.add(channel, FLOW("participation"), element, channel.doc());
+      this.store.add(channel, FLOW("participation"), element.webId, channel.doc());
     });
 
     this.fetcher.putBack(channel);
@@ -439,8 +440,17 @@ export class RdfService {
           });
         }
 
+        let participant: Participant = new Participant(participation,"","");
+        let me = this.store.sym(participation.toString());
+
+        await this.fetcher.load(me.doc()).then(response => {
+          this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
+          this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
+        });
+
         // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
-        let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), participation, messages);
+        let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), messages);
+        chatChannel.participants.push(participant);
         chatChannels.push(chatChannel);
       });      
     }
@@ -448,7 +458,7 @@ export class RdfService {
     return chatChannels;
   }
 
-  async getVCardName(webid: string) {
+  async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let name = "";
     
@@ -459,7 +469,7 @@ export class RdfService {
     return name;
   }
 
-  async getVCardImage(webid: string) {
+  async getVCardImage(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let image = "";
     
@@ -468,6 +478,14 @@ export class RdfService {
     });
 
     return image;
+  }
+
+  async loadParticipantData(webid: string): Promise<Participant> {
+    try {
+      let imageURL = await this.getVCardImage(webid);
+      let name = await this.getVCardName(webid);
+      return new Participant(webid, imageURL, name);
+    } catch (err) { console.log("An error occurred when loading the participant: " + err); }
   }
 
   /**
@@ -480,7 +498,7 @@ export class RdfService {
   }
 
 
-  
+
    /***************************************************************/
 
   /**

@@ -31,7 +31,7 @@
               <div class="chat_people" (click)="setSelectedChatChannel(channel)">
                 <div class="chat_img">
                   <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
-                  <img [src]="imagesChannels[channel.id]" alt="sunil"> 
+                  <img [src]="getImagenChat(channel)" alt="sunil">
                 </div>
                 <div class="chat_ib">
                   <h5 *ngIf="!getLastMessage(channel)"> {{ channel.title }} <span class="chat_date"></span></h5>
@@ -55,7 +55,7 @@
               <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().webid">
                 <div class="incoming_msg_img"> 
                   <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
-                  <img [src]="imagesParticipants[msg.makerWebId]" alt="sunil"> </div>
+                  <img [src]="getImagenChat(selectedChatChannel)" alt="sunil"> </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>{{ msg.message }}</p>

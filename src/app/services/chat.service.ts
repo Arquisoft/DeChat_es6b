@@ -41,7 +41,7 @@ export class ChatService {
       .then(async () => { await this.loadChatChannels() })
       .then(async () => { await this.checkInbox() });
 
-    // Abrimos WebSocket al inbox, cualquier modificación en él hará que se ejecute "checkInbox()"
+    // Abrimos WebSocket, cualquier modificación en nuestro POD provocará la ejecución de "checkInbox()"
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => { await this.checkInbox() });
@@ -128,7 +128,7 @@ export class ChatService {
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
         chatChannel.participants.forEach(async participant => {  // << En este momento solo está implementado para cada persona distinta un chat distinto >>
-          let tmpParticipant = participant.replace(PROFILE_CARD_FOLDER, "");
+          let tmpParticipant = participant.webId.toString().replace(PROFILE_CARD_FOLDER, "");
           await this.rdf.createFile(tmpParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
         });
       }
@@ -160,7 +160,7 @@ export class ChatService {
     let newMessage:Message = JSON.parse(jsonld);
 
     // Añadimos el mensaje al canal correspondiente si ya existe
-    let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
+    let channel:ChatChannel = await this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
     if (channel != null) {
       channel.messages.push(newMessage);
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
@@ -196,15 +196,15 @@ export class ChatService {
    * @param title
    */
   public async createNewChatChannel(webId: string, title: string = "Canal de chat"): Promise<ChatChannel> {
-    let channel:ChatChannel = this.searchChatChannelByParticipantWebid(webId);
-    let nameParticipant = await this.rdf.getVCardName(webId);
+    let channel:ChatChannel = await this.searchChatChannelByParticipantWebid(webId);
+    let participant = await this.rdf.loadParticipantData(webId);
 
-    if (channel == null) {
-      title = (nameParticipant != undefined && nameParticipant.length > 0)? nameParticipant : title;
+    if (channel == null && participant != undefined) {
+      title = (participant.name != undefined && participant.name.length > 0)? participant.name.toString() : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
 
       // Añadimos el chat a la lista de chats en memoria
-      newChatChannel.participants.push(webId);
+      newChatChannel.participants.push(participant);
       this.chatChannels.push(newChatChannel);
 
       // Guardamos el chat a nuestro POD
@@ -221,10 +221,13 @@ export class ChatService {
    *
    * @param webId
    */
-  public searchChatChannelByParticipantWebid(webId: string): ChatChannel {
+  public async searchChatChannelByParticipantWebid(webId: string): Promise<ChatChannel> {
+    let participant = await this.rdf.loadParticipantData(webId);
     for (const channel of this.chatChannels) {
-      if (channel.participants.includes(webId)) {
-        return channel;
+      for (const p of channel.participants) {
+        if (p.webId == participant.webId) {
+          return channel;
+        }
       }
     }
     return null;

@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
-import { RdfService } from '../services/rdf.service';
 import { ChatService } from '../services/chat.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
@@ -14,13 +13,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private scrollMe: ElementRef;
 
   defaultImage = "assets/images/default.jpg";
+  selectedChatChannel: ChatChannel; 
 
-  selectedChatChannel: ChatChannel;
-  imagesChannels = {};
-  imagesParticipants = {};
-  
-
-  constructor(private rdf: RdfService, private chatService: ChatService) {
+  constructor(private chatService: ChatService) {
   }
 
   ngOnInit() {
@@ -33,7 +28,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   
   async init() {
     await this.chatService.startChat();
-    await this.setupImages();
   }
 
   getChatService() {
@@ -93,9 +87,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     const webid: string = inputElement.value;
     if (webid.length > 0) {
       let channel = await this.chatService.createNewChatChannel(webid);
-
-      // Cargamos la imagen del nuevo canal
-      this.addImageToImages(channel);
     }
   }
   
@@ -105,30 +96,19 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.title.toLowerCase() === name.toLowerCase()  || channel.title.includes(name) )
+      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.includes(name) )
         newChatChannels.push(channel);
     }
     this.chatService.setChatChannels(newChatChannels);
   }
 
-  // Método que carga las imágenes de los canales al inicio y las guarda en un HashMap
-  async setupImages() {
-    for (const channel of this.chatService.chatChannels) {
-      this.addImageToImages(channel);
-    }
-  }
-
-  // Método auxiliar para añadir las imágenes a los HashMap "imagesChannels" e "imagesParticipants"
-  async addImageToImages(channel: ChatChannel) {
+  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
+  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  public getImagenChat(channel: ChatChannel) {
     if (channel.participants[0]) {
-      let imageChannelURL = await this.rdf.getVCardImage(channel.participants[0]);
-      this.imagesChannels[channel.id] = (imageChannelURL.length > 0) ? imageChannelURL : this.defaultImage;
-
-      // Recorremos los participantes y añadimos sus imágenes a "imagesParticipants"
-      for (const participant of channel.participants) {
-        let imageParticipantURL = await this.rdf.getVCardImage(participant);
-        this.imagesParticipants[participant] = (imageParticipantURL.length > 0) ? imageParticipantURL : this.defaultImage;
-      }
+      return (channel.participants[0].imageURL.length > 0) ? channel.participants[0].imageURL : this.defaultImage;
+    } else {
+      return this.defaultImage;
     }
   }
 
