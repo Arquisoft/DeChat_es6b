@@ -25,6 +25,8 @@ export class ChatService {
   uri: string;
   webid: string
 
+  waitForCheckInbox: boolean = false;
+
   constructor(private rdf: RdfService ) {
     // this.startChat();
   }
@@ -44,7 +46,14 @@ export class ChatService {
     // Abrimos WebSocket, cualquier modificación en nuestro POD provocará la ejecución de "checkInbox()"
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
-    this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => { await this.checkInbox() });
+    this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
+      while (this.waitForCheckInbox) { await this.delay(Math.random() * (400 - 250) + 250); }
+      if (!this.waitForCheckInbox) {
+          this.waitForCheckInbox = true;
+          await this.checkInbox();
+          this.waitForCheckInbox = false;
+      }
+    });
   }
 
   /**
@@ -138,15 +147,11 @@ export class ChatService {
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
   private async checkInbox() {
-    let folderContent = await this.rdf.readFolder(this.uri + INBOX_FOLDER);
-
-    console.log("Checking inbox...");
-    for (const file of folderContent.files) {
-      if (file.type == MESSAGE_CONTENT_TYPE && file.label.includes(BASE_NAME_MESSAGES)) {
-        await this.processNewMessage(file.url);
-        await this.rdf.deleteFile(file.url);
-      }
-    }
+      console.log("Checking inbox...");
+      let messages: Message[] = await this.rdf.getInboxMessages(this.uri + INBOX_FOLDER);
+      messages.forEach(msg => {
+        this.processNewMessage(msg);
+      });
   }
 
   /**
@@ -155,10 +160,7 @@ export class ChatService {
    *
    * @param urlFile
    */
-  private async processNewMessage(urlFile: any) {
-    let jsonld = await this.rdf.readFile(urlFile);
-    let newMessage:Message = JSON.parse(jsonld);
-
+  private async processNewMessage(newMessage: Message) {
     // Añadimos el mensaje al canal correspondiente si ya existe
     let channel:ChatChannel = await this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
     if (channel != null) {

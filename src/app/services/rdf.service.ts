@@ -28,9 +28,10 @@ const SIOC = $rdf.Namespace('http://rdfs.org/sioc/ns#');
 const SOLIDRDF = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
 const UI = $rdf.Namespace('http://www.w3.org/ns/ui#');
 const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-var LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
+const LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
 
-const DEFAULT_CONTENT_TYPE = 'application/ld+json'
+// const JSONLD_CONTENT_TYPE = 'application/ld+json'
+const JSONLD_CONTENT_TYPE = 'http://www.w3.org/ns/iana/media-types/application/ld+json#Resource'
 const DEFAULT_ACCEPT = 'application/ld+json;q=0.9,text/turtle;q=0.8'
 const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
 
@@ -396,13 +397,49 @@ export class RdfService {
    */
   async saveMessage(chatUri: String, message: Message) {
     let msgUri = await this.generateUniqueUrlForResource(chatUri);
-    let msg = this.store.sym(msgUri);
+    try {
+      let msg = this.store.sym(msgUri);
 
-    this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
-    this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
-    this.store.add(msg, SIOC("content"), message.message, msg.doc());
+      this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
+      this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
+      this.store.add(msg, SIOC("content"), message.message, msg.doc());
 
-    this.fetcher.putBack(msg);
+      this.fetcher.putBack(msg);
+      console.log("Message (" + msgUri + ") saved!");
+    } catch (err) {
+      console.log("An error occurred while saving the message (" + msgUri + ")");
+    }
+  }
+
+  /**
+   * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,
+   * una vez obtenidos los elimina del inbox.
+   * 
+   * Devuelve un array con dichos mensajes.
+   * 
+   * @param inboxUri 
+   */
+  async getInboxMessages(inboxUri: string): Promise<Message[]> {
+    let fileUri = this.store.sym(inboxUri);    
+    let messages: Message[] = new Array();
+    await this.fetcher.load(fileUri.doc());
+
+    await Promise.all(this.store.match(null, RDF('type')).map(async st => {
+      if (st.object.value == JSONLD_CONTENT_TYPE) {
+        console.log(st.subject.value);
+        let jsonld = await this.readFile(st.subject.value);
+        try {
+          let jsonMessage:Message = JSON.parse(jsonld);
+          let newMessage: Message = new Message(jsonMessage.makerWebId, jsonMessage.message, jsonMessage.sendTime);
+          messages.push(newMessage);
+          await this.deleteFile(st.subject.value);
+        } catch (err) {
+          console.log("The message: (" + st.subject.value + ") does not have the correct structure.");
+        }
+      }
+    }));
+
+    return messages;
   }
 
   /**
@@ -440,7 +477,7 @@ export class RdfService {
           });
         }
 
-        let participant: Participant = new Participant(participation,"","");
+        let participant: Participant = new Participant(participation.toString(),"","");
         let me = this.store.sym(participation.toString());
 
         await this.fetcher.load(me.doc()).then(response => {
