@@ -85,12 +85,7 @@ export class ChatService {
    */
   private async loadChatChannels() {
     console.log("Loading chat channels...");
-    this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
-
-    // Ordenamos los mensajes de cada canal de chat
-    for (const c of this.chatChannels) {
-      c.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
-    }
+    this.chatChannels = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
   }
 
   /**
@@ -148,10 +143,9 @@ export class ChatService {
    */
   private async checkInbox() {
       console.log("Checking inbox...");
-      let messages: Message[] = await this.rdf.getInboxMessages(this.uri + INBOX_FOLDER);
-      messages.forEach(msg => {
+      this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then( msg => {
         this.processNewMessage(msg);
-      });
+      })
   }
 
   /**

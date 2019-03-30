@@ -405,7 +405,7 @@ export class RdfService {
       this.store.add(msg, SIOC("content"), message.message, msg.doc());
 
       this.fetcher.putBack(msg);
-      console.log("Message (" + msgUri + ") saved!");
+      console.log("Message saved! (" + msgUri + ")");
     } catch (err) {
       console.log("An error occurred while saving the message (" + msgUri + ")");
     }
@@ -419,75 +419,89 @@ export class RdfService {
    * 
    * @param inboxUri 
    */
-  async getInboxMessages(inboxUri: string): Promise<Message[]> {
+  public getInboxMessages(inboxUri: string): Promise<Message> {
     let fileUri = this.store.sym(inboxUri);    
-    let messages: Message[] = new Array();
-    await this.fetcher.load(fileUri.doc());
 
-    await Promise.all(this.store.match(null, RDF('type')).map(async st => {
-      if (st.object.value == JSONLD_CONTENT_TYPE) {
-        console.log(st.subject.value);
-        let jsonld = await this.readFile(st.subject.value); // URL del jsonld -> st.subject.value
-        try {
-          let jsonMessage:Message = JSON.parse(jsonld);
-          let newMessage: Message = new Message(jsonMessage.makerWebId, jsonMessage.message, jsonMessage.sendTime);
-          messages.push(newMessage);
-          await this.deleteFile(st.subject.value);
-        } catch (err) {
-          console.log("The message: (" + st.subject.value + ") does not have the correct structure.");
-        }
-      }
-    }));
-
-    return messages;
+    return new Promise((resolve, reject) => {
+      this.fetcher.load(fileUri.doc()).then(response => {
+        this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
+          // Verificamos que sea JSONLD
+          if (st.object.value == JSONLD_CONTENT_TYPE) {
+            let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
+            try {
+              let jsonMessage: Message = JSON.parse(jsonld);
+              // Verificamos que sea un mensaje válido
+              if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
+                this.deleteFile(st.subject.value);
+                resolve(jsonMessage);
+              }
+            } catch (err) {
+              console.log("The message does not have the correct structure. (" + st.subject.value + ")");
+            }
+          }
+        });
+      });
+    });
   }
 
   /**
    * Método para recuperar los canales de chat almacenados en el POD.
+   * (El método ordenará los mensajes de cada canal de chat en función de la fecha de envío)
    * 
-   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b
+   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b/
    */
-  public async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
+  public loadChatChannels(chatChannelsFolderUri: string): ChatChannel[] {
+    let folderUri = this.store.sym(chatChannelsFolderUri);
     let chatChannels: ChatChannel[] = new Array();
-    let messages: Message[];
 
-    await Promise.all(this.fetcher.load(chatChannelsFolderUri).then( response => {
+    Promise.all(this.fetcher.load(folderUri.doc()).then(response => {
       // Obtenemos los canales de chat
-      this.store.match(null, LDP('contains')).map(async st => {
+      this.store.match(folderUri, LDP('contains'), null, folderUri.doc()).map(async st => {
         let fileUri = this.store.sym(st.object.value); // fileUri -> URI del canal
-
+        
         // Obtenemos los datos del canal de chat
-        await this.fetcher.load(fileUri.doc()).then(async response => {
-          let id = st.object.value.split('/').pop();
-          let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
-          let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
-          
-          // Obtenemos los datos de cada participante del canal de chat
-          this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
-            let me = this.store.sym(st.object.value.toString());
-            await this.fetcher.load(me.doc()).then(response => {
-              let participant: Participant = new Participant(st.object.value.toString(),"","");
-              this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
-              this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
-              chatChannel.participants.push(participant);
-            });
-          });
+        this.fetcher.load(fileUri.doc()).then(async response => {
+          var d = await this.store.each(null, FLOW("participation"), null, fileUri.doc()); 
+          // Si contiene "participation" suponemos que es un canal de chat válido
+          // Comprobamos que sea un canal de chat válido
+          if (d.length != 0) {
+            let messages: Message[] = new Array();
 
-          // Obtenemos los datos de los mensajes del chat
-          this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
-            messages = new Array();
-            let messageUri = this.store.sym(st.subject.value);
-            await this.fetcher.load(messageUri.doc()).then(response => {
-              let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
-              let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
-              let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
-              messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
+            let id = st.object.value.split('/').pop();
+            let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            
+            // Obtenemos los datos de cada participante del canal de chat
+            this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
+              let me = this.store.sym(st.object.value.toString());
+              this.fetcher.load(me.doc()).then(response => {
+                let participant: Participant = new Participant(st.object.value.toString(),"","");
+                this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
+                this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
+                chatChannel.participants.push(participant);
+              });
             });
-          });
 
-          // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
-          let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), messages);
-          chatChannels.push(chatChannel);
+            // Obtenemos los datos de los mensajes del chat
+            this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
+              let messageUri = this.store.sym(st.subject.value);
+              await this.fetcher.load(messageUri.doc()).then(response => {
+                let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
+              });
+              // Ordenamos los mensajes del canal de chat (llegan desordenados)
+              messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
+            });
+
+            // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
+            let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), messages);
+            chatChannels.push(chatChannel);
+          } else {
+            console.log(st.object.value + " is not a valid chat channel");
+          }
+
         });
       });
     }));
