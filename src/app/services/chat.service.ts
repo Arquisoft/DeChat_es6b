@@ -85,7 +85,7 @@ export class ChatService {
    */
   private async loadChatChannels() {
     console.log("Loading chat channels...");
-    this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER);
+    this.chatChannels = await this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
 
     // Ordenamos los mensajes de cada canal de chat
     for (const c of this.chatChannels) {
