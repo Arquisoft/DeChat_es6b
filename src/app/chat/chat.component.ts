@@ -1,51 +1,45 @@
-import {Component, getModuleFactory, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {NgForm } from '@angular/forms';
-import {SolidProfile} from '../models/solid-profile.model';
-import { RdfService } from '../services/rdf.service';
+import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
 import { ChatService } from '../services/chat.service';
-import { AuthService } from '../services/solid.auth.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { templateJitUrl } from '@angular/compiler';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollMe') private scrollMe: ElementRef;
 
-  selectedChatChannel: ChatChannel;
+  defaultImage = "assets/images/default.jpg";
+  selectedChatChannel: ChatChannel; 
 
-  constructor(private rdf: RdfService,
-              private route: ActivatedRoute, private auth: AuthService, private chatService: ChatService) {
+  constructor(private chatService: ChatService) {
   }
 
   ngOnInit() {
       this.init();
   }
+
+  ngAfterViewChecked() {
+    this.moveChatScrollToBottom();
+  }
   
   async init() {
     await this.chatService.startChat();
-    //this.onSubmit();
   }
 
   getChatService() {
-        return this.chatService;
-    }
+    return this.chatService;
+  }
 
-  async messageTime(msg: Message){
+  messageTime(msg: Message): string {
     let messageTime = msg.sendTime;
     let h = messageTime.getHours();
     let m = messageTime.getMinutes();
     let s = messageTime.getSeconds();
-
-    let outputElement: HTMLOutputElement = document.getElementById('time') as HTMLOutputElement;
-    let time: string = h + ":" + m + ":" + s
-    outputElement.value = time;
+    return h + ":" + m + ":" + s;
   }
   
   async sendMessage() {
@@ -58,13 +52,12 @@ export class ChatComponent implements OnInit {
     this.messageTime(mssage);
   }
 
-  async emptyTextInput(){
+  async emptyText() {
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
     let msg: string = "";
     inputElement.value = msg;
   }
 
-  
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
   }
@@ -82,20 +75,22 @@ export class ChatComponent implements OnInit {
     return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
   }
 
-  getDayAndMonthLastMessage(channel: ChatChannel) {
+  /* getDayAndMonthLastMessage(channel: ChatChannel) {
     let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
     return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
       + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
-  }
+  } */
 
   getChatChannels(): ChatChannel[] {
     return this.chatService.chatChannels;
   }
 
-  addNewChatChannel() {
+  async addNewChatChannel() {
     const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
     const webid: string = inputElement.value;
-    this.chatService.createNewChatChannel(webid);
+    if (webid.length > 0) {
+      let channel = await this.chatService.createNewChatChannel(webid);
+    }
   }
   
   search() {
@@ -104,9 +99,25 @@ export class ChatComponent implements OnInit {
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.participants[0].toLowerCase() === name.toLowerCase()  || channel.participants[0].includes(name) )
+      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.includes(name) )
         newChatChannels.push(channel);
     }
     this.chatService.setChatChannels(newChatChannels);
   }
+
+  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
+  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  public getImagenChat(channel: ChatChannel) {
+    if (channel.participants[0]) {
+      return (channel.participants[0].imageURL.length > 0) ? channel.participants[0].imageURL : this.defaultImage;
+    } else {
+      return this.defaultImage;
+    }
+  }
+
+  // Ajusta el scroll del chat a la parte inferior de este
+  moveChatScrollToBottom() {
+    this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+  }
+
 }
