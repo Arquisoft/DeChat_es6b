@@ -7,6 +7,10 @@ export class AppPage {
     //return browser.get('http://localhost:4200/ ');
   }
 
+  public navigateToUrl(text: string) {
+    return browser.get(text);
+  }
+
   public enterSearchInput(text: string) {
     return element(by.css('input[aria-label="search"]'))
       .sendKeys(text);
