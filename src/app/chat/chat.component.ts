@@ -45,13 +45,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   async sendMessage() {
     const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
     const msg: string = inputElement.value;
+
+    let mssage: Message = new Message(msg);
+    
     this.chatService.sendMessage(this.selectedChatChannel, msg);
+    this.messageTime(mssage);
   }
 
   async emptyText() {
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
-    let msg: string = inputElement.value;
-    msg = "";
+    let msg: string = "";
     inputElement.value = msg;
   }
 

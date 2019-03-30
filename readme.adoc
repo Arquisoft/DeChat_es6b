@@ -18,7 +18,6 @@ This project is done by a team of 5 members:
 * Iván Gómez Pinta.
 * Sara García Rodríguez.
 
-
 == Generating documentation
 
 ----
@@ -31,6 +30,12 @@ Generates documentation in `docs` folder. Previously you need to have installed 
 npm install gulp-cli -g
 ----
 
+You can also use the Node Package Manager by executing:
+
+----
+npm run gulp
+----
+
 == Development server
 
 Run development server with:
@@ -39,12 +44,17 @@ Run development server with:
 ng serve
 ----
 
-Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files. If you don't have Angular installed, use Node Package Manager:
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files. If you don't have Angular installed you can use Node Package Manager:
 
 ----
 npm run ng serve
 ----
 
+Node modules aren't in the project, so before running the development server you need to generate them with:
+
+----
+npm install
+----
 
 == Running unit tests
 
