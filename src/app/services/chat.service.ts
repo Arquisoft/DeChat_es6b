@@ -143,9 +143,12 @@ export class ChatService {
    */
   private async checkInbox() {
       console.log("Checking inbox...");
-      this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then( msg => {
-        this.processNewMessage(msg);
-      })
+      this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
+        msgs.forEach(msg => {
+          if (msg)
+            this.processNewMessage(msg);
+        });
+      });
   }
 
   /**

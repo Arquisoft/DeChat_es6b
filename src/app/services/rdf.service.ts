@@ -416,31 +416,30 @@ export class RdfService {
    * una vez obtenidos los elimina del inbox.
    * 
    * Devuelve un array con dichos mensajes.
+   * (Puede devolver objetos "undefined" en dicho array, intentar arreglar)
    * 
    * @param inboxUri 
    */
-  public getInboxMessages(inboxUri: string): Promise<Message> {
-    let fileUri = this.store.sym(inboxUri);    
-
-    return new Promise((resolve, reject) => {
-      this.fetcher.load(fileUri.doc()).then(response => {
-        this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
-          // Verificamos que sea JSONLD
-          if (st.object.value == JSONLD_CONTENT_TYPE) {
-            let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
-            try {
-              let jsonMessage: Message = JSON.parse(jsonld);
-              // Verificamos que sea un mensaje válido
-              if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
-                this.deleteFile(st.subject.value);
-                resolve(jsonMessage);
-              }
-            } catch (err) {
-              console.log("The message does not have the correct structure. (" + st.subject.value + ")");
+  public getInboxMessages(inboxUri: string): any {
+    let fileUri = this.store.sym(inboxUri);
+        
+    return this.fetcher.load(fileUri.doc()).then(async response => {
+      return Promise.all(this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
+        // Verificamos que sea JSONLD
+        if (st.object.value == JSONLD_CONTENT_TYPE) {
+          let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
+          try {
+            let jsonMessage: Message = JSON.parse(jsonld);
+            // Verificamos que sea un mensaje válido
+            if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
+              this.deleteFile(st.subject.value);
+              return jsonMessage;
             }
+          } catch (err) {
+            console.log("The message does not have the correct structure. (" + st.subject.value + ")");
           }
-        });
-      });
+        }
+      }));
     });
   }
 
@@ -451,13 +450,13 @@ export class RdfService {
    * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b/
    */
   public loadChatChannels(chatChannelsFolderUri: string): ChatChannel[] {
-    let folderUri = this.store.sym(chatChannelsFolderUri);
+    let chatFolder = this.store.sym(chatChannelsFolderUri);
     let chatChannels: ChatChannel[] = new Array();
 
-    Promise.all(this.fetcher.load(folderUri.doc()).then(response => {
+    Promise.all(this.fetcher.load(chatFolder.doc()).then(response => {
       // Obtenemos los canales de chat
-      this.store.match(folderUri, LDP('contains'), null, folderUri.doc()).map(async st => {
-        let fileUri = this.store.sym(st.object.value); // fileUri -> URI del canal
+      this.store.match(chatFolder, LDP('contains'), null, chatFolder.doc()).map(async st => {
+        let fileUri = this.store.sym(st.object.value); // st.object.value -> URI del canal
         
         // Obtenemos los datos del canal de chat
         this.fetcher.load(fileUri.doc()).then(async response => {
