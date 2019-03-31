@@ -89,6 +89,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
   
+  /**
+   * Método que busca un chat según el texto introducido en el input_search en la lista de chats activos 
+   * NO es sensible a mayúsculas y minúsculas
+   */
   search() {
     const inputElement: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
     const name: string = inputElement.value;
@@ -114,6 +118,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   // Ajusta el scroll del chat a la parte inferior de este
   moveChatScrollToBottom() {
     this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+  }
+
+  // Elimina un chat de la lista y del POD del usuario
+  deleteChat(channel: ChatChannel) {
+    const index = this.chatService.chatChannels.indexOf(channel);
+    this.chatService.delete(channel); //Pod
+    this.chatService.chatChannels.splice(index, 1); //Lista
   }
 
 }

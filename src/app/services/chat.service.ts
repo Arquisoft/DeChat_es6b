@@ -27,7 +27,7 @@ export class ChatService {
 
   waitForCheckInbox: boolean = false;
 
-  constructor(private rdf: RdfService ) {
+  constructor(private rdf: RdfService) {
     // this.startChat();
   }
 
@@ -262,6 +262,16 @@ export class ChatService {
     }
 
     return id;
+  }
+
+  public async delete(chat: ChatChannel) {
+    // Comprobamos que el canal exista
+    let channel:ChatChannel = this.searchChatChannelById(chat.id);
+    console.log(channel.created);
+
+    // Si existe lo borramos
+    if(channel != null)
+      this.rdf.deleteFile(this.uri + PRIVATE_CHAT_FOLDER +"/"+ chat.id);
   }
 
 }
