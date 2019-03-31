@@ -37,9 +37,7 @@
                   <h5 *ngIf="!getLastMessage(channel)"> {{ channel.title }} <span class="chat_date"></span></h5>
                   <h5 *ngIf="getLastMessage(channel)"> {{ channel.title }} <span class="chat_date">{{ getLastMessage(channel).sendTime | date:'LLL d' }}</span></h5>
                   <p> {{ getLastMessageText(channel) }} </p>
-                </div>
-                <div>
-                  <button class="delete_button" type="button" (click)="deleteChat(channel)">Eliminar</button>
+                  <p><button class="delete_button" type="button" (click)="deleteChat(channel)"><i class="fa fa-trash" aria-hidden="true"></i></button></p>
                 </div>
               </div>
             </div>
