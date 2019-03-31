@@ -1,6 +1,6 @@
 
 import { expect } from 'chai';
-import { AppPage } from './PO_App';
+import { AppPage } from './PageObjects/PO_App';
 import { defineSupportCode } from 'cucumber';
 
 defineSupportCode(({Given, When, Then, Before}) => {
