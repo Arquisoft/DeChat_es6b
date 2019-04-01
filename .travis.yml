@@ -3,8 +3,10 @@ sudo: false
 node_js:
   - "10.15"
 before_script:
-  - npm install -g @angular/cli
+  - npm install 
 script: 
-  - ng build --prod
+  - npm run ng serve
+  - npm run ng test
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  # - npm run cucumber
+  - npm run coverage
