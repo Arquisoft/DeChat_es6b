@@ -103,10 +103,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.includes(name) )
+      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.toString().includes(name) )
         newChatChannels.push(channel);
     }
-    this.chatService.setChatChannels(newChatChannels);
+
+    if (newChatChannels.length!=0) 
+      this.chatService.setChatChannels(newChatChannels);
+    else
+      alert("No se han encontrado coincidencias con ningún chat activo.");
   }
 
   // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
