@@ -1,4 +1,4 @@
-import { AppPage } from '../pages/app.po';
+import { AppPage } from '../PageObjects/app.po';
 import {Given, Then, When, Before} from 'cucumber';
 import { expect } from 'chai';
 

@@ -7,19 +7,29 @@ export class AppPage {
     //return browser.get('http://localhost:4200/ ');
   }
 
+  public clickGoLogin() {
+    element(by.xpath("/html/body/app-root/app-login/div/div[2]/ng-select/div")).click();
+    element(by.id("btnGo")).click();
+  }
+
+  public chatView() {
+    return element(by.id("loadChat")).click();
+  }
+
   public navigateToUrl(text: string) {
     return browser.get(text);
   }
 
+  public pressButton(id: string) {
+    return element(by.id(id)).click;
+  }
+
   public enterSearchInput(text: string) {
-    return element(by.css('input[aria-label="search"]'))
-      .sendKeys(text);
+    return element(by.id('input_search')).sendKeys(text);
   }
 
   public getSearchResultItems() {
-    const condition = until.elementsLocated(by.css('.search-results .search-result-item'));
-
-    return browser.wait(condition, 5000);
+    return element(by.className('chat_ib')).getText();
   }
 
   public getParagraphText() {
