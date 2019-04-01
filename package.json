@@ -9,7 +9,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "gulp": "gulp",
-    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "cucumber": "./node_modules/.bin/cucumber-js ./test/cucumber/*.feature",
+    "coverage": "bash <(curl -s https://codecov.io/bash)"
   },
   "browser": {
     "crypto": false,
