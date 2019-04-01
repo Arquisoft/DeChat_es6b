@@ -55,7 +55,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   async sendImage(){
-    const image: HTMLImageElement = document.getElementById('send_image') as HTMLImageElement;
+    if (this.selectedChatChannel != null) {
+    const img: HTMLImageElement = document.getElementById('send_image') as HTMLImageElement;
+    this.chatService.sendImage(this.selectedChatChannel, img);
+    }
   }
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
