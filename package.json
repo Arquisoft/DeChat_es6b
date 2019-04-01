@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "gulp": "gulp",
     "cucumber": "./node_modules/.bin/cucumber-js ./test/cucumber/*.feature",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "coverage": "bash <(curl -s https://codecov.io/bash)"
   },
   "browser": {
     "crypto": false,
