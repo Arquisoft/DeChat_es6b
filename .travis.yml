@@ -1,11 +1,20 @@
+dist: trusty
+sudo: false
+
 language: node_js
 node_js:
    - "10.15"
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
 before_script:
   - npm install 
 script: 
   - npm run gulp
-  - npm run ng serve
+  - npm run ng e2e
 after_success:
   # - npm run cucumber
   - npm run coverage
