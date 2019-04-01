@@ -10,7 +10,7 @@ import { Given, Then, When, Before } from 'cucumber';
   });
 
   Given('I am on the angular.io site',
-    () => app.navigateTo());
+    () => app.navigateToUrl('https://angular.io'));
 
   When('I type {string} into the search input field',
     (text: string) => app.enterSearchInput(text));

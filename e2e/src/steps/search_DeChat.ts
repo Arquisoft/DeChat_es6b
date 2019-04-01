@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { AppPage } from 'e2e/src/PageObjects/PO_App';
+import { AppPage } from '../PageObjects/PO_App';
 import { Given, Before, Then, When } from 'cucumber';
 import { and } from '@angular/router/src/utils/collection';
 
@@ -16,12 +16,13 @@ import { and } from '@angular/router/src/utils/collection';
       app.navigateToUrl('https://arquisoft.github.io/DeChat_es6b/')
       //select solidcommunity pod
       app.clickGoLogin();
-      //log in pod???
+      //log in pod
+      app.login();
     }
   );
 
   When('I access to the Chat View', () => {
-    app.chatView();
+    app.pressButton("loadChat");
   });
 
   When('I write in the search field {string}',
