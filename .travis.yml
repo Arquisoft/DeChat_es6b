@@ -17,4 +17,4 @@ script:
   - npm run ng test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
 after_success:
   # - npm run cucumber
-  - npm run coverage
+  - bash <(curl -s https://codecov.io/bash)
