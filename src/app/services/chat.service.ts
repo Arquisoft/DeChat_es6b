@@ -118,8 +118,9 @@ export class ChatService {
    * @param msg
    */
   public async sendMessage(chatChannel: ChatChannel, msg: string) {
-      // Comprobamos que el canal exista
-      let channel:ChatChannel = this.searchChatChannelById(chatChannel.id);
+    // Comprobamos que el canal exista
+    try {
+      let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
         let tmpMakerWebId = await this.rdf.getWebId();
@@ -136,6 +137,9 @@ export class ChatService {
           await this.rdf.createFile(tmpParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
         });
       }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
