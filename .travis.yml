@@ -14,6 +14,7 @@ before_script:
   - npm install 
 script: 
   - npm run gulp
+  - npm run ng test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
 after_success:
   # - npm run cucumber
   - npm run coverage
