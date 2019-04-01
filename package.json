@@ -38,6 +38,8 @@
     "cucumber": "^5.1.0",
     "http": "^0.0.0",
     "isomorphic-fetch": "^2.2.1",
+    "karma-jasmine": "^2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
     "ngx-toastr": "^9.0.2",
     "node-fetch": "^2.2.0",
     "path": "^0.12.7",
