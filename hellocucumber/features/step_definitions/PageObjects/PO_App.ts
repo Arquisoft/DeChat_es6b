@@ -22,4 +22,12 @@ export class AppPage {
     return browser.wait(condition, 5000);
   }
 
+  public getParagraphText() {
+    return element(by.css('app-root h1')).getText();
+  }
+
+  public getHomeText(){
+    return element(by.id('homeChatTitle')).getText();
+  }
+
 }
