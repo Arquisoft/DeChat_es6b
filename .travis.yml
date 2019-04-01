@@ -5,6 +5,7 @@ node_js:
 before_script:
   - npm install 
 script: 
+  - npm run gulp
   - npm run ng serve
   - npm run ng test
 after_success:
