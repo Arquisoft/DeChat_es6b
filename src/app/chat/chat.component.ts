@@ -43,9 +43,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
   
   async sendMessage() {
-    const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
-    const msg: string = inputElement.value;
-    this.chatService.sendMessage(this.selectedChatChannel, msg);
+    // Enviar un mensaje solo si hay un chat seleccionado, si no no hace nada
+    if (this.selectedChatChannel != null) {
+      const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+      const msg: string = inputElement.value;
+      this.chatService.sendMessage(this.selectedChatChannel, msg);
+    }
   }
 
   async emptyText() {
@@ -86,6 +89,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     const webid: string = inputElement.value;
     if (webid.length > 0) {
       let channel = await this.chatService.createNewChatChannel(webid);
+      this.selectedChatChannel = channel;
     }
   }
   
@@ -125,6 +129,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     const index = this.chatService.chatChannels.indexOf(channel);
     this.chatService.delete(channel); //Pod
     this.chatService.chatChannels.splice(index, 1); //Lista
+
+    // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
+    if (this.selectedChatChannel==channel)
+      this.selectedChatChannel=null;
   }
 
 }
