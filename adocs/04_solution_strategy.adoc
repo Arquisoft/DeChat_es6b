@@ -1,5 +1,5 @@
 [[section-solution-strategy]]
-= Solution Strategy
+== Solution Strategy
 
 === Technological decisions and reaching the quality goals
 
@@ -31,6 +31,12 @@ image::images/angularJS_MVC1.png[Modelo Vista Controlador con Angular]
 === Organizational decisions
 
 ****
+Achiving our goals requires a good and prepared organization by the team. As soon as we started the scheme, we opted to divide it in equal parts so that we could work effectively as a team.
+
+At first we decided to divide the documentation, nevertheless, everyone ended up giving some participation in every file.
+After this we also began with the main project, giving the first steps with the SOLID platform, Angular, an so on. Once we had already the login interface we determined some different parts in order to be able to face the first release of the project, in which we should be able to launch the chat, which would load all the chats of the logged user, then click in the chat desired so that it would convert into the active one and we could see all the messages loaded from it. And, of course, be able as well to send messages to the user in the chat. Here we distinguished 3 clear parts: to load the chat channels, to open the chat and convert it in the active chat, and to send messages so that they would be stored in the user's POD. 
+
+We didn't follow any sort of development methodology for the time being, like scrum, xp or similar, so there's no need to explain anything.
 ****
 
 

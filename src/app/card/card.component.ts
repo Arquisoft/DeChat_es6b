@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { SolidProfile } from '../models/solid-profile.model';
 import { RdfService } from '../services/rdf.service';
 import { AuthService } from '../services/solid.auth.service';
+import { ChatComponent } from '../chat/chat.component';
 
 
 @Component({
@@ -16,11 +17,13 @@ export class CardComponent implements OnInit  {
   profile: SolidProfile;
   profileImage: string;
   loadingProfile: Boolean;
+  amigos: Array<any>;
+  chatComponent: ChatComponent;
 
   @ViewChild('f') cardForm: NgForm;
 
   constructor(private rdf: RdfService,
-    private route: ActivatedRoute, private auth: AuthService) {}
+    private route: ActivatedRoute, private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.loadingProfile = true;
@@ -49,6 +52,26 @@ export class CardComponent implements OnInit  {
 
   }
 
+  // Loads Solid chat from chat package
+  async loadChat() {
+    try {
+      this.router.navigateByUrl('/chat');
+    }
+    catch (err){
+      console.log(`Error: ${err}`);
+    }
+  }
+
+  async loadFriends() {
+    try {
+      const list_friends = await this.rdf.getFriends();
+      if(list_friends)
+        this.amigos = list_friends;
+    }catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  }
+
   // Submits the form, and saves the profile data using the auth/rdf service
   async onSubmit () {
     if (!this.cardForm.invalid) {
@@ -74,5 +97,6 @@ export class CardComponent implements OnInit  {
   // Example of logout functionality. Normally wouldn't be triggered by clicking the profile picture.
   logout() {
     this.auth.solidSignOut();
+    //deberia abrir un menu contextual con una opción de desconectar
   }
 }

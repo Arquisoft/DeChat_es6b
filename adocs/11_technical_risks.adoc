@@ -1,8 +1,8 @@
 [[section-technical-risks]]
-= Risks and Technical Debts
+== Risks and Technical Debts
 
 
-[role="arc42help"]
+
 ****
 .Contents
 In this document we will describe some of the problems and risks that may arise during the development of the project, ordered by priority.
@@ -28,4 +28,5 @@ A small list of the techical risks, with a possible solution of these risks.
 | Low level of knowledge about Solid | Inexperience with this environment | Read documentation about Solid to learn more about the environment
 | Problems creating pods with Solid to decentralize the application instead of creating a unified database | Almost all the code implemented by the memebers of the group to manage data has been done through a centralized database | Perform small tests with a Solid pod
 | Inexperience to realize a project without a recommended architecture | In great part of the projects realized by the members of the team we were indicated more or less the tools to use | To find the best tools to speed up the process of codification
+| Github| Inexperience in working on a repository with several branches| Read documentation about Github and be careful
 |===
