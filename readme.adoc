@@ -1,5 +1,7 @@
 = DECHAT_ES6B
 
+image:https://api.codacy.com/project/badge/Grade/7d93cf8880db40b083adbe9abbf57b60[link="https://app.codacy.com/app/carlosalvarezrabano/DeChat_es6b?utm_source=github.com&utm_medium=referral&utm_content=Arquisoft/DeChat_es6b&utm_campaign=Badge_Grade_Dashboard"]
+
 image:https://travis-ci.org/Arquisoft/DeChat_es6b.svg?branch=master["Build Status", link="https://travis-ci.org/Arquisoft/DeChat_es6b"]
 image:https://codecov.io/gh/Arquisoft/dechat_es6b/branch/master/graph/badge.svg["Codecov",link="https://codecov.io/gh/Arquisoft/dechat_es6b"]
 image:https://api.codacy.com/project/badge/Grade/fc7dc1da60ee4e9fb67ccff782625794["Codacy code quality", link="https://www.codacy.com/app/jelabra/dechat_es6b?utm_source=github.com&utm_medium=referral&utm_content=Arquisoft/dechat_es6b&utm_campaign=Badge_Grade"]
