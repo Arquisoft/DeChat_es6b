@@ -1,11 +1,20 @@
-language: node_js
 sudo: false
+dist: trusty
+
+language: node_js
 node_js:
-  - "10.15"
-before_script:
+  - 10
+
+addons:
+  chrome: stable
+
+install:
   - npm install -g @angular/cli
-script: 
-  - ng build --prod
-  - ng e2e
+  - npm install
+
+script:
+  - npm run e2e
+
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
