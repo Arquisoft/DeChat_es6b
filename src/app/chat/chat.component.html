@@ -74,9 +74,13 @@
           </div>
 
           <div class="type_msg">
-            <div class="input_msg_write">
-              <input type="text" class="write_msg" id ="input_text" placeholder="Type a message" #msgInput (keydown.enter)="sendMessage();emptyText();"/>
-              <button class="msg_send_btn" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+            <div class="input_msg_write row">
+              <input type="text" class="write_msg col-10" id ="input_text" placeholder="Type a message" #msgInput (keydown.enter)="sendMessage();emptyText();"/>
+              <label class="msg_send_btn col-2">
+                <input id="send_image" style="display: none;" type="file" accept="image/png, image/jpeg" (click)="sendMessage()"/>
+                <i class="fas fa-camera" aria-hidden="true"></i>
+              </label>
+              <button class="msg_send_btn col-2" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
             </div>
           </div>
         </div>

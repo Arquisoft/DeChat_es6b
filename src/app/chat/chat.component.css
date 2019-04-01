@@ -149,7 +149,7 @@ img {
   color: #4c4c4c;
   font-size: 15px;
   min-height: 48px;
-  width: 100%;
+  width: 90%;
 }
 .write_msg:focus { 
   outline:0 !important; 
@@ -168,11 +168,13 @@ img {
   cursor: pointer;
   font-size: 17px;
   height: 33px;
-  position: absolute;
-  right: 6px;
+  /*position: absolute; 
+  right: 6px;*/
   top: 11px;
   width: 33px;
+  max-width: 33px;
 }
+
 .msg_send_btn:focus { 
   outline:0 !important; 
 }
@@ -182,6 +184,7 @@ img {
 .msg_send_btn:active {
   box-shadow: 0px 1px 1px 0px black;
 }
+
 .messaging { 
   padding: 0 0 50px 0;
   height: 100%;
