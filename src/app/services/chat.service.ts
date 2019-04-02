@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
+import { ImageMessage } from '../models/imageMessage.model';
 
 import * as uuid from 'uuid';
 
@@ -149,14 +150,25 @@ export class ChatService {
    * @param chatChannel
    * @param img
    */
-  public async sendImage(chatChannel: ChatChannel, img: HTMLImageElement) {
+  public async sendImage(chatChannel: ChatChannel, msg: string, img: File) {
     try {
       // Comprobamos que el canal exista
       let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
         let tmpMakerWebId = await this.rdf.getWebId();
-        //let Imagemessage = new Message(tmpMakerWebId, msg);
+        let message = new ImageMessage(tmpMakerWebId, msg, img);
+        chatChannel.messages.push(message);
+
+        // Actualizamos canal de chat en POD propio
+        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
+
+        // Enviamos el mensaje a todos los participantes del chat
+        let newMsg = JSON.stringify(message);
+        chatChannel.participants.forEach(async participant => {  // << En este momento solo está implementado para cada persona distinta un chat distinto >>
+          let tmpParticipant = participant.webId.toString().replace(PROFILE_CARD_FOLDER, "");
+          await this.rdf.createFile(tmpParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+        });
         
       }
     } catch (error) {

@@ -77,7 +77,7 @@
             <div class="input_msg_write row">
               <input type="text" class="write_msg col-10" id ="input_text" placeholder="Type a message" #msgInput (keydown.enter)="sendMessage();emptyText();"/>
               <label class="msg_send_btn col-2">
-                <input id="send_image" style="display: none;" type="file" accept="image/png, image/jpeg" (click)="sendImage()"/>
+                <input id="send_image" style="display: none;" type="file" accept="image/png, image/jpeg" (change)="sendImage($event);"/>
                 <i class="fas fa-camera" aria-hidden="true"></i>
               </label>
               <button class="msg_send_btn col-2" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>

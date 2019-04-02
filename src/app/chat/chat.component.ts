@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef, OnChanges} from '@angular/core';
 import { ChatService } from '../services/chat.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
@@ -54,10 +54,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     inputElement.value = msg;
   }
 
-  async sendImage(){
+  async sendImage(event) {
     if (this.selectedChatChannel != null) {
-    const img: HTMLImageElement = document.getElementById('send_image') as HTMLImageElement;
-    this.chatService.sendImage(this.selectedChatChannel, img);
+      const img: File = event.target.files[0];
+      this.chatService.sendImage(this.selectedChatChannel, '', img);
     }
   }
 
