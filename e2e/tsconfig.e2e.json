@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "module": "commonjs",
-    "target": "es2018",
+    "target": "es5",
     "types": [
-      "chai",
-      "cucumber",
+      "jasmine",
+      "jasminewd2",
       "node"
     ]
   }
