@@ -185,6 +185,13 @@ img {
   box-shadow: 0px 1px 1px 0px black;
 }
 
+.icon_pos {
+  align-content: center;
+  position: absolute;
+  top: 25%;
+  left: 25%;
+}
+
 .messaging { 
   padding: 0 0 50px 0;
   height: 100%;
@@ -200,6 +207,7 @@ img {
   color: white;
   padding: 6px 12px;
   cursor: pointer;
+  border-radius: 50%;
 }
 .delete_button:focus { 
   outline:0 !important; 
