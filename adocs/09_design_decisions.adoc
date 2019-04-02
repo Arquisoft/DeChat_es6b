@@ -1,0 +1,16 @@
+[[section-design-decisions]]
+== Design Decisions
+
+
+****
+In this section we will talk about all the decisions made for the implementation of our project.
+Unlike section 4 of the documentation, here we explain possible advantages and disadvantages of these decisions on the development of our decentralized chat.
+
+  * First, we would like to point out that our practice follows the architectural pattern of the MVC (model view controller). We have made this decision because we believe it is a good enough pattern to separate the layers of business logic from the persistence layer with Solid pods, for example. Even though it is not the best architectural pattern, this decision is made because it is a pattern we all know, which counteracts the possible drawbacks with a great advantage that is the convenience and speed up the coding process.
+  
+  * Also, note that our practice is almost entirely developed in TypeScript and using a framework called Angular. This decision has been made on the basis that they can be a framework and a language that will facilitate the implementation process of our project with respect to other programming languages and / or other frameworks. Although it may have negative consequences such as, at this moment, our project is too dependent on Angular (some functionality depends a lot on the libraries provided by Angular), which would make it very difficult to migrate this project to other languages, such as Java. 
+  
+  * In order to save the data of our chat conversations, we have been recommended to use SOLID. The great advantage that it has over other databases is that it is one of the best decentralized databases, which helps us to save the data without needing a main database and that helps to improve the privacy of individual conversations between two users or in group chats between several. But it also has the disadvantage that being a very "young" software, has some difficulties of use (in terms of user interface refers) which makes rather cumbersome implementation tasks and check that the application works properly and that the POD saves the data correctly.
+  
+  * Finally, to perform the acceptance tests that check the correct functioning of the practice, we will use Cucumber. It has been decided to use it because it is one of the best programs to perform unit tests (or in this case, acceptance tests) and it will greatly facilitate the process of carrying them out. The "problem" that it has is that it can be quite difficult at first to carry out such tests, either for inexperience with the tool or for being quite tedious the implementation of tests in Cucumber on applications of Angular. 
+****

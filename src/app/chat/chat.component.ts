@@ -1,41 +1,33 @@
-import {Component, getModuleFactory, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {NgForm } from '@angular/forms';
-import {SolidProfile} from '../models/solid-profile.model';
-import { RdfService } from '../services/rdf.service';
+import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
 import { ChatService } from '../services/chat.service';
-import { AuthService } from '../services/solid.auth.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { templateJitUrl } from '@angular/compiler';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollMe') private scrollMe: ElementRef;
 
   defaultImage = "assets/images/default.jpg";
+  selectedChatChannel: ChatChannel; 
 
-  selectedChatChannel: ChatChannel;
-  imagesChannels = {};
-  imagesParticipants = {};
-  
-
-  constructor(private rdf: RdfService, private route: ActivatedRoute, 
-              private auth: AuthService, private chatService: ChatService) {
+  constructor(private chatService: ChatService) {
   }
 
   ngOnInit() {
       this.init();
   }
+
+  ngAfterViewChecked() {
+    this.moveChatScrollToBottom();
+  }
   
   async init() {
     await this.chatService.startChat();
-    await this.setupImages();
   }
 
   getChatService() {
@@ -51,15 +43,17 @@ export class ChatComponent implements OnInit {
   }
   
   async sendMessage() {
-    const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
-    const msg: string = inputElement.value;
-    this.chatService.sendMessage(this.selectedChatChannel, msg);
+    // Enviar un mensaje solo si hay un chat seleccionado, si no no hace nada
+    if (this.selectedChatChannel != null) {
+      const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+      const msg: string = inputElement.value;
+      this.chatService.sendMessage(this.selectedChatChannel, msg);
+    }
   }
 
   async emptyText() {
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
-    let msg: string = inputElement.value;
-    msg = "";
+    let msg: string = "";
     inputElement.value = msg;
   }
 
@@ -95,43 +89,54 @@ export class ChatComponent implements OnInit {
     const webid: string = inputElement.value;
     if (webid.length > 0) {
       let channel = await this.chatService.createNewChatChannel(webid);
-
-      // Cargamos la imagen del nuevo canal
-      this.addImageToImages(channel);
+      this.selectedChatChannel = channel;
     }
   }
   
+  /**
+   * Método que busca un chat según el texto introducido en el input_search en la lista de chats activos 
+   * NO es sensible a mayúsculas y minúsculas
+   */
   search() {
     const inputElement: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
     const name: string = inputElement.value;
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.participants[0].toLowerCase() === name.toLowerCase()  || channel.participants[0].includes(name) )
+      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.toString().includes(name) )
         newChatChannels.push(channel);
     }
-    this.chatService.setChatChannels(newChatChannels);
+
+    if (newChatChannels.length!=0) 
+      this.chatService.setChatChannels(newChatChannels);
+    else
+      alert("No se han encontrado coincidencias con ningún chat activo.");
   }
 
-  // Método que carga las imágenes de los canales al inicio y las guarda en un HashMap
-  async setupImages() {
-    for (const channel of this.chatService.chatChannels) {
-      this.addImageToImages(channel);
-    }
-  }
-
-  // Método auxiliar para añadir las imágenes a los HashMap "imagesChannels" e "imagesParticipants"
-  async addImageToImages(channel: ChatChannel) {
+  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
+  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  public getImagenChat(channel: ChatChannel) {
     if (channel.participants[0]) {
-      let imageChannelURL = await this.rdf.getVCardImage(channel.participants[0]);
-      this.imagesChannels[channel.id] = (imageChannelURL.length > 0) ? imageChannelURL : this.defaultImage;
-
-      // Recorremos los participantes y añadimos sus imágenes a "imagesParticipants"
-      for (const participant of channel.participants) {
-        let imageParticipantURL = await this.rdf.getVCardImage(participant);
-        this.imagesParticipants[participant] = (imageParticipantURL.length > 0) ? imageParticipantURL : this.defaultImage;
-      }
+      return (channel.participants[0].imageURL.length > 0) ? channel.participants[0].imageURL : this.defaultImage;
+    } else {
+      return this.defaultImage;
     }
+  }
+
+  // Ajusta el scroll del chat a la parte inferior de este
+  moveChatScrollToBottom() {
+    this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+  }
+
+  // Elimina un chat de la lista y del POD del usuario
+  deleteChat(channel: ChatChannel) {
+    const index = this.chatService.chatChannels.indexOf(channel);
+    this.chatService.delete(channel); //Pod
+    this.chatService.chatChannels.splice(index, 1); //Lista
+
+    // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
+    if (this.selectedChatChannel==channel)
+      this.selectedChatChannel=null;
   }
 
 }

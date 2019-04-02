@@ -9,8 +9,8 @@ import * as uuid from 'uuid';
 import * as fileClient from 'solid-file-client';
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { store } from '@angular/core/src/render3/instructions';
 import { Message } from '../models/message.model';
+import { Participant } from '../models/participant.model';
 import { ChatChannel } from '../models/chat-channel.model';
 
 
@@ -28,9 +28,10 @@ const SIOC = $rdf.Namespace('http://rdfs.org/sioc/ns#');
 const SOLIDRDF = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
 const UI = $rdf.Namespace('http://www.w3.org/ns/ui#');
 const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-var LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
+const LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
 
-const DEFAULT_CONTENT_TYPE = 'application/ld+json'
+// const JSONLD_CONTENT_TYPE = 'application/ld+json'
+const JSONLD_CONTENT_TYPE = 'http://www.w3.org/ns/iana/media-types/application/ld+json#Resource'
 const DEFAULT_ACCEPT = 'application/ld+json;q=0.9,text/turtle;q=0.8'
 const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
 
@@ -369,6 +370,10 @@ export class RdfService {
   }
 
 
+  /*********************************/
+  /* CÓDIGO NUEVO A PARTIR DE AQUÍ */
+  /*********************************/
+
   /**
    * @param folderUri Example: https://yourpod.solid.community/private/
    * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
@@ -380,7 +385,7 @@ export class RdfService {
     this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
     this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
     newChatChannel.participants.forEach(element => {
-      this.store.add(channel, FLOW("participation"), element, channel.doc());
+      this.store.add(channel, FLOW("participation"), element.webId, channel.doc());
     });
 
     this.fetcher.putBack(channel);
@@ -392,60 +397,118 @@ export class RdfService {
    */
   async saveMessage(chatUri: String, message: Message) {
     let msgUri = await this.generateUniqueUrlForResource(chatUri);
-    let msg = this.store.sym(msgUri);
+    try {
+      let msg = this.store.sym(msgUri);
 
-    this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
-    this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
-    this.store.add(msg, SIOC("content"), message.message, msg.doc());
+      this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
+      this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
+      this.store.add(msg, SIOC("content"), message.message, msg.doc());
 
-    this.fetcher.putBack(msg);
+      this.fetcher.putBack(msg);
+      console.log("Message saved! (" + msgUri + ")");
+    } catch (err) {
+      console.log("An error occurred while saving the message (" + msgUri + ")");
+    }
   }
 
   /**
+   * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,
+   * una vez obtenidos los elimina del inbox.
    * 
-   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b
+   * Devuelve un array con dichos mensajes.
+   * (Puede devolver objetos "undefined" en dicho array, intentar arreglar)
+   * 
+   * @param inboxUri 
    */
-  async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
-     const folderContent = await this.readFolder(chatChannelsFolderUri);
-     let chatChannels: ChatChannel[] = new Array();
-
-     // Recorremos los canales de chat
-    for (const file of folderContent.files) {
-      let fileUri = this.store.sym(file.url);
-      
-      // Obtenemos los datos del chat
-      await this.fetcher.load(fileUri.doc()).then(async response => {
-        let id = file.url.split('/').pop();
-        let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
-        let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
-        let participation = this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(st => { return (st.object.value) });
-        let messages: Message[] = new Array();
-
-        // Recorremos los mensajes del chat
-        let listUrisMessages = this.store.match(null, SIOC("content"), null, fileUri.doc()).map(st => { return (st.subject.value) });
-        for (const message of listUrisMessages) {
-          let messageUri = this.store.sym(message);
-
-          // Obtenemos los datos de cada mensaje del chat
-          this.fetcher.load(messageUri.doc()).then(response => {
-            let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
-            let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
-            let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
-            
-            messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
-          });
+  public getInboxMessages(inboxUri: string): any {
+    let fileUri = this.store.sym(inboxUri);
+        
+    return this.fetcher.load(fileUri.doc()).then(async response => {
+      return Promise.all(this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
+        // Verificamos que sea JSONLD
+        if (st.object.value == JSONLD_CONTENT_TYPE) {
+          let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
+          try {
+            let jsonMessage: Message = JSON.parse(jsonld);
+            // Verificamos que sea un mensaje válido
+            if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
+              this.deleteFile(st.subject.value);
+              return jsonMessage;
+            }
+          } catch (err) {
+            console.log("The message does not have the correct structure. (" + st.subject.value + ")");
+          }
         }
+      }));
+    });
+  }
 
-        // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
-        let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), participation, messages);
-        chatChannels.push(chatChannel);
-      });      
-    }
+  /**
+   * Método para recuperar los canales de chat almacenados en el POD.
+   * (El método ordenará los mensajes de cada canal de chat en función de la fecha de envío)
+   * 
+   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b/
+   */
+  public loadChatChannels(chatChannelsFolderUri: string): ChatChannel[] {
+    let chatFolder = this.store.sym(chatChannelsFolderUri);
+    let chatChannels: ChatChannel[] = new Array();
+
+    Promise.all(this.fetcher.load(chatFolder.doc()).then(response => {
+      // Obtenemos los canales de chat
+      this.store.match(chatFolder, LDP('contains'), null, chatFolder.doc()).map(async st => {
+        let fileUri = this.store.sym(st.object.value); // st.object.value -> URI del canal
+        
+        // Obtenemos los datos del canal de chat
+        this.fetcher.load(fileUri.doc()).then(async response => {
+          var d = await this.store.each(null, FLOW("participation"), null, fileUri.doc()); 
+          // Si contiene "participation" suponemos que es un canal de chat válido
+          // Comprobamos que sea un canal de chat válido
+          if (d.length != 0) {
+            let messages: Message[] = new Array();
+
+            let id = st.object.value.split('/').pop();
+            let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            
+            // Obtenemos los datos de cada participante del canal de chat
+            this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
+              let me = this.store.sym(st.object.value.toString());
+              this.fetcher.load(me.doc()).then(response => {
+                let participant: Participant = new Participant(st.object.value.toString(),"","");
+                this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
+                this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
+                chatChannel.participants.push(participant);
+              });
+            });
+
+            // Obtenemos los datos de los mensajes del chat
+            this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
+              let messageUri = this.store.sym(st.subject.value);
+              await this.fetcher.load(messageUri.doc()).then(response => {
+                let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
+                messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
+              });
+              // Ordenamos los mensajes del canal de chat (llegan desordenados)
+              messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
+            });
+
+            // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
+            let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), messages);
+            chatChannels.push(chatChannel);
+          } else {
+            console.log(st.object.value + " is not a valid chat channel");
+          }
+
+        });
+      });
+    }));
 
     return chatChannels;
   }
 
-  async getVCardName(webid: string) {
+  async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let name = "";
     
@@ -456,7 +519,7 @@ export class RdfService {
     return name;
   }
 
-  async getVCardImage(webid: string) {
+  async getVCardImage(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let image = "";
     
@@ -467,8 +530,25 @@ export class RdfService {
     return image;
   }
 
+  async loadParticipantData(webid: string): Promise<Participant> {
+    try {
+      let imageURL = await this.getVCardImage(webid);
+      let name = await this.getVCardName(webid);
+      return new Participant(webid, imageURL, name);
+    } catch (err) { console.log("An error occurred when loading the participant: " + err); }
+  }
 
-  
+  /**
+   * Example result: https://yourpod.solid.community
+   */
+  async getWebId(): Promise<string> {
+    var sess = await solid.auth.currentSession();
+    if (sess) return sess.webId;
+    else throw new Error("No current session!");
+  }
+
+
+
    /***************************************************************/
 
   /**
@@ -558,102 +638,22 @@ export class RdfService {
 
 
 
+
+
+
+
+
+
+
+
+
+
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
 
-  // Añadir
-  public newMessage() {
-    console.log("PROBANDO RDF");
-
-    var link = 'http://www.w3.org/ns/ldp#Resource; rel=“type”';
-    var filename = "chat_" + Math.round(Math.random()*60000) + ".ttl";
-    
-    //const me = this.store.sym('https://dcarballob01.solid.community/inbox/chat_' + new Date().getTime() + '.ttl');
-    const me = this.store.sym('https://dcarballob01.solid.community/private/testChat.ttl');
-    const profile = me.doc();
-
-    //let info = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#info");
-    let me1 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dkfdjs3");
-    let me2 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dasdad2");
-    let me3 = this.store.sym("https://dcarballob01.solid.community/private/testChat.ttl#dasdda4");
-
-
-    this.store.add(me, SIOC("id"), uuid.v4(), me.doc());
-    this.store.add(me, SIOC("user"), "David", me.doc());
-
-    this.store.add(me1, SIOC("msg"), "MENSAJE +¨^{", me1.doc());
-    this.store.add(me2, SIOC("msg"), "MENSAJE... 2", me2.doc());
-
-    this.store.add(me3, SIOC("msg"), "HOLA MUNDO", me3.doc());
-    this.store.add(me3, SIOC("hora"), new Date(), me3.doc());
-    
-    this.fetcher.putBack(me);
-    this.fetcher.putBack(me1);
-    this.fetcher.putBack(me2);
-    this.fetcher.putBack(me3);
-  }
-
-   
-
-  // Cargar
-  public async loadMessages() {
-
-    const me = this.store.sym('https://dcarballob01.solid.community/private/testChat.ttl');
-    const profile = me.doc();
-
-    //this.fetcher.updater.addDownstreamChangeListener(doc, refreshFunction)
-    let folder = $rdf.sym('https://dcarballob01.solid.community/private/testChat.ttl');  // NOTE: Ends in a slash
-
-    let temp = new Array();
-
-    this.fetcher.load(profile).then( async response => {
-      // var msg = this.store.any(me, SIOC("msg"));
-      //var msg = this.store.each(me,  SIOC("msg"));
-
-      // Obtener todos los elementos
-      //var msg = this.store.match(null, null, null, me.doc()).map(st => temp.push(st.object));
-
-      // Obtener URL de los elementos
-      //var msg = this.store.match(null, null, null, me.doc()).map(st => temp.push(st.subject.value));
-      var msg = this.store.match(null, SIOC("msg"), null, me.doc()).map(st => temp.push(st.subject.value));
-      console.log(temp);
-
-      var url = await this.generateUniqueUrlForResource("https://dcarballob01.solid.community/private/testChat.ttl");
-      console.log("URL UNICA: " + url);
-
-      // Solucionado: comprobando SIOC("msg") ya nos aseguramos de que sean URLs de mensajes y no se repiten tampoco
-
-      // --> Problema: Se repiten las URL al obtenerlas debido a los diferentes campos
-      // --> Solución: Comprobar que no esten ya en el array
-      // --> Además, también obtiene URLs que no contienen "#"
-
-      // for (let index = 0; index < temp.length; index++) {
-      //   let test = this.store.sym(temp[index]);
-
-      //   this.fetcher.load(test.doc()).then(response => {
-      //     console.log("MENSAJE: " + temp[index]);
-      //     this.store.match(test, SIOC("msg"), null, test.doc()).map(st => console.log("CONTENIDO: " + st.object.value));
-      //   });
-
-      // }
-      
-
-
-      //console.log("Tipo: " + (typeof msg));
-    }, err => {
-      console.log("Load failed " +  err);
-    });
-
-  }
-
-
-  // Cargar Inbox
-  public async getMessagesFromOtherPOD() {
-
-  }
-
+ 
   // Actualizar
   public async updateTest() {
 
@@ -681,81 +681,6 @@ export class RdfService {
   }
 
 
-  public async getAllInbox(inboxUrl) {
-    /* const urlMsg = "https://dcarballob01.solid.community/inbox/3eb771b0-3c84-11e9-81a7-73e11fa71822.txt";
-    const inbox = "https://dcarballob01.solid.community/inbox/";
-
-    const me = this.store.sym('https://dcarballob01.solid.community/inbox/');
-    const doc = me.doc(); */
-
-    //var temp = this.store.match(null, null, doc, null);
-    //console.log(temp);
-
-    /* solid.auth.fetch("https://dcarballob01.solid.community/inbox/",{headers: {accept: DEFAULT_ACCEPT}}).
-    then(function(response){return response.text();}).
-    then(function(data){ console.log(data);}) */
-
-    /* solid.auth.fetch(inbox).then(response => {return response.text();
-    }).then(data => {console.log(data)}); */
-
-    //const inbox = "https://dcarballob01.solid.community/inbox/";
-
-    //this.checkInbox(inbox);
-    //this.sendToUserInbox("https://carballo09.solid.community/inbox", "test");
- 
-
-    /* const userDataUrl = 'https://dcarballob01.solid.community/public/';
-    const otherUrl = "https://carballo09.solid.community/public/chat_test.ttl";
-
-    const folder = "https://dcarballob01.solid.community/public/chat"; */
-
-
-
-
-
-    /* // CARGAR CONTENIDO DE OTRO POD (PUBLIC)
-    inboxUrl = "https://carballo09.solid.community/public/chat_test.ttl";
-
-    await this.fetcher.load(inboxUrl);
-    let temp = this.store.match();
-    console.log(temp); */
-
-  }
-
-  
-
-
-
-  // ------------ FUNCIONES CASI VÁLIDAS ------------------
-
-  // Busca nuevas notificaciones de mensajes
-  async checkInbox(inboxUrl) {
-    let urls = await this.getAllUrlsResourcesInInbox(inboxUrl);
-    for (let index = 0; index < urls.length; index++) {
-      let content = await this.getContentInboxNotification(urls[index]);
-      
-      // Procesamos notificaciones de DeChat, una vez procesadas las borramos
-      if(content.includes('Prueba')) {
-        this.deleteFileForUser(urls[index]);
-        console.log(content);
-      }
-    }
-  }
-
-  // Devuelve las url de los documentos que hay en el inbox
-  async getAllUrlsResourcesInInbox(inboxUrl): Promise<any[]> {
-    await this.fetcher.load(inboxUrl);
-    return this.store.match(null, LDP('contains')).map(st => { return st.object.value });
-  }
-
-  // Devuelve el contenido de una notificación
-  // Devuelve Promise, por tanto ".then(data=>{console.log(data)});"
-  async getContentInboxNotification(urlNotificationInbox): Promise<any> {
-    return solid.auth.fetch(urlNotificationInbox).then(response => {return response.text();});
-  }
-
-
-  
 
   // ------------ FUNCIONES VÁLIDAS ------------------
 
@@ -858,22 +783,5 @@ export class RdfService {
       return url;
     }
   }
-
-  /* async generateInvitation(baseUrl, chatUrl, userWebId, opponentWebId) {
-    const invitationUrl = await this.generateUniqueUrlForResource(baseUrl);
-    const notification = `<${invitationUrl}> a ` + SCHEMA('InviteAction');
-    console.log(notification);
-    const sparqlUpdate = `
-    <${invitationUrl}> a <`+SCHEMA("InviteAction")+`>;
-      <`+SCHEMA("event")+`> <${chatUrl}>;
-      <`+SCHEMA("agent")+`> <${userWebId}>;
-      <`+SCHEMA("recipient")+`> <${opponentWebId}>.
-  `;
-
-    return {
-      notification,
-      sparqlUpdate
-    };
-  } */
 
 }

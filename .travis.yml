@@ -10,11 +10,9 @@ addons:
 
 install:
   - npm install -g @angular/cli
-  - npm install
 
 script:
-  - npm run e2e
-
+  - ng build --prod
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

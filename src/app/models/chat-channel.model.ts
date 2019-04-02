@@ -1,20 +1,21 @@
 import { Message } from './message.model';
+import { Participant } from './participant.model';
 
 export class ChatChannel {
 
     id: string;
     title: string;
     created: Date;
-    participants: string[]; // Array de WebIds
+    participants: Participant[];
     messages: Message[];
 
     constructor(id: string, title: string, created: Date = new Date(),
-            participants: string[] = new Array(), messages: Message[] = new Array()) {
+            messages: Message[] = new Array(), participants: Participant[] = new Array()) {
 
         this.id = id;
         this.title = title;
-        this.created = created
-        this.participants = participants;
+        this.created = created;
         this.messages = messages;
+        this.participants = participants;
     }
 }
