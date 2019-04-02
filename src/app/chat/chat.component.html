@@ -59,6 +59,9 @@
                   <img [src]="getImagenChat(selectedChatChannel)" alt="sunil"> </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
+                    <div *ngIf="isMessageImage(msg)">
+                        <img [src]="getImageFile(msg)" alt="image" />
+                    </div>
                     <p>{{ msg.message }}</p>
                     <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span></div>
                 </div>

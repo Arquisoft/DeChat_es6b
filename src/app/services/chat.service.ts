@@ -161,7 +161,7 @@ export class ChatService {
         chatChannel.messages.push(message);
 
         // Actualizamos canal de chat en POD propio
-        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
+        await this.rdf.saveImageMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
@@ -202,16 +202,28 @@ export class ChatService {
       channel.messages.push(newMessage);
       channel.messages.sort(function (a, b) { return +new Date(a.sendTime) - +new Date(b.sendTime) });
 
-      // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
+      if (newMessage instanceof ImageMessage) {
+        // Guardamos la imagen en el chat en el POD propio
+        await this.rdf.saveImageMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
+      }
+      else {
+        // Guardamos el mensaje en el chat en el POD propio
+        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage as ImageMessage);
+      }
 
     } else {
       // Si no hay canal asociado creamos uno
       let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
       newChannel.messages.push(newMessage);
 
-      // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChannel.id, newMessage);
+      if (newMessage instanceof ImageMessage) {
+        // Guardamos la imagen en el chat en el POD propio
+        await this.rdf.saveImageMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
+      }
+      else {
+        // Guardamos el mensaje en el chat en el POD propio
+        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage as ImageMessage);
+      }
     }
   }
 

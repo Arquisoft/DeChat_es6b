@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Message } from '../models/message.model';
 import { Participant } from '../models/participant.model';
 import { ChatChannel } from '../models/chat-channel.model';
+import { ImageMessage } from '../models/imageMessage.model';
 
 
 const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
@@ -396,13 +397,26 @@ export class RdfService {
    * @param msg Mensaje a guardar en el POD
    */
   async saveMessage(chatUri: String, message: Message) {
+    this.saveIt(chatUri, message, message.message);
+  }
+
+    /**
+   * @param chatUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
+   * @param msg Mensaje de imagen a guardar en el POD
+   */
+  async saveImageMessage(chatUri: String, message: ImageMessage) {
+    this.saveIt(chatUri, message, message.content);
+  }
+
+    
+  private async saveIt(chatUri: String, message: Message, content: Object) {
     let msgUri = await this.generateUniqueUrlForResource(chatUri);
     try {
       let msg = this.store.sym(msgUri);
 
       this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
       this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
-      this.store.add(msg, SIOC("content"), message.message, msg.doc());
+      this.store.add(msg, SIOC("content"), content, msg.doc());
 
       this.fetcher.putBack(msg);
       console.log("Message saved! (" + msgUri + ")");
@@ -410,6 +424,7 @@ export class RdfService {
       console.log("An error occurred while saving the message (" + msgUri + ")");
     }
   }
+
 
   /**
    * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,

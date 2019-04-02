@@ -3,6 +3,7 @@ import { ChatService } from '../services/chat.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
+import { ImageMessage } from '../models/imageMessage.model';
 
 @Component({
   selector: 'app-chat',
@@ -60,6 +61,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.chatService.sendImage(this.selectedChatChannel, '', img);
     }
   }
+
+  isMessageImage(msg) {
+    return msg instanceof ImageMessage;
+}
+
+async getImageFile(msg){
+  let imageMsg: ImageMessage = msg as ImageMessage;
+  return imageMsg.content;
+}
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
