@@ -475,7 +475,7 @@ export class RdfService {
               let me = this.store.sym(st.object.value.toString());
               this.fetcher.load(me.doc()).then(response => {
                 let participant: Participant = new Participant(st.object.value.toString(),"","");
-                this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
+                this.store.match(me, VCARD("name"), null, me.doc()).map(st => { participant.name = st.object.value });
                 this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
                 chatChannel.participants.push(participant);
               });
@@ -513,7 +513,7 @@ export class RdfService {
     let name = "";
     
     await this.fetcher.load(me.doc()).then(response => {
-      this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { name = st.object.value });
+      this.store.match(me, VCARD("name"), null, me.doc()).map(st => { name = st.object.value });
     });
 
     return name;
