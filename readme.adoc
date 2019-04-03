@@ -8,11 +8,6 @@ image:https://api.codacy.com/project/badge/Grade/fc7dc1da60ee4e9fb67ccff78262579
 
 DeDhat is a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. Read the documentation for more accurate information about the project.
 
-== Try solid-chat online
-
-You can try solid-chat in gh-pages from the following url:
-https://arquisoft.github.io/DeChat_es6b/
-
 == Development Team
 
 This project is done by a team of 5 members:
