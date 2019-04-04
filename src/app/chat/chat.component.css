@@ -56,8 +56,7 @@ input[type="checkbox"] {
 .moreMenu {
   position: absolute;
   top: 70px;
-  /*right: 0px;*/
-  right: calc(50%);
+  right: calc(50% - 700px);
   z-index: 10;
   padding: 10px;
   color: #666;
@@ -907,11 +906,21 @@ div[class~="onTop"] > .count {
 
 /* SOLVING RESPONSIVE DESIGN ISSUES */
 
-@media only screen and (max-width: 1300px) {
+@media screen and (max-width: 1540px) {
+  .moreMenu {
+    right: 5%;
+  }
+}
+
+@media screen and (max-width: 1300px) {
   .container {
     margin: 0;
     width: 100%;
     max-width: 100%;
+  }
+
+  .moreMenu {
+    right: 0;
   }
 }
 
