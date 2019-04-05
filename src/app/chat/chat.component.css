@@ -52,6 +52,49 @@ input[type="checkbox"] {
   display: none;
 }
 
+.newChannel {
+  position: absolute;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  min-width: 400px;
+  max-width: 600px;
+  height: 200px;
+  z-index: 12;
+  display: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.newChannel p {
+  font-size: 20px;
+  font-weight: 600;
+  color: #444;
+  margin: 10px 0px 15px 0px;
+}
+
+.newChannel input {
+  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+  margin: 10px 0px 15px 0px;
+  padding: 2px 0 4px 6px;
+  border-bottom: 1px solid gray;
+  color: #4c4c4c;
+  font-size: 15px;
+  min-height: 48px;
+  width: 98%;
+}
+
+.newChannel button {
+  display: block;
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
 /* small conversation menu */
 .moreMenu {
   position: absolute;
@@ -155,12 +198,10 @@ input[type="checkbox"] {
   margin-bottom: 15px;
 }
 
-.me .image {
+.me .image > img {
   width: 70px;
   height: 70px;
-  background: #fff
-    url(http://4bp.blogspot.com/-BHhUazKytmw/VbCfWPqrOJI/AAAAAAAAB7c/qj6WVX3du-s/s1600/51b91bba5a3fd9b6c8b9c53bc0ab6c65.jpg)
-    no-repeat center;
+  background: #fff no-repeat center;
   background-size: cover;
   border-radius: 100%;
   cursor: pointer;
@@ -288,12 +329,10 @@ nav button > span {
   background: #fff;
 }
 
-.profile .image {
+.profile .image > img {
   width: 140px;
   height: 140px;
-  background: #fff
-    url(http://4bp.blogspot.com/-BHhUazKytmw/VbCfWPqrOJI/AAAAAAAAB7c/qj6WVX3du-s/s1600/51b91bba5a3fd9b6c8b9c53bc0ab6c65.jpg)
-    no-repeat center;
+  background: #fff no-repeat center;
   background-size: cover;
   border-radius: 100%;
   float: left;
@@ -312,7 +351,7 @@ nav button > span {
   font-weight: 600;
 }
 
-.side .pStatus {
+.side .pWebId {
   margin-top: 5px;
   font-size: 14px;
   font-weight: 300;
@@ -530,7 +569,7 @@ header {
   width: 55px;
   height: 55px;
   background: #ddd
-    url(https://pbs.twimg.com/profile_images/378800000822867536/3f5a00acf72df93528b6bb7cd0a4fd0c.jpeg)
+    url(/src/assets/images/default.jpg)
     no-repeat center;
   background-size: cover;
   border-radius: 100%;
@@ -806,7 +845,8 @@ div[class~="onTop"] > .count {
   width: 325px;
   height: 200px;
   padding: 10px;
-  right: 30px;
+  /*right: 30px;*/
+  right: calc(50% - 690px);
   bottom: 80px;
   border: 2px solid #ddd;
   border-radius: 3px;
@@ -906,12 +946,18 @@ div[class~="onTop"] > .count {
 
 /* SOLVING RESPONSIVE DESIGN ISSUES */
 
+/* Caso: Cuando el contenedor aún no ha alcanzado el ancho máximo */
 @media screen and (max-width: 1540px) {
   .moreMenu {
     right: 5%;
   }
+
+  .emojiBar {
+    right: calc(5% + 10px);
+  }
 }
 
+/* Caso: Cuando el contenedor ha alcanzado el ancho mínimo */
 @media screen and (max-width: 1300px) {
   .container {
     margin: 0;
@@ -921,6 +967,10 @@ div[class~="onTop"] > .count {
 
   .moreMenu {
     right: 0;
+  }
+
+  .emojiBar {
+    right: 10px;
   }
 }
 

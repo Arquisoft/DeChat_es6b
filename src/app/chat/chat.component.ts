@@ -2,8 +2,12 @@ import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angul
 import * as $ from 'jquery';
 
 import { ChatService } from '../services/chat.service';
+import { RdfService } from '../services/rdf.service';
+import { AuthService } from '../services/solid.auth.service';
+
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
+import { Participant } from '../models/participant.model';
 
 @Component({
   selector: 'app-chat',
@@ -15,8 +19,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   defaultImage = "assets/images/default.jpg";
   selectedChatChannel: ChatChannel; 
+  myProfile: Participant;
 
-  constructor(private chatService: ChatService) {
+  constructor(private chatService: ChatService, private rdf: RdfService,
+                private auth: AuthService) {
+
   }
 
   ngOnInit() {
@@ -29,11 +36,23 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
 
     /* make config menu show up */
-    $(".settings").click(function() {
+    $(".cloud").click(function() {
       $(".config").animate({opacity: '1', right: '0px'}, 180);
       /* hide others */
       $(".menuWrap").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
+    });
+
+    /* make newChannel option show up */
+    $(".nc").click(function() {
+      $(".newChannel").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+    /* close newChannel option when adding */
+    $("#button_add_channel").click(function () {
+      $(".overlay, .newChannel").fadeOut(180);
     });
 
     // Show/Hide the other notification options
@@ -43,7 +62,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* close all overlay elements */
     $(".overlay").click(function () {
-      $(".overlay, .menuWrap").fadeOut(180);
+      $(".overlay, .menuWrap, .newChannel").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
       $(".config").animate({opacity: '0', right: '-200vw'}, 180);
     });
@@ -84,6 +103,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   
   async init() {
     await this.chatService.startChat();
+    this.myProfile = await this.rdf.loadParticipantData(this.chatService.webid);
   }
 
   getChatService() {
@@ -193,6 +213,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
     if (this.selectedChatChannel==channel)
       this.selectedChatChannel=null;
+  }
+
+  logout() {
+    this.auth.solidSignOut();
   }
 
 }

@@ -45,13 +45,6 @@ export class ChatService {
 
     // Abrimos WebSocket, cualquier modificación en nuestro POD provocará la ejecución de "checkInbox()"
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
-    // await this.rdf.fetcher.load(updateUri.doc()).then(async response => {
-    //   this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
-    //     await this.checkInbox();
-    //   });
-    // });
-
-
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
       // Esperar si ya hay otra comprobación en funcionamiento
@@ -59,6 +52,7 @@ export class ChatService {
         await this.delay(Math.random() * (400 - 250) + 250); 
       }
 
+      // Comprobar que no se esté ejecutando ya otra comprobación
       if (!this.waitForCheckInbox) {
           this.waitForCheckInbox = true;
           await this.checkInbox();

@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chat</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -155,18 +154,24 @@
 <section class="menuWrap">
 	<div class="menu">
 		<div class="me userBg">
-			<div class="image"></div>
+			<div class="image" *ngIf="myProfile"><img [src]="myProfile.imageURL" /></div>
 			
 			<div class="myinfo">
-			<p class="name">Random Name</p>
-			<p class="phone">+1 12 1234 5678</p>
+			<p class="name" *ngIf="myProfile">{{ myProfile.name }}</p>
+			<p class="phone"></p>
 			</div>
 			
+			<!--
 			<button class="cloud">
 				<i class="material-icons">bookmark</i>
 			</button>
-			
+			-->
+			<!--
 			<button class="settings">
+				<i class="material-icons">settings</i>
+			</button>
+			-->
+			<button class="cloud">
 				<i class="material-icons">settings</i>
 			</button>
 		</div>
@@ -189,6 +194,7 @@
 				<span>Contacts</span>
 			</button>
 			
+			<!--
 			<button class="cl">
 				<i class="material-icons">&#xE0B0;</i>
 				
@@ -202,21 +208,23 @@
 				<span>FAQ and Support</span>
 			</button>
 			</a>
+			-->
 			
-			<button class="lo">
+			<button class="lo" (click)="logout()">
 				<i class="material-icons">&#xE879;</i>
-				
 				<span>Logout</span>
 			</button>
 		</nav>
 		
-		<div class="info">
-		<p>Telegram Web</p>
-		<p>Ver 0.0.2 - <a href="https://en.wikipedia.org/wiki/Telegram_(messaging_service)">About</a></p>
-		<p>Layout coded by: <a href="https://www.github.com/mayrinck">Mayrinck</a></p>
-		</div>
 	</div>
 </section>
+
+<!-- NEW CHANNEL OPTION -->
+<div class="newChannel">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_add_webid" placeholder="Type a friend's webid"/>
+	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
+</div>
 
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
@@ -226,6 +234,7 @@
 </div>
 
 <!-- MOBILE OVERLAY -->
+<!--
 <section class="switchMobile">
 	<p class="title">Mobile Device Detected</p>
 	
@@ -233,18 +242,19 @@
 	
 	<a href="https://web.telegram.org/#/login"><button class="okay">OK</button></a>
 </section>
+-->
 
 <!-- PROFILE OPTIONS OVERLAY -->
 <section class="config">
 	<section class="configSect">
 		<div class="profile">
-		<p class="confTitle">Settings</p>
+		<p class="confTitle">Profile</p>
 		
-		<div class="image"></div>
+		<div class="image" *ngIf="myProfile"><img [src]="myProfile.imageURL" /></div>
 		
 		<div class="side">
-		<p class="name">Random Name</p>
-		<p class="pStatus">Online</p>
+		<p class="name" *ngIf="myProfile">{{ myProfile.name }}</p>
+		<p class="pWebId" *ngIf="myProfile">{{ myProfile.webId }}</p>
 		</div>
 			
 		<button class="changePic">Change Profile Picture</button>
