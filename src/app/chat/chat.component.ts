@@ -21,9 +21,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
 
-  constructor(private chatService: ChatService, private rdf: RdfService,
-                private auth: AuthService) {
-
+  constructor(private chatService: ChatService, private rdf: RdfService, private auth: AuthService) {
   }
 
   ngOnInit() {
@@ -78,6 +76,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* small conversation menu */
     $(".otherOptions").click(function(){
+      $(".moreMenu").slideToggle("fast");
+    });
+
+    /* moreMenu */
+    $(".moreMenu button").click(function(){
       $(".moreMenu").slideToggle("fast");
     });
 
@@ -205,14 +208,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   // Elimina un chat de la lista y del POD del usuario
-  deleteChat(channel: ChatChannel) {
-    const index = this.chatService.chatChannels.indexOf(channel);
-    this.chatService.delete(channel); //Pod
-    this.chatService.chatChannels.splice(index, 1); //Lista
+  deleteChat() {
+    if (this.selectedChatChannel) {
+      let channel = this.selectedChatChannel;
+      
+      const index = this.chatService.chatChannels.indexOf(channel);
+      this.chatService.delete(channel); //Pod
+      this.chatService.chatChannels.splice(index, 1); //Lista
 
-    // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
-    if (this.selectedChatChannel==channel)
-      this.selectedChatChannel=null;
+      // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
+      if (this.selectedChatChannel==channel)
+        this.selectedChatChannel=null;
+    }
   }
 
   logout() {

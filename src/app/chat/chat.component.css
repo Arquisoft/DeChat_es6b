@@ -569,7 +569,7 @@ header {
   width: 55px;
   height: 55px;
   background: #ddd
-    url(/src/assets/images/default.jpg)
+    url(/assets/images/default.jpg)
     no-repeat center;
   background-size: cover;
   border-radius: 100%;
