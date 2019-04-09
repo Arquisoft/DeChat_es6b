@@ -182,7 +182,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.chatChannels) {
-      if ( channel.title.toString().toLowerCase() === name.toString().toLowerCase()  || channel.title.toString().includes(name) )
+      if ( channel.title.toString().toLowerCase() === name.toLowerCase()  || channel.title.toString().toLowerCase().includes(name.toLowerCase()) )
         newChatChannels.push(channel);
     }
 

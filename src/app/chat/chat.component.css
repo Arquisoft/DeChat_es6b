@@ -95,11 +95,6 @@ input[type="checkbox"] {
 	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	box-shadow:inset 0px 1px 0px 0px #ffffff;
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
-	background:-moz-linear-gradient(top, #ededed 5%, #dfdfdf 100%);
-	background:-webkit-linear-gradient(top, #ededed 5%, #dfdfdf 100%);
-	background:-o-linear-gradient(top, #ededed 5%, #dfdfdf 100%);
-	background:-ms-linear-gradient(top, #ededed 5%, #dfdfdf 100%);
 	background:linear-gradient(to bottom, #ededed 5%, #dfdfdf 100%);
 	background-color:#ededed;
 	-moz-border-radius:6px;
@@ -550,6 +545,7 @@ header {
   width: calc(100% - 85px);
   height: 40px;
   background: #eee;
+  color: #555;
   float: left;
   padding: 8px;
   margin-top: 14px;

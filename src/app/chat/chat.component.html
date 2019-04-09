@@ -20,7 +20,7 @@
           <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
         </svg>
 			</button>
-			<input class="searchChats" id="input_search" type="search" (keydown.enter)="search()" placeholder="Search..."/>
+			<input class="searchChats" id="input_search" type="search" (keydown.enter)="search()" placeholder="Search a chat..."/>
 		</header>
 		<div class="chats">
       <ul *ngFor="let channel of getChatChannels()">
@@ -64,9 +64,6 @@
 	<div class="rightPanel">
 		<div class="topBar">
 			<div class="rightSide">
-				<button class="tbButton search">
-					<i class="material-icons">&#xE8B6;</i>
-				</button>
 				<button class="tbButton otherOptions">
 					<i class="material-icons">more_vert</i>
 				</button>
