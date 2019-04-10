@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef, OnChanges} from '@angular/core';
 import { ChatService } from '../services/chat.service';
+import { FileService } from '../services/file.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { ImageMessage } from '../models/imageMessage.model';
+import { FileMessage } from '../models/file-message.model';
 
 @Component({
   selector: 'app-chat',
@@ -16,7 +17,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   defaultImage = "assets/images/default.jpg";
   selectedChatChannel: ChatChannel; 
 
-  constructor(private chatService: ChatService) {
+  constructor(private chatService: ChatService, private file: FileService) {
   }
 
   ngOnInit() {
@@ -34,14 +35,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   getChatService() {
     return this.chatService;
   }
-
-  messageTime(msg: Message): string {
-    let messageTime = msg.sendTime;
-    let h = messageTime.getHours();
-    let m = messageTime.getMinutes();
-    let s = messageTime.getSeconds();
-    return h + ":" + m + ":" + s;
-  }
   
   async sendMessage() {
     const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
@@ -55,21 +48,21 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     inputElement.value = msg;
   }
 
-  async sendImage(event) {
+  async sendFile(event) {
     if (this.selectedChatChannel != null) {
       const img: File = event.target.files[0];
-      this.chatService.sendImage(this.selectedChatChannel, '', img);
+      this.chatService.sendFile(this.selectedChatChannel, '', img);
     }
   }
 
-  isMessageImage(msg) {
-    return msg instanceof ImageMessage;
-}
+  isMessageFile(msg) {
+    return msg instanceof FileMessage;
+  }
 
-async getImageFile(msg){
-  let imageMsg: ImageMessage = msg as ImageMessage;
-  return imageMsg.content;
-}
+  async getFile(msg){
+    let fileMsg: FileMessage = msg as FileMessage;
+    return fileMsg.content;
+  }
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
@@ -88,16 +81,13 @@ async getImageFile(msg){
     return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
   }
 
-  /* getDayAndMonthLastMessage(channel: ChatChannel) {
-    let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
-    return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
-      + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
-  } */
-
   getChatChannels(): ChatChannel[] {
     return this.chatService.chatChannels;
   }
 
+  /**
+   * 
+   */
   async addNewChatChannel() {
     const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
     const webid: string = inputElement.value;
@@ -122,8 +112,7 @@ async getImageFile(msg){
     this.chatService.setChatChannels(newChatChannels);
   }
 
-  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
-  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  // Método para cargar las imágenes
   public getImagenChat(channel: ChatChannel) {
     if (channel.participants[0]) {
       return (channel.participants[0].imageURL.length > 0) ? channel.participants[0].imageURL : this.defaultImage;

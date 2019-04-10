@@ -59,8 +59,8 @@
                   <img [src]="getImagenChat(selectedChatChannel)" alt="sunil"> </div>
                 <div class="received_msg">
                   <div class="received_withd_msg">
-                    <div *ngIf="isMessageImage(msg)">
-                        <img [src]="getImageFile(msg)" alt="image" />
+                    <div *ngIf="isMessageFile(msg)">
+                        <img [src]="getFile(msg)" alt="image" />
                     </div>
                     <p>{{ msg.message }}</p>
                     <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span></div>
@@ -80,7 +80,7 @@
             <div class="input_msg_write row">
               <input type="text" class="write_msg col-10" id ="input_text" placeholder="Type a message" #msgInput (keydown.enter)="sendMessage();emptyText();"/>
               <label class="msg_send_btn col-2 ml-4">
-                <input id="send_image" style="display: none;" type="file" accept="image/png, image/jpeg" (change)="sendImage($event);"/>
+                <input id="send_image" style="display: none;" type="file" accept="image/png, image/jpeg" (change)="sendFile($event);"/>
                 <i class="fas fa-camera icon_pos" aria-hidden="true"></i>
               </label>
               <button class="msg_send_btn col-2 ml-2" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o icon_pos" aria-hidden="true"></i></button>

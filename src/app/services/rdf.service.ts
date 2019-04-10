@@ -12,7 +12,6 @@ import { ToastrService } from 'ngx-toastr';
 import { Message } from '../models/message.model';
 import { Participant } from '../models/participant.model';
 import { ChatChannel } from '../models/chat-channel.model';
-import { ImageMessage } from '../models/imageMessage.model';
 
 
 const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
@@ -30,6 +29,8 @@ const SOLIDRDF = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
 const UI = $rdf.Namespace('http://www.w3.org/ns/ui#');
 const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
+const ACL = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
+const TYPE = $rdf.Namespace("https://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
 // const JSONLD_CONTENT_TYPE = 'application/ld+json'
 const JSONLD_CONTENT_TYPE = 'http://www.w3.org/ns/iana/media-types/application/ld+json#Resource'
@@ -397,26 +398,13 @@ export class RdfService {
    * @param msg Mensaje a guardar en el POD
    */
   async saveMessage(chatUri: String, message: Message) {
-    this.saveIt(chatUri, message, message.message);
-  }
-
-    /**
-   * @param chatUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
-   * @param msg Mensaje de imagen a guardar en el POD
-   */
-  async saveImageMessage(chatUri: String, message: ImageMessage) {
-    this.saveIt(chatUri, message, message.content);
-  }
-
-    
-  private async saveIt(chatUri: String, message: Message, content: Object) {
-    let msgUri = await this.generateUniqueUrlForResource(chatUri);
+    let msgUri = await this.generateUniqueUrlForResource(chatUri + "#");
     try {
       let msg = this.store.sym(msgUri);
 
       this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
       this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
-      this.store.add(msg, SIOC("content"), content, msg.doc());
+      this.store.add(msg, SIOC("content"), message.message, msg.doc());
 
       this.fetcher.putBack(msg);
       console.log("Message saved! (" + msgUri + ")");
@@ -424,7 +412,6 @@ export class RdfService {
       console.log("An error occurred while saving the message (" + msgUri + ")");
     }
   }
-
 
   /**
    * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,
@@ -523,6 +510,73 @@ export class RdfService {
     return chatChannels;
   }
 
+  /**
+   * Métodos para asignar un propietario a un fichero
+   * 
+   * '@prefix  acl:     <http://www.w3.org/ns/auth/acl#>.\n'+
+   *     
+   *     '<#owner>\n'+
+   *     'a                  acl:Authorization;\n'+
+   *     'acl:agent          <'+ownerWebId+'>;\n'+
+   *     'acl:accessTo       <'+fileURI+'>;\n'+
+   *     'acl:defaultForNew  <'+fileURI+'>;\n'+
+   *     'acl:mode           acl:Read, acl:Write, acl:Control.\n'+
+   * 
+   * @param fileURI 
+   * @param ownerWebId 
+   * @param otherWebId 
+   */
+  public addOwnerToACL(fileURI: string, ownerWebId: string) {
+    let file = this.store.sym(fileURI);
+    let owner = this.store.sym(ownerWebId);
+
+    let aclFile = this.store.sym(fileURI + ".acl#owner");
+
+    this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
+    this.store.add(aclFile, ACL("agent"), owner, aclFile.doc());
+    this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
+    this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Write"), aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Control"), aclFile.doc());
+
+    this.fetcher.putBack(aclFile);
+  }
+
+  /**
+   * Métodos para añadir un lector a un fichero.
+   * (permisos de lectura)
+   * 
+   * '<#reader>\n'+
+   *     'a                  acl:Authorization;\n'+
+   *     'acl:agent          <'+otherWebId+'>;\n'+
+   *     'acl:accessTo       <'+fileURI+'>;\n'+
+   *     'acl:defaultForNew  <'+fileURI+'>;\n'+
+   *     'acl:mode           acl:Read.'
+   * 
+   * @param fileURI 
+   * @param string 
+   * @param otherWebId 
+   */
+  public async addReaderToACL(fileURI: string, otherWebId: string) {
+    let file = this.store.sym(fileURI);
+    let other = this.store.sym(otherWebId);
+
+    let uniqueUri = await this.generateUniqueUrlForResource(fileURI + ".acl#reader");
+    let aclFile = this.store.sym(uniqueUri);
+
+    this.fetcher.load(aclFile.doc()).then(response => {
+
+      this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
+      this.store.add(aclFile, ACL("agent"), other, aclFile.doc());
+      this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
+
+      this.fetcher.putBack(aclFile);
+    });
+  }
+
   async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let name = "";
@@ -571,9 +625,9 @@ export class RdfService {
    *
    * @param newFile
    */
-  async createFile(newFile, content?, contentType?) {
-    fileClient.createFile(newFile, content, contentType)
-        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
+  async createFile(newFile, content?, contentType?): Promise<string> {
+    return fileClient.createFile(newFile, content, contentType)
+        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); return(fileCreated) }, err => console.log(err) );
   }
 
   /**
@@ -771,9 +825,14 @@ export class RdfService {
     return response.status === 200;
   }
 
-  // Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+  /**
+   * Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+   * Concatena a la URL pasada por parámetro un código aleatorio, formando una URL única.
+   * 
+   * @param baseurl 
+   */
   async generateUniqueUrlForResource(baseurl) {
-    let url = this.store.sym(baseurl + '#' + uuid.v4());
+    let url = this.store.sym(baseurl + uuid.v4());
 
     try {
       await this.fetcher.load(url.doc()).then(async response => {

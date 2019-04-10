@@ -1,6 +1,6 @@
 import { Message } from "./message.model";
 
-export class ImageMessage extends Message{
+export class FileMessage extends Message{
 
     content: File;
     
@@ -10,9 +10,5 @@ export class ImageMessage extends Message{
         // this.id = id;
         this.content = content;
     }
-
-    public toString(): String {
-        return this.message;
-        // return this.makerWebId + ": " + this.message + ". Enviado: " + this.sendTime.toDateString;
-     }
+    
 }

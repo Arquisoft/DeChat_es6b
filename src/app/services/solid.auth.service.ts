@@ -44,12 +44,12 @@ export class AuthService {
    */
   solidLoginPopup = async () => {
     try {
-      await solid.auth.popupLogin({ popupUri: './login-popup'});
+      await solid.auth.popupLogin({ popupUri: 'https://solid.github.io/solid-auth-client/dist/popup.html'});
       // Check if session is valid to avoid redirect issues
       await this.isSessionActive();
 
       // popupLogin success redirect to profile
-      this.router.navigate(['/card']);
+      this.router.navigate(['/chat']);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
@@ -87,7 +87,7 @@ export class AuthService {
   */
   solidLogin = async (idp: string) => {
     await solid.auth.login(idp, {
-      callbackUri: `${window.location.href}card`,
+      callbackUri: `${window.location.href}chat`,
       storage: localStorage,
     });
   }
