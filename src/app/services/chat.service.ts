@@ -22,6 +22,7 @@ const MESSAGE_FILE_FORMAT = 'jsonld';
 export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
+  allActiveChats: ChatChannel[] = new Array(); // todos los chats activos del usuario
   uri: string;
   webid: string
 
@@ -91,6 +92,7 @@ export class ChatService {
   private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
+    this.allActiveChats = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
   }
 
   /**

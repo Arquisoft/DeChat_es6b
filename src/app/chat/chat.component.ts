@@ -20,7 +20,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   defaultImage = "assets/images/default.jpg";
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
-  allActiveChats: ChatChannel[]; /* for recovering from search */ 
 
   constructor(private chatService: ChatService, private rdf: RdfService, private auth: AuthService) {
   }
@@ -164,10 +163,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     return this.chatService.chatChannels;
   }
 
-  getAllActiveChats(): ChatChannel[] {
-    return this.allActiveChats;
-  }
-
   async addNewChatChannel() {
     const inputElement: HTMLInputElement = document.getElementById('input_add_webid') as HTMLInputElement;
     const webid: string = inputElement.value;
@@ -180,37 +175,45 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   search() {
     const inputSearch: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
     const name: string = inputSearch.value;
-
     this.searchChat(name);
-  }
-
-  /**
-   * Muestra el botón go_back y oculta el trigger cuando gana el foco input_search
-   */
-  hideTriggerShowGoBack(){
-    const trigger: HTMLInputElement = document.getElementsByClassName('trigger').item(0) as HTMLInputElement;
-    trigger.hidden=true;
-    const go_back: HTMLInputElement = document.getElementsByClassName('go_back').item(0) as HTMLInputElement;
-    go_back.hidden=false;
   }
 
   /**
    * Método que busca un chat según el texto introducido en el input_search en la lista de chats activos 
    * NO es sensible a mayúsculas y minúsculas
+   * La busqueda se ha de realizar siempre sobre TODOS los chats activos
    */
   private searchChat(name: string) {
     var newChatChannels: ChatChannel[] = new Array();
-    for (let channel of this.chatService.chatChannels) {
+    for (let channel of this.chatService.allActiveChats) {
       if ( channel.title.toString().toLowerCase() === name.toLowerCase()  || channel.title.toString().toLowerCase().includes(name.toLowerCase()) )
         newChatChannels.push(channel);
     }
 
-    if (newChatChannels.length!=0) {
-      this.allActiveChats = this.chatService.chatChannels; // guardamos todos los canales activos para una posible recuperación
+    if (newChatChannels.length > 0)
       this.chatService.setChatChannels(newChatChannels);
-    }
     else
       alert("No se han encontrado coincidencias con ningún chat activo.");
+  }
+
+  /**
+   * Muestra el botón go_back y oculta el trigger cuando gana el foco input_search
+   */
+  triggerGoBackHidden(triggerValue:boolean, go_backValue: boolean){
+    const triggerHtml: HTMLInputElement = document.getElementsByClassName('trigger').item(0) as HTMLInputElement;
+    triggerHtml.hidden=triggerValue;
+    const go_backHtml: HTMLInputElement = document.getElementsByClassName('go_back').item(0) as HTMLInputElement;
+    go_backHtml.hidden=go_backValue;
+  }
+
+  /**
+   * Recupera todos los chats del usuario activo
+   */
+  restoreAllActiveChats() {
+    this.triggerGoBackHidden(false, true);
+    const inputSearch: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
+    inputSearch.value = "";
+    this.chatService.setChatChannels(this.chatService.allActiveChats);
   }
 
   // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
