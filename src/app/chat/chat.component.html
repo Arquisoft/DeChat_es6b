@@ -22,7 +22,7 @@
         </svg>
 			</button>
 			<input class="searchChats" id="input_search" type="search" (keydown.enter)="search()" 
-				(click)="triggerGoBackHidden(true, false)" placeholder="Search a chat..."/>
+				(click)="triggerGoBackHidden(true, false)" (blur)="inputLostFocus()" placeholder="Search a chat..." />
 		</header>
 		<div class="chats">
       <ul *ngFor="let channel of getChatChannels()">

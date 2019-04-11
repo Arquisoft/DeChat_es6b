@@ -200,10 +200,25 @@ export class ChatComponent implements OnInit, AfterViewChecked {
    * Muestra el botón go_back y oculta el trigger cuando gana el foco input_search
    */
   triggerGoBackHidden(triggerValue:boolean, go_backValue: boolean){
-    const triggerHtml: HTMLInputElement = document.getElementsByClassName('trigger').item(0) as HTMLInputElement;
+    const triggerHtml: HTMLButtonElement  = document.getElementsByClassName('trigger').item(0) as HTMLButtonElement;
     triggerHtml.hidden=triggerValue;
-    const go_backHtml: HTMLInputElement = document.getElementsByClassName('go_back').item(0) as HTMLInputElement;
+    const go_backHtml: HTMLButtonElement  = document.getElementsByClassName('go_back').item(0) as HTMLButtonElement;
     go_backHtml.hidden=go_backValue;
+  }
+
+  /**
+   * PERDIDA DE FOCO DEL INPUT_CHAT
+   * 
+   * IF:
+   *      no habia escrito nada en el input de busqueda de chats
+   *      && la lista de chats actual es de la misma longitud que la que contiene todos los chats activos (son iguales)
+   * ENTONCES:
+   *      ocultar go_back y volver a mostrar trigger
+   */
+  inputLostFocus() {
+    const inputSearch: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
+    if(inputSearch.value==="" && this.chatService.allActiveChats.length == this.chatService.chatChannels.length)
+      this.triggerGoBackHidden(false, true);
   }
 
   /**
