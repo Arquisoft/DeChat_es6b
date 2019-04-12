@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
+import { UtilsService } from '../services/utils.service';
+
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { FileMessage } from '../models/file-message.model';
 
 import * as uuid from 'uuid';
 
@@ -29,7 +30,7 @@ export class ChatService {
 
   waitForCheckInbox: boolean = false;
 
-  constructor(private rdf: RdfService) {
+  constructor(private rdf: RdfService, private chatUtils: UtilsService) {
     // this.startChat();
   }
 
@@ -58,7 +59,6 @@ export class ChatService {
       }
     });
 
-    
   }
 
   /**
@@ -73,30 +73,6 @@ export class ChatService {
     if (checkFolder === undefined) {
       console.log("The '"+folder+"' folder does not exist, creating it...");
       await this.rdf.createFolder(this.uri + folder);
-    }
-  }
-
-  /**
-   * Crea la carpeta /private
-   */
-  private async checkPrivateFolder() {
-    // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_FOLDER);
-    if (checkFolder === undefined) {
-      console.log("The 'private' folder does not exist, creating it...");
-      await this.rdf.createFolder(this.uri + PRIVATE_FOLDER);
-    }
-  }
-
-  /**
-   * Crea la carpeta para almacenar los canales de chat si no está creada
-   */
-  private async checkDeChatFolder() {
-    // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.rdf.readFolder(this.uri + CHAT_FOLDER);
-    if (checkFolder === undefined) {
-      console.log("The 'dechat_es6b' folder does not exist, creating it...");
-      await this.rdf.createFolder(this.uri + CHAT_FOLDER);
     }
   }
 
@@ -171,6 +147,7 @@ export class ChatService {
 
         // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
         let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name, file);
+        // message.message = this.chatUtils.codeUrlImage(urlFile);
         message.message = urlFile;
         
         // Guardamos el mensaje (url)

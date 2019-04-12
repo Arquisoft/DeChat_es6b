@@ -1,10 +1,9 @@
 import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef, OnChanges} from '@angular/core';
 import { ChatService } from '../services/chat.service';
-import { FileService } from '../services/file.service';
+import { UtilsService } from '../services/utils.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-import { FileMessage } from '../models/file-message.model';
 
 @Component({
   selector: 'app-chat',
@@ -17,7 +16,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   defaultImage = "assets/images/default.jpg";
   selectedChatChannel: ChatChannel; 
 
-  constructor(private chatService: ChatService, private file: FileService) {
+  constructor(private chatService: ChatService, private chatUtils: UtilsService) {
   }
 
   ngOnInit() {
@@ -50,18 +49,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   async sendFile(event) {
     if (this.selectedChatChannel != null) {
-      const img: File = event.target.files[0];
-      this.chatService.sendFile(this.selectedChatChannel, '', img);
+      const file: File = event.target.files[0];
+      this.chatService.sendFile(this.selectedChatChannel, '', file);
     }
-  }
-
-  isMessageFile(msg) {
-    return msg instanceof FileMessage;
-  }
-
-  async getFile(msg){
-    let fileMsg: FileMessage = msg as FileMessage;
-    return fileMsg.content;
   }
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
@@ -131,6 +121,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     const index = this.chatService.chatChannels.indexOf(channel);
     this.chatService.delete(channel); //Pod
     this.chatService.chatChannels.splice(index, 1); //Lista
+  }
+
+  analyzeMessage(msg: string): string {
+    return this.chatUtils.analyzeMessage(msg.toString());
   }
 
 }
