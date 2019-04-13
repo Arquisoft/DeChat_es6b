@@ -40,8 +40,8 @@ export class UtilsService {
     let urlInHtml;
 
     if (this.imageTypes.includes(fileType.toLocaleLowerCase())) {
-      urlInHtml = '<a class="chat_image" target="_blank" rel="noopener noreferrer" href="' + url + '">';
-      urlInHtml += '<img src="' + url + '" />';
+      urlInHtml = '<a target="_blank" rel="noopener noreferrer" href="' + url + '">';
+      urlInHtml += '<img class="chat_image" height="220px" width="auto" src="' + url + '" />';
       urlInHtml += '</a>';
     } 
     else if (this.videoTypes.includes(fileType.toLocaleLowerCase())) {

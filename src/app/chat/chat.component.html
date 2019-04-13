@@ -1,92 +1,347 @@
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!DOCTYPE HTML>
 
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chat</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-<h2 id="DeChatTitle" class=" text-center">DeChat</h2>
-<div class="messaging">
-      <div class="inbox_msg">
-        <div class="inbox_people">
-          <div class="headind_srch">
-            <div class="recent_heading">
-              <h4>Recent chats</h4>
-            </div>
-            <div class="srch_bar">
-              <div class="stylish-input-group">
-                <input id=input_search type="search" class="search-bar" placeholder="Search" />
-                <span class="input-group-addon">
-                  <button class=lens type="submit" (click)=search()> <i class="fa fa-search"></i> </button>
-                </span> 
-              </div>
-            </div>
+<!-- -------- -->
+<!-- MAIN APP -->
+<!-- -------- -->
+<section class="mainApp">
+	<div class="leftPanel">
+		<header>
+			<button class="go_back" (click)="restoreAllActiveChats()" hidden>&#10140;</button>
+			<button class="trigger">
+				<svg viewBox="0 0 24 24">
+          <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+        </svg>
+			</button>
+			<input class="searchChats" id="input_search" type="search" (keydown.enter)="search()" 
+				(click)="triggerGoBackHidden(true, false)" (blur)="inputLostFocus()" placeholder="Search a chat..." />
+		</header>
+		<div class="chats">
+      <ul *ngFor="let channel of getChatChannels()">
+
+        <!--
+        <div class="chatButton active" *ngIf="channel == getMessagesSelectedChatChannel()">
+          <div class="chatInfo">
+            <img class="image" [src]="getImagenChat(channel)">
+            <p class="name">Renan Mayrinck</p>
+            <p class="message">Actually, more ...</p>
           </div>
-          <div class="inbox_chat">
-            <div class="chat_list active_chat" *ngFor="let channel of getChatChannels()">
-              <div class="chat_people" (click)="setSelectedChatChannel(channel)">
-                <div class="chat_img">
-                  <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
-                  <img [src]="getImagenChat(channel)" alt="sunil">
-                </div>
-                <div class="chat_ib">
-                  <h5 *ngIf="!getLastMessage(channel)"> {{ channel.title }} <span class="chat_date"></span></h5>
-                  <h5 *ngIf="getLastMessage(channel)"> {{ channel.title }} <span class="chat_date">{{ getLastMessage(channel).sendTime | date:'LLL d' }}</span></h5>
-                  <p> {{ getLastMessageText(channel) }} </p>
-                  <p><button class="delete_button" type="button" (click)="deleteChat(channel)"><i class="fa fa-trash" aria-hidden="true"></i></button></p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="type_msg">
-            <div class="input_msg_write">
-              <input type="text" class="write_msg" id ="input_add_webid" placeholder="Type a friend's webid" />
-              <button class="msg_send_btn" type="button" (click)="addNewChatChannel()"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
-            </div>
+          <div class="status onTop">
+            <p class="date">00:02</p>
+            <p class="count">10</p>
+            <i class="material-icons read">done_all</i>
+            <svg class="fixed" viewBox="0 0 24 24">
+              <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+            </svg>
           </div>
         </div>
-        <div class="mesgs">
-          <div class="msg_history" #scrollMe>
-            <div *ngFor="let msg of getMessagesSelectedChatChannel()">
-
-              <div class="incoming_msg" *ngIf="msg.makerWebId != getChatService().webid">
-                <div class="incoming_msg_img"> 
-                  <!-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIp3zzC4sZwW3OvXpOKxw2_dH3Zn0oNdxGz60tIDFNeEkjKcA8" alt="sunil"> </div> -->
-                  <img [src]="getImagenChat(selectedChatChannel)" alt="sunil"> </div>
-                <div class="received_msg">
-                  <div class="received_withd_msg">
-                    <p [innerHtml]="analyzeMessage(msg.message)"></p>
-                    <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span></div>
-                </div>
-              </div>
-
-              <div class="outgoing_msg" *ngIf="msg.makerWebId == getChatService().webid">
-                <div class="sent_msg" >
-                  <p [innerHtml]="analyzeMessage(msg.message)"></p>
-                  <span class="time_date">{{ msg.sendTime | date:'h:mm a z' }}</span> </div>
-              </div>
-              
-            </div>
+        -->
+        
+        <div [ngClass]="(channel != selectedChatChannel) ? 'chatButton' : 'chatButton active'" (click)="setSelectedChatChannel(channel)">
+          <div class="chatInfo">
+            <img class="image" [src]="getImagenChat(channel)">
+            <p class="name">{{ channel.title }}</p>
+            <p class="message">{{ getLastMessageText(channel) }}</p>
           </div>
-
-          <div class="type_msg">
-            <div class="input_msg_write row">
-              <input type="text" class="write_msg col-10" id ="input_text" placeholder="Type a message" #msgInput (keydown.enter)="sendMessage();emptyText();"/>
-              <label class="msg_send_btn col-2 ml-4">
-                <input id="send_file" style="display: none;" type="file" (change)="sendFile($event);"/>
-                <i class="fas fa-camera icon_pos" aria-hidden="true"></i>
-              </label>
-              <button class="msg_send_btn col-2 ml-2" (click)="sendMessage()" (click)="emptyText()" type="button"><i class="fa fa-paper-plane-o icon_pos" aria-hidden="true"></i></button>
-            </div>
+          <div class="status normal">
+            <p class="date" *ngIf="getLastMessage(channel)">{{ getLastMessage(channel).sendTime | date:'LLL d' }}</p>
+            <p class="count">42</p>
+            <!--<i class="material-icons read">done_all</i>-->
+            <i class="material-icons fixed">loyalty</i>
           </div>
+				</div>
+				
+    	</ul>
+		</div>
+	</div>
+	
+	<div class="rightPanel">
+		<div class="topBar">
+			<div class="rightSide">
+				<button class="tbButton otherOptions">
+					<i class="material-icons">more_vert</i>
+				</button>
+			</div>
+			
+			<div class="leftSide">
+			<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
+        <span>{{ selectedChatChannel.participants[0].webId }}</span></p>
+			<!--<p class="chatStatus">Online</p>-->
+			</div>
+		</div>
+		
+		<div class="convHistory userBg" #scrollMe>
+			<!-- CONVERSATION GOES HERE! -->
+      
+      <ul *ngFor="let msg of getMessagesSelectedChatChannel()">
+		<div [ngClass]="(msg.makerWebId != getChatService().webid)? 'msg messageReceived' : 'msg messageSent'">
+          <ul [innerHtml]="analyzeMessage(msg.message)"></ul>
+          <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
         </div>
+	  
+        <!--<div class="msg messageReceived" *ngIf="msg.makerWebId != getChatService().webid">
+          {{ msg.message }}
+          <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
+        </div>-->
+        
+        <!--<div class="msg messageSent" *ngIf="msg.makerWebId == getChatService().webid">
+          {{ msg.message }}
+          <!--<i class="material-icons readStatus">done_all</i>-->
+          <!--<span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
+        </div>-->
+      </ul>
 
-      </div>
     </div>
-  </div>
+					
+		<div class="replyBar">
+			<button class="attach" (click)="send_file.click()">
+				<input id="send_file" #send_file style="display: none;" type="file" (change)="sendFile($event);"/>
+				<i class="material-icons d45">attach_file</i>
+			</button>
+			
+			<input type="text" class="replyMessage" id="input_text" (keydown.enter)="sendMessage();emptyText();" placeholder="Type your message..."/>
+			
+			<div class="emojiBar">
+				<div class="emoticonType">
+				<button id="panelEmoji">Emoji</button>
+				<button id="panelStickers">Stickers</button>
+				<button id="panelGIFs">GIFs</button>
+			</div>
+				
+				<!-- Emoji panel -->
+				<div class="emojiList">
+					<button id="smileface" class="pick">
+				</button>
+					<button id="grinningface" class="pick"></button>
+					<button id="tearjoyface" class="pick"></button>
+					<button id="rofl" class="pick"></button>
+					<button id="somface" class="pick"></button>
+					<button id="swfface" class="pick"></button>
+				</div>
+				
+				<!-- the best part of telegram ever: STICKERS!! -->
+				<div class="stickerList">
+					<button id="smileface" class="pick">
+				</button>
+					<button id="grinningface" class="pick"></button>
+					<button id="tearjoyface" class="pick"></button>
+				</div>
+			</div>
+			
+			<div class="otherTools">
+				<button class="toolButtons emoji">
+					<i class="material-icons">face</i>
+				</button>
+				
+				<button class="toolButtons audio">
+					<i class="material-icons">mic</i>
+				</button>
+			</div>
+    </div>
+    
+	</div>
+</section>
+
+<!-- ---------------------- -->
+<!-- MENU AND OVERLAY STUFF -->
+<!-- ---------------------- -->
+
+<!-- MENU -->
+<section class="menuWrap">
+	<div class="menu">
+		<div class="me userBg">
+			<div class="image" *ngIf="myProfile"><img [src]="myProfile.imageURL" /></div>
+			
+			<div class="myinfo">
+			<p class="name" *ngIf="myProfile">{{ myProfile.name }}</p>
+			<p class="phone"></p>
+			</div>
+			
+			<!--
+			<button class="cloud">
+				<i class="material-icons">bookmark</i>
+			</button>
+			-->
+			<!--
+			<button class="settings">
+				<i class="material-icons">settings</i>
+			</button>
+			-->
+			<button class="cloud">
+				<i class="material-icons">settings</i>
+			</button>
+		</div>
+		<nav>
+			<button class="ng">
+				<i class="material-icons">&#xE8D3;</i>
+				
+				<span>New Group</span>
+			</button>
+			
+			<button class="nc">
+				<i class="material-icons">&#xE0B6;</i>
+				
+				<span>New Channel</span>
+			</button>
+			
+			<button class="cn">
+				<i class="material-icons">&#xE851;</i>
+				
+				<span>Contacts</span>
+			</button>
+			
+			<!--
+			<button class="cl">
+				<i class="material-icons">&#xE0B0;</i>
+				
+				<span>Calls History</span>
+			</button>
+			
+			<a href="https://telegram.org/faq" target="_blank">
+			<button class="faq">
+				<i class="material-icons">&#xE000;</i>
+				
+				<span>FAQ and Support</span>
+			</button>
+			</a>
+			-->
+			
+			<button class="lo" (click)="logout()">
+				<i class="material-icons">&#xE879;</i>
+				<span>Logout</span>
+			</button>
+		</nav>
+		
+	</div>
+</section>
+
+<!-- NEW CHANNEL OPTION -->
+<div class="newChannel">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_add_webid" placeholder="Type a friend's webid"/>
+	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
+</div>
+
+<!-- CONVERSATION OPTIONS MENU -->
+<div class="moreMenu">
+	<button class="option about">See Info</button>
+	<button class="option notify">Disable Notifications</button>
+	<button class="option block">Block User</button>
+	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<!--
+<section class="switchMobile">
+	<p class="title">Mobile Device Detected</p>
+	
+	<p class="desc">Switch to the mobile version for a better performance.</p>
+	
+	<a href="https://web.telegram.org/#/login"><button class="okay">OK</button></a>
+</section>
+-->
+
+<!-- PROFILE OPTIONS OVERLAY -->
+<section class="config">
+	<section class="configSect">
+		<div class="profile">
+		<p class="confTitle">Profile</p>
+		
+		<div class="image" *ngIf="myProfile"><img [src]="myProfile.imageURL" /></div>
+		
+		<div class="side">
+		<p class="name" *ngIf="myProfile">{{ myProfile.name }}</p>
+		<p class="pWebId" *ngIf="myProfile">{{ myProfile.webId }}</p>
+		</div>
+			
+		<button class="changePic">Change Profile Picture</button>
+		<button class="edit">Edit Profile Info</button>
+	</div>
+	</section>
+	
+	<section class="configSect second">
+		
+		<!-- PROFILE INFO SECTION -->
+		<p class="confTitle">Your Info</p>
+		
+		<div class="information">
+			<ul>
+				<li>Phone Number: <span class="blue phone">+1 12 1234 5678</span></li>
+				<li>Username: <span class="blue username">@USERNAME</span></li>
+				<li>Profile: <span class="blue">https://t.me/USERNAME</span></li>
+			</ul>
+		</div>
+		
+		<!-- NOTIFICATIONS SECTION -->
+		<p class="confTitle">Notifications</p>
+		
+		<div class="optionWrapper deskNotif">
+			<input type="checkbox" id="deskNotif" class="toggleTracer" checked>
+
+			<label class="check deskNotif" for="deskNotif">
+				<div class="tracer"></div>
+			</label>
+			<p>Enable Desktop Notifications</p>
+		</div>
+		
+		<div class="optionWrapper showSName">
+			<input type="checkbox" id="showSName" class="toggleTracer">
+
+			<label class="check" for="showSName">
+				<div class="tracer"></div>
+			</label>
+			<p>Show Sender Name</p>
+		</div>
+		
+		<div class="optionWrapper showPreview">
+			<input type="checkbox" id="showPreview" class="toggleTracer">
+
+			<label class="check" for="showPreview">
+				<div class="tracer"></div>
+			</label>
+			<p>Show Message Preview</p>
+		</div>
+		
+		<div class="optionWrapper playSounds">
+			<input type="checkbox" id="playSounds" class="toggleTracer">
+
+			<label class="check" for="playSounds">
+				<div class="tracer"></div>
+			</label>
+			<p>Play Sounds</p>
+		</div>
+		
+		
+		<p class="confTitle">Other Settings</p>
+		
+			<div class="optionWrapper">
+				<input type="checkbox" id="checkNight" class="toggleTracer">
+				
+				<label class="check" for="checkNight">
+					<div class="tracer"></div>
+				</label>
+				<p>Night Mode</p>
+			</div>
+		
+	</section>
+</section>
+<!-- -------------------------------- -->
+<!-- SPECIFIC FOR CONNECTION WARNINGS -->
+<!-- -------------------------------- -->
+<div class="alerts">
+	Trying to reconnect... 
+</div>
+
+</div>
+<!-- DARK FRAME OVERLAY -->
+<section class="overlay"></section>
 </body>
 </html>

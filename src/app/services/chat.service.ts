@@ -9,13 +9,14 @@ import * as uuid from 'uuid';
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
 const MESSAGE_CONTENT_TYPE = 'application/ld+json';
+const BASE_NAME_MESSAGES = 'dechat_msg';
+const MESSAGE_FILE_FORMAT = 'jsonld';
+
 const PRIVATE_FOLDER = '/private';
 const FILES_FOLDER = '/private/files'
 const CHAT_FOLDER = '/private/dechat_es6b';
 const INBOX_FOLDER = '/inbox/';
-const BASE_NAME_MESSAGES = 'dechat_msg';
 const PROFILE_CARD_FOLDER = '/profile/card#me';
-const MESSAGE_FILE_FORMAT = 'jsonld';
 
 
 @Injectable({
@@ -24,6 +25,7 @@ const MESSAGE_FILE_FORMAT = 'jsonld';
 export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
+  allActiveChats: ChatChannel[] = new Array(); // todos los chats activos del usuario
   uri: string;
   webid: string
 
@@ -50,7 +52,12 @@ export class ChatService {
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
-      while (this.waitForCheckInbox) { await this.delay(Math.random() * (400 - 250) + 250); }
+      // Esperar si ya hay otra comprobación en funcionamiento
+      while (this.waitForCheckInbox) { 
+        await this.delay(Math.random() * (400 - 250) + 250); 
+      }
+
+	  // Comprobar que no se esté ejecutando ya otra comprobación
       if (!this.waitForCheckInbox) {
         this.waitForCheckInbox = true;
         await this.checkInbox();
@@ -81,6 +88,7 @@ export class ChatService {
   private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
+	this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
   }
 
   /**
