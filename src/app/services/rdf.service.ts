@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { UtilsService } from '../services/utils.service';
 import { SolidSession } from '../models/solid-session.model';
 declare let solid: any;
 declare let $rdf: any;
 //import * as $rdf from 'rdflib'
 
-// TODO: Remove any UI interaction from this service
 import * as uuid from 'uuid';
 import * as fileClient from 'solid-file-client';
+
+// TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Message } from '../models/message.model';
@@ -66,7 +68,7 @@ export class RdfService {
    */
   updateManager = $rdf.UpdateManager;
 
-  constructor (private toastr: ToastrService) {
+  constructor (private toastr: ToastrService, private chatUtils: UtilsService) {
     const fetcherOptions = {};
     this.fetcher = new $rdf.Fetcher(this.store, fetcherOptions);
     this.updateManager = new $rdf.UpdateManager(this.store);
@@ -480,6 +482,10 @@ export class RdfService {
                 this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { participant.name = st.object.value });
                 this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
                 chatChannel.participants.push(participant);
+
+                /* Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
+                   de la cuenta con la que hemos iniciado sesión */
+                this.fetch(st.object.value.toString().match(this.chatUtils.regexUrlDomain)[0]);
               });
             });
 
@@ -699,6 +705,16 @@ export class RdfService {
    */
   async readFolder(url) {
     return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
+  }
+
+  /**
+   * 
+   * @param url 
+   */
+  async fetch(url) {
+    fileClient.fetch(url).then( results => {
+      // do something with results
+    }, err => {} ); // console.log(err) );
   }
 
 

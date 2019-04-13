@@ -4,8 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class UtilsService {
-
   regexUrlFiles: RegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gi;
+  regexUrlDomain: RegExp = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/im;
+
+  imageTypes = ["jpg", "jpeg", "png", "gif", "svg"];
+  videoTypes = ["mp4", "webm"];
+  audioTypes = ["mp3", "wav", "ogg"];
+
 
   constructor() { }
 
@@ -14,9 +19,9 @@ export class UtilsService {
    * @param msg 
    */
   public analyzeMessage(msg: string): string {
-    let newTemp = msg.replace(this.regexUrlFiles, this.convertUrlToHtml);
+    let newMsg = msg.replace(this.regexUrlFiles, this.convertUrlToHtml.bind(this));
 
-    return (newTemp)? newTemp : msg;
+    return (newMsg)? newMsg : msg;
   }
 
   /**
@@ -31,24 +36,20 @@ export class UtilsService {
    */
   private convertUrlToHtml(url: string, p1, p2, offset, s): string
   {
-    let imageTypes = ["jpg", "jpeg", "png", "gif", "svg"];
-    let videoTypes = ["mp4", "webm"];
-    let audioTypes = ["mp3", "wav", "ogg"];
-
     let fileType = url.split(".").pop();
     let urlInHtml;
 
-    if (imageTypes.includes(fileType.toLocaleLowerCase())) {
+    if (this.imageTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<a class="chat_image" target="_blank" rel="noopener noreferrer" href="' + url + '">';
       urlInHtml += '<img src="' + url + '" />';
       urlInHtml += '</a>';
     } 
-    else if (videoTypes.includes(fileType.toLocaleLowerCase())) {
+    else if (this.videoTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<video class="chat_video" src="' + url + '" controls>';
       urlInHtml += 'Your browser does not support the video tag.';
       urlInHtml += '</video>';
     }
-    else if (audioTypes.includes(fileType.toLocaleLowerCase())) {
+    else if (this.audioTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<audio class="chat_audio" src="' + url + '" controls>';
       urlInHtml += 'Your browser does not support the audio element.';
       urlInHtml += '</audio>';

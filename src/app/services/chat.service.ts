@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
-import { UtilsService } from '../services/utils.service';
 
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
@@ -30,7 +29,7 @@ export class ChatService {
 
   waitForCheckInbox: boolean = false;
 
-  constructor(private rdf: RdfService, private chatUtils: UtilsService) {
+  constructor(private rdf: RdfService) {
     // this.startChat();
   }
 
@@ -45,7 +44,7 @@ export class ChatService {
       .then(async () => { await this.checkFolder(FILES_FOLDER) })
       .then(async () => { await this.checkFolder(CHAT_FOLDER) })
       .then(async () => { await this.loadChatChannels() })
-      .then(async () => { await this.checkInbox() });    
+      .then(async () => { await this.checkInbox() });
 
     // Abrimos WebSocket, cualquier modificación en nuestro POD provocará la ejecución de "checkInbox()"
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
