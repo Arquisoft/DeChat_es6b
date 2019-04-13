@@ -92,7 +92,7 @@ export class ChatService {
   private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
-    this.allActiveChats = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
+    this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
   }
 
   /**

@@ -256,7 +256,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.chatService.chatChannels.splice(index, 1); //Lista
 
       // Si el chat mostrado actualmente es el que se borra, vaciamos los mensajes
-      if (this.selectedChatChannel==channel)
+      if (this.selectedChatChannel===channel)
         this.selectedChatChannel=null;
     }
   }
