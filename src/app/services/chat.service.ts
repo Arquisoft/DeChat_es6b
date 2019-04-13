@@ -22,6 +22,7 @@ const MESSAGE_FILE_FORMAT = 'jsonld';
 export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
+  allActiveChats: ChatChannel[] = new Array(); // todos los chats activos del usuario
   uri: string;
   webid: string
 
@@ -47,7 +48,12 @@ export class ChatService {
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
-      while (this.waitForCheckInbox) { await this.delay(Math.random() * (400 - 250) + 250); }
+      // Esperar si ya hay otra comprobación en funcionamiento
+      while (this.waitForCheckInbox) { 
+        await this.delay(Math.random() * (400 - 250) + 250); 
+      }
+
+      // Comprobar que no se esté ejecutando ya otra comprobación
       if (!this.waitForCheckInbox) {
           this.waitForCheckInbox = true;
           await this.checkInbox();
@@ -86,6 +92,7 @@ export class ChatService {
   private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
+    this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
   }
 
   /**

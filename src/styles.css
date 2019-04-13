@@ -1,4 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  overflow: hidden;
+}
+
 button.wide-button {
   width: 360px;
   height: 40px;
