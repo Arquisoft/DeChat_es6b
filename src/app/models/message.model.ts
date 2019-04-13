@@ -12,8 +12,4 @@ export class Message {
         this.sendTime = sendTime;
     }
 
-    public toString(): String {
-        return this.message;
-        // return this.makerWebId + ": " + this.message + ". Enviado: " + this.sendTime.toDateString;
-     }
 }

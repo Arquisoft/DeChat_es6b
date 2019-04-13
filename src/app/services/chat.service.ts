@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
+
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 
@@ -8,12 +9,14 @@ import * as uuid from 'uuid';
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
 const MESSAGE_CONTENT_TYPE = 'application/ld+json';
-const PRIVATE_FOLDER = '/private';
-const PRIVATE_CHAT_FOLDER = '/private/dechat_es6b';
-const INBOX_FOLDER = '/inbox/';
 const BASE_NAME_MESSAGES = 'dechat_msg';
-const PROFILE_CARD_FOLDER = '/profile/card#me';
 const MESSAGE_FILE_FORMAT = 'jsonld';
+
+const PRIVATE_FOLDER = '/private';
+const FILES_FOLDER = '/private/files'
+const CHAT_FOLDER = '/private/dechat_es6b';
+const INBOX_FOLDER = '/inbox/';
+const PROFILE_CARD_FOLDER = '/profile/card#me';
 
 
 @Injectable({
@@ -39,8 +42,9 @@ export class ChatService {
     this.webid = await this.rdf.getWebId();
     this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
 
-    await this.checkPrivateFolder()
-      .then(async () => { await this.checkDeChatFolder() })
+    await this.checkFolder(PRIVATE_FOLDER)
+      .then(async () => { await this.checkFolder(FILES_FOLDER) })
+      .then(async () => { await this.checkFolder(CHAT_FOLDER) })
       .then(async () => { await this.loadChatChannels() })
       .then(async () => { await this.checkInbox() });
 
@@ -55,34 +59,26 @@ export class ChatService {
 
       // Comprobar que no se esté ejecutando ya otra comprobación
       if (!this.waitForCheckInbox) {
-          this.waitForCheckInbox = true;
-          await this.checkInbox();
-          this.waitForCheckInbox = false;
+        this.waitForCheckInbox = true;
+        await this.checkInbox();
+        this.waitForCheckInbox = false;
       }
     });
+
   }
 
   /**
-   * Crea la carpeta /private
+   * Comprobar si existe la carpeta especificada por parámetro, si no existe
+   * se crea la carpeta
+   * 
+   * @param folder Example: '/private'
    */
-  private async checkPrivateFolder() {
-    // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_FOLDER);
+  private async checkFolder(folder: string) {
+    // Si no esta creada la carpeta la creamos
+    let checkFolder = await this.rdf.readFolder(this.uri + folder);
     if (checkFolder === undefined) {
-      console.log("The 'private' folder does not exist, creating it...");
-      await this.rdf.createFolder(this.uri + PRIVATE_FOLDER);
-    }
-  }
-
-  /**
-   * Crea la carpeta para almacenar los canales de chat si no está creada
-   */
-  private async checkDeChatFolder() {
-    // Si no esta creada la carpeta para almacenar los canales de chat la creamos
-    let checkFolder = await this.rdf.readFolder(this.uri + PRIVATE_CHAT_FOLDER);
-    if (checkFolder === undefined) {
-      console.log("The 'dechat_es6b' folder does not exist, creating it...");
-      await this.rdf.createFolder(this.uri + PRIVATE_CHAT_FOLDER);
+      console.log("The '"+folder+"' folder does not exist, creating it...");
+      await this.rdf.createFolder(this.uri + folder);
     }
   }
 
@@ -91,15 +87,15 @@ export class ChatService {
    */
   private async loadChatChannels() {
     console.log("Loading chat channels...");
-    this.chatChannels = this.rdf.loadChatChannels(this.uri + PRIVATE_CHAT_FOLDER + "/");
-    this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
+    this.chatChannels = this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
+	  this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
   }
 
   /**
    * 
    * @param chatChannels 
    */
-  setChatChannels(chatChannels: ChatChannel[]){
+  setChatChannels(chatChannels: ChatChannel[]) {
     this.chatChannels = chatChannels;
   }
 
@@ -108,14 +104,7 @@ export class ChatService {
    * @param ms 
    */
   delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-  }
-
-  /**
-   * 
-   */
-  getUri(): string {
-    return this.uri;
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
@@ -130,12 +119,11 @@ export class ChatService {
       let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
-        let tmpMakerWebId = await this.rdf.getWebId();
-        let message = new Message(tmpMakerWebId, msg);
+        let message = new Message(this.webid, msg);
         chatChannel.messages.push(message);
 
         // Actualizamos canal de chat en POD propio
-        await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + chatChannel.id, message);
+        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
@@ -148,18 +136,63 @@ export class ChatService {
       console.error(error);
     }
   }
+  
+ /**
+   * Guarda la url del fichero en el chat, actualiza el chat en el POD propio y envía la url del fichero a los participantes del chat
+   * 
+   * @param chatChannel
+   * @param file
+   */
+  public async sendFile(chatChannel: ChatChannel, msg: string, file: File) {
+    try {
+      // Comprobamos que el canal exista
+      let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
+      if (channel != null) {
+        // Creamos el mensaje
+        let message = new Message(this.webid, msg);
+
+        // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
+        let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name, file);
+        // message.message = this.chatUtils.codeUrlImage(urlFile);
+        message.message = urlFile;
+        
+        // Guardamos el mensaje (url)
+        chatChannel.messages.push(message);
+
+        // Creamos el fichero .acl (permisos) y le asignamos el Owner (webid actual)
+        await this.rdf.updateFile(urlFile + ".acl", "");
+        await this.rdf.addOwnerToACL(urlFile, this.webid);
+
+        // Actualizamos canal de chat en POD propio
+        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
+
+        // Enviamos el mensaje a todos los participantes del chat
+        let newMsg = JSON.stringify(message);
+        chatChannel.participants.forEach(async participant => {  // << En este momento solo está implementado para cada persona distinta un chat distinto >>
+          let uriParticipant = participant.webId.toString().replace(PROFILE_CARD_FOLDER, "");
+          // Añadimos permisos de lectura al fichero para el participante
+          await this.rdf.addReaderToACL(urlFile, participant.webId.toString());
+          // Enviamos al inbox del participante el mensaje con la url del fichero
+          this.rdf.createFile(uriParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
+        });
+        
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   /**
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
   private async checkInbox() {
-      console.log("Checking inbox...");
-      this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
-        msgs.forEach(msg => {
-          if (msg)
-            this.processNewMessage(msg);
-        });
+    console.log("Checking inbox...");
+    this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
+      msgs.forEach(msg => {
+        if (msg)
+          this.processNewMessage(msg);
       });
+    });
   }
 
   /**
@@ -176,7 +209,7 @@ export class ChatService {
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
        // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + channel.id, newMessage);
+      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
 
     } else {
       // Si no hay canal asociado creamos uno
@@ -184,18 +217,8 @@ export class ChatService {
       newChannel.messages.push(newMessage);
 
       // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + PRIVATE_CHAT_FOLDER + "/" + newChannel.id, newMessage);
+      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
     }
-  }
-
-  /**
-   *
-   * @param ChatChannel chat
-   */
-  public async showChatMessages(chat: ChatChannel) {
-      for (const m in chat.messages) {
-        console.log(m.toString);
-      }
   }
 
   /**
@@ -206,11 +229,11 @@ export class ChatService {
    * @param title
    */
   public async createNewChatChannel(webId: string, title: string = "Canal de chat"): Promise<ChatChannel> {
-    let channel:ChatChannel = await this.searchChatChannelByParticipantWebid(webId);
+    let channel: ChatChannel = await this.searchChatChannelByParticipantWebid(webId);
     let participant = await this.rdf.loadParticipantData(webId);
 
     if (channel == null && participant != undefined) {
-      title = (participant.name != undefined && participant.name.length > 0)? participant.name.toString() : title;
+      title = (participant.name != undefined && participant.name.length > 0) ? participant.name.toString() : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
 
       // Añadimos el chat a la lista de chats en memoria
@@ -218,7 +241,7 @@ export class ChatService {
       this.chatChannels.push(newChatChannel);
 
       // Guardamos el chat a nuestro POD
-      await this.rdf.saveNewChatChannel(this.uri + PRIVATE_CHAT_FOLDER + "/", newChatChannel);
+      await this.rdf.saveNewChatChannel(this.uri + CHAT_FOLDER + "/", newChatChannel);
 
       return newChatChannel;
     }
@@ -277,12 +300,12 @@ export class ChatService {
 
   public async delete(chat: ChatChannel) {
     // Comprobamos que el canal exista
-    let channel:ChatChannel = this.searchChatChannelById(chat.id);
+    let channel: ChatChannel = this.searchChatChannelById(chat.id);
     console.log(channel.created);
 
     // Si existe lo borramos
-    if(channel != null)
-      this.rdf.deleteFile(this.uri + PRIVATE_CHAT_FOLDER +"/"+ chat.id);
+    if (channel != null)
+      this.rdf.deleteFile(this.uri + CHAT_FOLDER + "/" + chat.id);
   }
 
 }

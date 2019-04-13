@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // If we're authenticated, go to profile
     if (localStorage.getItem('solid-auth-client')) {
-      this.router.navigateByUrl('/card');
+      this.router.navigateByUrl('/chat');
     }
 
     this.identityProviders = this.auth.getIdentityProviders();
@@ -39,15 +39,16 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin = async () => {
-    const idp: string = this.selectedProviderUrl ? this.selectedProviderUrl : this.customProviderUrl;
+    this.auth.solidLoginPopup();
 
-    if (idp) {
-      try {
-        this.auth.solidLogin(idp);
-      } catch (err) {
-        console.log('An error has occurred logging in: ' + err);
-      }
-    }
+    // const idp: string = this.selectedProviderUrl ? this.selectedProviderUrl : this.customProviderUrl;
+    // if (idp) {
+    //   try {
+    //     this.auth.solidLogin(idp);
+    //   } catch (err) {
+    //     console.log('An error has occurred logging in: ' + err);
+    //   }
+    // }
   }
 
   goToRegistration() {

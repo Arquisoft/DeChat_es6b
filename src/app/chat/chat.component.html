@@ -82,14 +82,8 @@
 			<!-- CONVERSATION GOES HERE! -->
       
       <ul *ngFor="let msg of getMessagesSelectedChatChannel()">
-        <div class="msg messageReceived" *ngIf="msg.makerWebId != getChatService().webid">
-          {{ msg.message }}
-          <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
-        </div>
-        
-        <div class="msg messageSent" *ngIf="msg.makerWebId == getChatService().webid">
-          {{ msg.message }}
-          <!--<i class="material-icons readStatus">done_all</i>-->
+		    <div [ngClass]="(msg.makerWebId != getChatService().webid)? 'msg messageReceived' : 'msg messageSent'">
+          <ul [innerHtml]="analyzeMessage(msg.message)"></ul>
           <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
         </div>
       </ul>
@@ -97,7 +91,8 @@
     </div>
 					
 		<div class="replyBar">
-			<button class="attach">
+			<button class="attach" (click)="send_file.click()">
+				<input id="send_file" #send_file style="display: none;" type="file" (change)="sendFile($event);"/>
 				<i class="material-icons d45">attach_file</i>
 			</button>
 			

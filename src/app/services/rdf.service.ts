@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { UtilsService } from '../services/utils.service';
 import { SolidSession } from '../models/solid-session.model';
 declare let solid: any;
 declare let $rdf: any;
 //import * as $rdf from 'rdflib'
 
-// TODO: Remove any UI interaction from this service
 import * as uuid from 'uuid';
 import * as fileClient from 'solid-file-client';
+
+// TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Message } from '../models/message.model';
@@ -29,6 +31,8 @@ const SOLIDRDF = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
 const UI = $rdf.Namespace('http://www.w3.org/ns/ui#');
 const RDF = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
+const ACL = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
+const TYPE = $rdf.Namespace("https://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
 // const JSONLD_CONTENT_TYPE = 'application/ld+json'
 const JSONLD_CONTENT_TYPE = 'http://www.w3.org/ns/iana/media-types/application/ld+json#Resource'
@@ -64,7 +68,7 @@ export class RdfService {
    */
   updateManager = $rdf.UpdateManager;
 
-  constructor (private toastr: ToastrService) {
+  constructor (private toastr: ToastrService, private chatUtils: UtilsService) {
     const fetcherOptions = {};
     this.fetcher = new $rdf.Fetcher(this.store, fetcherOptions);
     this.updateManager = new $rdf.UpdateManager(this.store);
@@ -396,7 +400,7 @@ export class RdfService {
    * @param msg Mensaje a guardar en el POD
    */
   async saveMessage(chatUri: String, message: Message) {
-    let msgUri = await this.generateUniqueUrlForResource(chatUri);
+    let msgUri = await this.generateUniqueUrlForResource(chatUri + "#");
     try {
       let msg = this.store.sym(msgUri);
 
@@ -478,6 +482,10 @@ export class RdfService {
                 this.store.match(me, VCARD("name"), null, me.doc()).map(st => { participant.name = st.object.value });
                 this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
                 chatChannel.participants.push(participant);
+
+                /* Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
+                   de la cuenta con la que hemos iniciado sesión */
+                this.fetch(st.object.value.toString().match(this.chatUtils.regexUrlDomain)[0]);
               });
             });
 
@@ -506,6 +514,73 @@ export class RdfService {
     }));
 
     return chatChannels;
+  }
+
+  /**
+   * Métodos para asignar un propietario a un fichero
+   * 
+   * '@prefix  acl:     <http://www.w3.org/ns/auth/acl#>.\n'+
+   *     
+   *     '<#owner>\n'+
+   *     'a                  acl:Authorization;\n'+
+   *     'acl:agent          <'+ownerWebId+'>;\n'+
+   *     'acl:accessTo       <'+fileURI+'>;\n'+
+   *     'acl:defaultForNew  <'+fileURI+'>;\n'+
+   *     'acl:mode           acl:Read, acl:Write, acl:Control.\n'+
+   * 
+   * @param fileURI 
+   * @param ownerWebId 
+   * @param otherWebId 
+   */
+  public addOwnerToACL(fileURI: string, ownerWebId: string) {
+    let file = this.store.sym(fileURI);
+    let owner = this.store.sym(ownerWebId);
+
+    let aclFile = this.store.sym(fileURI + ".acl#owner");
+
+    this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
+    this.store.add(aclFile, ACL("agent"), owner, aclFile.doc());
+    this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
+    this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Write"), aclFile.doc());
+    this.store.add(aclFile, ACL("mode"), ACL("Control"), aclFile.doc());
+
+    this.fetcher.putBack(aclFile);
+  }
+
+  /**
+   * Métodos para añadir un lector a un fichero.
+   * (permisos de lectura)
+   * 
+   * '<#reader>\n'+
+   *     'a                  acl:Authorization;\n'+
+   *     'acl:agent          <'+otherWebId+'>;\n'+
+   *     'acl:accessTo       <'+fileURI+'>;\n'+
+   *     'acl:defaultForNew  <'+fileURI+'>;\n'+
+   *     'acl:mode           acl:Read.'
+   * 
+   * @param fileURI 
+   * @param string 
+   * @param otherWebId 
+   */
+  public async addReaderToACL(fileURI: string, otherWebId: string) {
+    let file = this.store.sym(fileURI);
+    let other = this.store.sym(otherWebId);
+
+    let uniqueUri = await this.generateUniqueUrlForResource(fileURI + ".acl#reader");
+    let aclFile = this.store.sym(uniqueUri);
+
+    this.fetcher.load(aclFile.doc()).then(response => {
+
+      this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
+      this.store.add(aclFile, ACL("agent"), other, aclFile.doc());
+      this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
+
+      this.fetcher.putBack(aclFile);
+    });
   }
 
   async getVCardName(webid: string): Promise<string> {
@@ -556,9 +631,9 @@ export class RdfService {
    *
    * @param newFile
    */
-  async createFile(newFile, content?, contentType?) {
-    fileClient.createFile(newFile, content, contentType)
-        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); }, err => console.log(err) );
+  async createFile(newFile, content?, contentType?): Promise<string> {
+    return fileClient.createFile(newFile, content, contentType)
+        .then( fileCreated => { console.log(`Created file ${fileCreated}.`); return(fileCreated) }, err => console.log(err) );
   }
 
   /**
@@ -630,6 +705,16 @@ export class RdfService {
    */
   async readFolder(url) {
     return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
+  }
+
+  /**
+   * 
+   * @param url 
+   */
+  async fetch(url) {
+    fileClient.fetch(url).then( results => {
+      // do something with results
+    }, err => {} ); // console.log(err) );
   }
 
 
@@ -756,9 +841,14 @@ export class RdfService {
     return response.status === 200;
   }
 
-  // Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+  /**
+   * Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+   * Concatena a la URL pasada por parámetro un código aleatorio, formando una URL única.
+   * 
+   * @param baseurl 
+   */
   async generateUniqueUrlForResource(baseurl) {
-    let url = this.store.sym(baseurl + '#' + uuid.v4());
+    let url = this.store.sym(baseurl + uuid.v4());
 
     try {
       await this.fetcher.load(url.doc()).then(async response => {

@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angul
 import * as $ from 'jquery';
 
 import { ChatService } from '../services/chat.service';
+import { UtilsService } from '../services/utils.service';
 import { RdfService } from '../services/rdf.service';
 import { AuthService } from '../services/solid.auth.service';
 
@@ -21,7 +22,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
 
-  constructor(private chatService: ChatService, private rdf: RdfService, private auth: AuthService) {
+  constructor(private chatService: ChatService, private rdf: RdfService, 
+				private auth: AuthService, private chatUtils: UtilsService) {
+
   }
 
   ngOnInit() {
@@ -112,14 +115,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   getChatService() {
     return this.chatService;
   }
-
-  messageTime(msg: Message): string {
-    let messageTime = msg.sendTime;
-    let h = messageTime.getHours();
-    let m = messageTime.getMinutes();
-    let s = messageTime.getSeconds();
-    return h + ":" + m + ":" + s;
-  }
   
   async sendMessage() {
     // Enviar un mensaje solo si hay un chat seleccionado, si no no hace nada
@@ -135,6 +130,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     let msg: string = "";
     inputElement.value = msg;
   }
+  
+  async sendFile(event) {
+    if (this.selectedChatChannel != null) {
+      const file: File = event.target.files[0];
+      this.chatService.sendFile(this.selectedChatChannel, '', file);
+    }
+  }
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
@@ -142,7 +144,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   getMessagesSelectedChatChannel() {
     return (this.selectedChatChannel == undefined)? new Array() : this.selectedChatChannel.messages;
-    
   }
 
   getLastMessage(channel: ChatChannel): Message {
@@ -152,12 +153,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   getLastMessageText(channel: ChatChannel): string {
     return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
   }
-
-  /* getDayAndMonthLastMessage(channel: ChatChannel) {
-    let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
-    return (this.getLastMessage(channel) != null)? months[new Date(this.getLastMessage(channel).sendTime).getUTCMonth()]
-      + " " + (new Date(this.getLastMessage(channel).sendTime).getUTCDay()+1) : "";
-  } */
 
   getChatChannels(): ChatChannel[] {
     return this.chatService.chatChannels;
@@ -235,7 +230,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
   public getImagenChat(channel: ChatChannel) {
     if (channel.participants[0]) {
-      return (channel.participants[0].imageURL.length > 0) ? channel.participants[0].imageURL : this.defaultImage;
+      return (channel.participants[0].imageURL.length > 0)? channel.participants[0].imageURL : this.defaultImage;
     } else {
       return this.defaultImage;
     }
@@ -263,6 +258,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   logout() {
     this.auth.solidSignOut();
+  }
+  
+  analyzeMessage(msg: string): string {
+    return this.chatUtils.analyzeMessage(msg.toString());
   }
 
 }
