@@ -57,7 +57,7 @@ export class ChatService {
         await this.delay(Math.random() * (400 - 250) + 250); 
       }
 
-	  // Comprobar que no se esté ejecutando ya otra comprobación
+      // Comprobar que no se esté ejecutando ya otra comprobación
       if (!this.waitForCheckInbox) {
         this.waitForCheckInbox = true;
         await this.checkInbox();
@@ -88,7 +88,7 @@ export class ChatService {
   private async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
-	this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
+	  this.allActiveChats = this.chatChannels.map(x => Object.assign({}, x));
   }
 
   /**
@@ -114,8 +114,8 @@ export class ChatService {
    * @param msg
    */
   public async sendMessage(chatChannel: ChatChannel, msg: string) {
+    // Comprobamos que el canal exista
     try {
-      // Comprobamos que el canal exista
       let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
         // Creamos y guardamos el mensaje
@@ -136,7 +136,6 @@ export class ChatService {
       console.error(error);
     }
   }
-
   
  /**
    * Guarda la url del fichero en el chat, actualiza el chat en el POD propio y envía la url del fichero a los participantes del chat
