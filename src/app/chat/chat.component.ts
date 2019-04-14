@@ -87,11 +87,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".moreMenu").slideToggle("fast");
     });
 
-    /* clicking the search button from the conversation focus the search bar outside it, as on desktop */
-    $( ".search" ).click(function() {
-      $( ".searchChats" ).focus();
-    });
-
     /* Show or Hide Emoji Panel */
     $(".emoji").click(function(){
       $(".emojiBar").fadeToggle(120);
