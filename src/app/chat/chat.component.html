@@ -52,7 +52,7 @@
             <p class="message">{{ getLastMessageText(channel) }}</p>
           </div>
           <div class="status normal">
-            <p class="date" *ngIf="getLastMessage(channel)">{{ getLastMessage(channel).sendTime | date:'LLL d' }}</p>
+            <p class="date" *ngIf="channel.getLastMessage()">{{ channel.getLastMessage().sendTime | date:'LLL d' }}</p>
             <p class="count">42</p>
             <!--<i class="material-icons read">done_all</i>-->
             <i class="material-icons fixed">loyalty</i>
@@ -244,7 +244,7 @@
 		<div class="profile">
 		<p class="confTitle">Profile</p>
 		
-		<div class="image" *ngIf="myProfile"><img [src]="myProfile.imageURL" /></div>
+		<div class="image" *ngIf="myProfile"><img [src]="getOwnImage()" /></div>
 		
 		<div class="side">
 		<p class="name" *ngIf="myProfile">{{ myProfile.name }}</p>

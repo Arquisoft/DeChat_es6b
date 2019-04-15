@@ -386,6 +386,7 @@ export class RdfService {
     let chatUri = folderUri + newChatChannel.id;
     let channel = this.store.sym(chatUri);
 
+    this.store.add(channel, TYPE(), MEE("LongChat"), channel.doc());
     this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
     this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
     newChatChannel.participants.forEach(element => {
@@ -424,10 +425,11 @@ export class RdfService {
    * 
    * @param inboxUri 
    */
-  public getInboxMessages(inboxUri: string): any {
+  public async getInboxMessages(inboxUri: string): Promise<Message[]> {
+    let messages: Message[] = new Array();
     let fileUri = this.store.sym(inboxUri);
         
-    return this.fetcher.load(fileUri.doc()).then(async response => {
+    let promises = this.fetcher.load(fileUri.doc()).then(async response => {
       return Promise.all(this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
         // Verificamos que sea JSONLD
         if (st.object.value == JSONLD_CONTENT_TYPE) {
@@ -445,6 +447,12 @@ export class RdfService {
         }
       }));
     });
+
+    // Guardamos los mensajes en un array
+    await promises.then(msgs => { msgs.forEach(msg => { messages.push(msg); })});
+
+    // Devolvemos el array de mensajes (son promesas)
+    return messages.filter(msg => { return msg != undefined });
   }
 
   /**
@@ -453,67 +461,111 @@ export class RdfService {
    * 
    * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b/
    */
-  public loadChatChannels(chatChannelsFolderUri: string): ChatChannel[] {
-    let chatFolder = this.store.sym(chatChannelsFolderUri);
+  public async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
     let chatChannels: ChatChannel[] = new Array();
+    let chatFolder = this.store.sym(chatChannelsFolderUri);
 
-    Promise.all(this.fetcher.load(chatFolder.doc()).then(response => {
+    let promises = this.fetcher.load(chatFolder.doc()).then(response => {
       // Obtenemos los canales de chat
-      this.store.match(chatFolder, LDP('contains'), null, chatFolder.doc()).map(async st => {
+      return Promise.all(this.store.match(chatFolder, LDP('contains'), null, chatFolder.doc()).map(async st => {
         let fileUri = this.store.sym(st.object.value); // st.object.value -> URI del canal
         
         // Obtenemos los datos del canal de chat
-        this.fetcher.load(fileUri.doc()).then(async response => {
+        return this.fetcher.load(fileUri.doc()).then(async response => {
           var d = await this.store.each(null, FLOW("participation"), null, fileUri.doc()); 
           // Si contiene "participation" suponemos que es un canal de chat válido
           // Comprobamos que sea un canal de chat válido
           if (d.length != 0) {
-            let messages: Message[] = new Array();
-
             let id = st.object.value.split('/').pop();
             let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
             let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
             
-            // Obtenemos los datos de cada participante del canal de chat
-            this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
-              let me = this.store.sym(st.object.value.toString());
-              this.fetcher.load(me.doc()).then(response => {
-                let participant: Participant = new Participant(st.object.value.toString(),"","");
-                this.store.match(me, VCARD("name"), null, me.doc()).map(st => { participant.name = st.object.value });
-                this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { participant.imageURL = st.object.value });
-                chatChannel.participants.push(participant);
+            // Obtenemos participantes y mensajes del canal de chat
+            let messages = await this.getMessagesChatChannel(st.object.value);
+            let participants = await this.getParticipantsChatChannel(st.object.value);
 
-                /* Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
-                   de la cuenta con la que hemos iniciado sesión */
-                this.fetch(st.object.value.toString().match(this.chatUtils.regexUrlDomain)[0]);
-              });
-            });
-
-            // Obtenemos los datos de los mensajes del chat
-            this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
-              let messageUri = this.store.sym(st.subject.value);
-              await this.fetcher.load(messageUri.doc()).then(response => {
-                let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
-                let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
-                let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
-                messages.push(new Message(msgMaker, msgContent, new Date(msgCreated)));
-              });
-              // Ordenamos los mensajes del canal de chat (llegan desordenados)
-              messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
-            });
-
-            // Creamos el canal de chat con los datos obtenidos y lo añadimos al array
-            let chatChannel: ChatChannel = new ChatChannel(id, title, new Date(created), messages);
-            chatChannels.push(chatChannel);
+            // Retornamos el canal de chat con los datos obtenidos
+            return new ChatChannel(id, title, new Date(created), messages, participants);
           } else {
             console.log(st.object.value + " is not a valid chat channel");
           }
-
         });
-      });
-    }));
+      }));
+    });
 
-    return chatChannels;
+    // Guardamos los canales de chat en un array
+    await promises.then(channels => { channels.forEach(channel => { chatChannels.push(channel) })});
+
+    // Devolvemos el array de canales de chat (son promesas)
+    return chatChannels.filter(channel => { return channel != undefined });
+  }
+
+  /**
+   * Método para obtener los datos de todos los participantes del canal de chat
+   * 
+   * @param chatChannelUri 
+   */
+  public async getParticipantsChatChannel(chatChannelUri: string): Promise<Participant[]> {
+    let participants: Participant[] = new Array();
+    let fileUri = this.store.sym(chatChannelUri);
+
+    let promises = this.fetcher.load(fileUri.doc()).then(res => {
+      return Promise.all(this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
+        let me = this.store.sym(st.object.value.toString());
+
+        /* Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
+         * de la cuenta con la que hemos iniciado sesión */
+        this.fetch(st.object.value.toString().match(this.chatUtils.regexUrlDomain)[0]);
+        /*******************************************************************************/
+
+        return this.fetcher.load(me.doc()).then(res => {
+          let nameFN = this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { return (st.object.value) });
+          let nameNAME = this.store.match(me, FOAF("name"), null, me.doc()).map(st => { return (st.object.value) });
+          let imageURL = this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { return (st.object.value) });
+          let selectedName = (nameFN != undefined && nameFN.length != 0)? nameFN.toString() : nameNAME.toString();
+          let selectedImageURL = (imageURL.length > 0)? imageURL[0].toString() : ""; // Seleccionamos la primera imagen (si la hay)
+          return new Participant(st.object.value.toString(), selectedImageURL, selectedName);
+        });
+      }));
+    });
+
+    // Guardamos los participantes en un array
+    await promises.then(parts => { parts.forEach(part => { participants.push(part) })});
+
+    // Devolvemos el array de participantes (son promesas)
+    return participants;
+  }
+
+  /**
+   * Método para obtener los datos de todos los mensajes de un canal de chat
+   * 
+   * @param chatChannelUri 
+   */
+  public async getMessagesChatChannel(chatChannelUri: string): Promise<Message[]> {
+    let messages: Message[] = new Array();
+    let fileUri = this.store.sym(chatChannelUri);
+
+    let promises = this.fetcher.load(fileUri.doc()).then(res => {
+       return Promise.all(this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
+        let messageUri = this.store.sym(st.subject.value);
+
+        return this.fetcher.load(messageUri.doc()).then(res => {
+          let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
+          let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
+          let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
+          return new Message(msgMaker, msgContent, new Date(msgCreated));
+        });
+      }));
+    });
+
+    // Guardamos los mensajes en un array
+    await promises.then(msgs => { msgs.forEach(msg => { messages.push(msg); })});
+
+    // Ordenamos los mensajes del canal de chat (llegan desordenados)
+    messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
+
+    // Devolvemos el array de mensajes (son promesas)
+    return messages;
   }
 
   /**
@@ -586,9 +638,11 @@ export class RdfService {
   async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let name = "";
-    
+
     await this.fetcher.load(me.doc()).then(response => {
-      this.store.match(me, FOAF("name"), null, me.doc()).map(st => { name = st.object.value });
+      let nameFN = this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { return (st.object.value) });
+      let nameNAME = this.store.match(me, FOAF("name"), null, me.doc()).map(st => { return (st.object.value) });
+      name = (nameFN != undefined && nameFN.length != 0)? nameFN.toString() : nameNAME.toString();
     });
 
     return name;
@@ -599,7 +653,8 @@ export class RdfService {
     let image = "";
     
     await this.fetcher.load(me.doc()).then(response => {
-      this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { image = st.object.value });
+      let imageURL = this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { return (st.object.value) });
+      image = (imageURL.length > 0)? imageURL[0].toString() : ""; // Seleccionamos la primera imagen (si la hay)
     });
 
     return image;
@@ -705,6 +760,13 @@ export class RdfService {
    */
   async readFolder(url) {
     return fileClient.readFolder(url).then(folder => { return(folder) }, err => console.log(err) );
+  }
+
+  /**
+   * 
+   */
+  async logout() {
+    await fileClient.logout().then( console.log( `Bye now!` ), err => console.log(err) );
   }
 
   /**

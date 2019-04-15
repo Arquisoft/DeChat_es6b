@@ -87,6 +87,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".moreMenu").slideToggle("fast");
     });
 
+    /* clicking the search button from the conversation focus the search bar outside it, as on desktop */
+    $( ".search" ).click(function() {
+      $( ".searchChats" ).focus();
+    });
+
     /* Show or Hide Emoji Panel */
     $(".emoji").click(function(){
       $(".emojiBar").fadeToggle(120);
@@ -141,12 +146,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     return (this.selectedChatChannel == undefined)? new Array() : this.selectedChatChannel.messages;
   }
 
-  getLastMessage(channel: ChatChannel): Message {
-    return (channel.messages[channel.messages.length-1] != undefined)? (channel.messages[channel.messages.length-1]) : null;
-  }
-
   getLastMessageText(channel: ChatChannel): string {
-    return (this.getLastMessage(channel) != null)? this.getLastMessage(channel).message : "";
+    return (channel.getLastMessage() != null)? channel.getLastMessage().message : "";
   }
 
   getChatChannels(): ChatChannel[] {
@@ -231,6 +232,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  public getOwnImage() {
+    return (this.myProfile.imageURL != undefined && this.myProfile.imageURL.length > 0)? 
+        this.myProfile.imageURL : this.defaultImage;
+  }
+
   // Ajusta el scroll del chat a la parte inferior de este
   moveChatScrollToBottom() {
     this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
@@ -251,8 +257,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  logout() {
-    this.auth.solidSignOut();
+  async logout() {
+    await this.rdf.logout();
+    await this.auth.solidSignOut();
   }
   
   analyzeMessage(msg: string): string {

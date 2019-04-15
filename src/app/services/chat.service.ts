@@ -87,8 +87,35 @@ export class ChatService {
    */
   private async loadChatChannels() {
     console.log("Loading chat channels...");
-    this.chatChannels = this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
-	  this.allActiveChats = this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
+    this.chatChannels = await this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
+    this.sortChatChannels();
+    this.allActiveChats = this.chatChannels.map(channel => { return channel });
+  }
+
+  /**
+   * 
+   * @param channel 
+   * @param msg 
+   */
+  private addNewMessageToChannel(channel: ChatChannel, msg: Message) {
+    channel.messages.push(msg);
+    this.sortChatChannels();
+  }
+
+  /**
+   * Ordena los canales de canal de chat por fecha de envío del último mensaje
+   */
+  sortChatChannels() {
+    this.chatChannels.sort(function(a, b) { 
+      if (a.getLastMessage() && !b.getLastMessage())
+        return 1;
+      else if (!a.getLastMessage() && b.getLastMessage())
+        return -1;
+      else if (!a.getLastMessage() && !b.getLastMessage())
+        return 0;
+      else
+        return +new Date(b.getLastMessage().sendTime) - +new Date(a.getLastMessage().sendTime) 
+    });
   }
 
   /**
@@ -120,7 +147,7 @@ export class ChatService {
       if (channel != null) {
         // Creamos y guardamos el mensaje
         let message = new Message(this.webid, msg);
-        chatChannel.messages.push(message);
+        this.addNewMessageToChannel(channel, message);
 
         // Actualizamos canal de chat en POD propio
         await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
@@ -157,7 +184,7 @@ export class ChatService {
         message.message = urlFile;
         
         // Guardamos el mensaje (url)
-        chatChannel.messages.push(message);
+        this.addNewMessageToChannel(channel, message);
 
         // Creamos el fichero .acl (permisos) y le asignamos el Owner (webid actual)
         await this.rdf.updateFile(urlFile + ".acl", "");
@@ -187,12 +214,18 @@ export class ChatService {
    */
   private async checkInbox() {
     console.log("Checking inbox...");
-    this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
-      msgs.forEach(msg => {
-        if (msg)
-          this.processNewMessage(msg);
-      });
-    });
+    let msgs = await this.rdf.getInboxMessages(this.uri + INBOX_FOLDER);
+
+    for (const msg of msgs) {
+      await this.processNewMessage(msg);
+    }
+
+    // this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
+    //   msgs.forEach(async msg => {
+    //     if (msg)
+    //       await this.processNewMessage(msg);
+    //   });
+    // });
   }
 
   /**
@@ -203,9 +236,9 @@ export class ChatService {
    */
   private async processNewMessage(newMessage: Message) {
     // Añadimos el mensaje al canal correspondiente si ya existe
-    let channel:ChatChannel = await this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
+    let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
     if (channel != null) {
-      channel.messages.push(newMessage);
+      this.addNewMessageToChannel(channel, newMessage);
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
        // Guardamos el mensaje en el chat en el POD propio
@@ -214,7 +247,7 @@ export class ChatService {
     } else {
       // Si no hay canal asociado creamos uno
       let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
-      newChannel.messages.push(newMessage);
+      this.addNewMessageToChannel(newChannel, newMessage);
 
       // Guardamos el mensaje en el chat en el POD propio
       await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
@@ -229,7 +262,7 @@ export class ChatService {
    * @param title
    */
   public async createNewChatChannel(webId: string, title: string = "Canal de chat"): Promise<ChatChannel> {
-    let channel: ChatChannel = await this.searchChatChannelByParticipantWebid(webId);
+    let channel: ChatChannel = this.searchChatChannelByParticipantWebid(webId);
     let participant = await this.rdf.loadParticipantData(webId);
 
     if (channel == null && participant != undefined) {
@@ -254,11 +287,10 @@ export class ChatService {
    *
    * @param webId
    */
-  public async searchChatChannelByParticipantWebid(webId: string): Promise<ChatChannel> {
-    let participant = await this.rdf.loadParticipantData(webId);
+  public searchChatChannelByParticipantWebid(webId: string): ChatChannel {
     for (const channel of this.chatChannels) {
       for (const p of channel.participants) {
-        if (p.webId == participant.webId) {
+        if (p.webId == webId) {
           return channel;
         }
       }

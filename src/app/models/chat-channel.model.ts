@@ -18,4 +18,8 @@ export class ChatChannel {
         this.messages = messages;
         this.participants = participants;
     }
+
+    getLastMessage(): Message {
+        return (this.messages[this.messages.length-1] != undefined)? (this.messages[this.messages.length-1]) : null;
+    }
 }
