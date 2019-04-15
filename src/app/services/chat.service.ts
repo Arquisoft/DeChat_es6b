@@ -219,13 +219,6 @@ export class ChatService {
     for (const msg of msgs) {
       await this.processNewMessage(msg);
     }
-
-    // this.rdf.getInboxMessages(this.uri + INBOX_FOLDER).then(msgs => {
-    //   msgs.forEach(async msg => {
-    //     if (msg)
-    //       await this.processNewMessage(msg);
-    //   });
-    // });
   }
 
   /**
