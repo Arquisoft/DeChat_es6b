@@ -137,6 +137,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     let msg: string = "";
     inputElement.value = msg;
   }
+
+  putTextInInput(text: string) {
+    let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+    inputElement.value += text;
+  }
   
   async sendFile(event) {
     if (this.selectedChatChannel != null) {

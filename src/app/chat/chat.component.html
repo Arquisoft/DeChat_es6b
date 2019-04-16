@@ -107,14 +107,14 @@
 				
 				<!-- Emoji panel -->
 				<div class="emojiList">
-					<button id="smileface" class="pick"></button>
-					<button id="grinningface" class="pick"></button>
-					<button id="tearjoyface" class="pick"></button>
+					<button id="smileface" class="pick" (click)="putTextInInput(':-) ')"></button>
+					<button id="grinningface" class="pick" (click)="putTextInInput(':) ')"></button>
+					<button id="tearjoyface" class="pick" (click)="putTextInInput(':D ')"></button>
 				</div>
 
 				<!-- Gif panel -->
 				<div class="gifList">
-					<button id="gif" class="pick"></button>
+					<button id="gif" class="pick"  (click)="putTextInInput(':angry: ')"></button>
 				</div>
 				
 				<!-- the best part of telegram ever: STICKERS!! -->

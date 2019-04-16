@@ -76,15 +76,25 @@ export class UtilsService {
    * @param s 
    */
   public convertEmoteToHtml(emote: string, p1, p2, offset, s): string {
-    var emotes = {
+    let emotes = {
       ':-)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png'],
       ':)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png'],
       ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png']
     }
 
+    let gifs = {
+      ':angry:':['http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif']
+    }
+
+
     // Devolvemos el código HTML del emote
     if (emotes[emote]) {
-      return '<img class="emoticonType" height="25px" width="25px" src="' + emotes[emote][0] + '" />';
+      return '<img height="25px" width="25px" src="' + emotes[emote][0] + '" />';
+    }
+    
+    // Devolvemos el código HTML del GIF
+    if (gifs[emote]) {
+      return '<img height="80px" width="auto" src="' + gifs[emote][0] + '" />';
     }
 
     return emote;
