@@ -6,10 +6,7 @@ import { Injectable } from '@angular/core';
 export class UtilsService {
   regexUrlFiles: RegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gi;
   regexUrlDomain: RegExp = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/im;
-
-  imageTypes = ["jpg", "jpeg", "png", "gif", "svg"];
-  videoTypes = ["mp4", "webm"];
-  audioTypes = ["mp3", "wav", "ogg"];
+  regexEmotes: RegExp = /(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=]|[\:\;\=B8][\-\^]?[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)/gi;
 
 
   constructor() { }
@@ -20,6 +17,7 @@ export class UtilsService {
    */
   public analyzeMessage(msg: string): string {
     let newMsg = msg.replace(this.regexUrlFiles, this.convertUrlToHtml.bind(this));
+    newMsg = newMsg.replace(this.regexEmotes, this.convertEmoteToHtml.bind(this));
 
     return (newMsg)? newMsg : msg;
   }
@@ -36,20 +34,25 @@ export class UtilsService {
    */
   private convertUrlToHtml(url: string, p1, p2, offset, s): string
   {
+    let imageTypes = ["jpg", "jpeg", "png", "gif", "svg"];
+    let videoTypes = ["mp4", "webm"];
+    let audioTypes = ["mp3", "wav", "ogg"];
+
     let fileType = url.split(".").pop();
     let urlInHtml;
 
-    if (this.imageTypes.includes(fileType.toLocaleLowerCase())) {
+
+    if (imageTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<a target="_blank" rel="noopener noreferrer" href="' + url + '">';
       urlInHtml += '<img class="chat_image" height="220px" width="auto" src="' + url + '" />';
       urlInHtml += '</a>';
     } 
-    else if (this.videoTypes.includes(fileType.toLocaleLowerCase())) {
+    else if (videoTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<video class="chat_video" src="' + url + '" controls>';
       urlInHtml += 'Your browser does not support the video tag.';
       urlInHtml += '</video>';
     }
-    else if (this.audioTypes.includes(fileType.toLocaleLowerCase())) {
+    else if (audioTypes.includes(fileType.toLocaleLowerCase())) {
       urlInHtml = '<audio class="chat_audio" src="' + url + '" controls>';
       urlInHtml += 'Your browser does not support the audio element.';
       urlInHtml += '</audio>';
@@ -73,7 +76,18 @@ export class UtilsService {
    * @param s 
    */
   public convertEmoteToHtml(emote: string, p1, p2, offset, s): string {
-    return "";
+    var emotes = {
+      ':-)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png'],
+      ':)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png'],
+      ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png']
+    }
+
+    // Devolvemos el código HTML del emote
+    if (emotes[emote]) {
+      return '<img class="emoticonType" height="25px" width="25px" src="' + emotes[emote][0] + '" />';
+    }
+
+    return emote;
   }
   
 }

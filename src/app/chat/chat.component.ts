@@ -77,6 +77,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       }
     });
 
+    // Show emojis panel and hide the others
+    $("#panelEmoji").click(function(){
+      $(".gifList").hide();
+      $(".emojiList").show();
+    });
+
+    // Show gifs panel and hide the others
+    $("#panelGIFs").click(function(){
+      $(".emojiList").hide();
+      $(".gifList").show();
+    });
+
     /* small conversation menu */
     $(".otherOptions").click(function(){
       $(".moreMenu").slideToggle("fast");

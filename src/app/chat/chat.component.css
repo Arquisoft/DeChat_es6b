@@ -927,6 +927,7 @@ div[class~="onTop"] > .count {
 }
 
 .emojiList,
+.gifList,
 .stickerList {
   width: 100%;
   height: 150px;
@@ -951,6 +952,7 @@ div[class~="onTop"] > .count {
   background-size: 70%;
 }
 
+.gifList .pick,
 .stickerList .pick {
   width: 80px;
   height: 80px;
@@ -961,6 +963,7 @@ div[class~="onTop"] > .count {
   transition: all 0.15s ease-in-out;
 }
 
+.gifList .pick,
 .stickerList .pick:hover {
   background: #ddd;
   background-repeat: no-repeat;
@@ -968,7 +971,8 @@ div[class~="onTop"] > .count {
   background-size: 65%;
 }
 
-/* hidden, while not complete */
+/* hidden */
+.gifList,
 .stickerList {
   display: none;
 }
@@ -987,17 +991,12 @@ div[class~="onTop"] > .count {
   background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png);
 }
 
-#rofl {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/rolling-on-the-floor-laughing_1f923.png);
+/* CSS FOR THE EMOJI IMAGES, JUST SOME */
+
+#gif {
+  background-image: url(http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif);
 }
 
-#somface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth_1f603.png);
-}
-
-#swfface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png);
-}
 
 /* SOLVING RESPONSIVE DESIGN ISSUES */
 
