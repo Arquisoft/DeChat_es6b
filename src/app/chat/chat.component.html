@@ -74,7 +74,7 @@
 			<div class="leftSide">
 				<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
 					<span *ngIf="!selectedChatChannel.group || selectedChatChannel.group.toString().length == 0">{{ selectedChatChannel.participants[0].webId }}</span>
-					<!-- <span *ngIf="selectedChatChannel.group.toString().length > 0">{{ selectedChatChannel.group.toString() }}</span> -->
+					<!-- <span *ngIf="selectedChatChannel.group || selectedChatChannel.group.toString().length > 0">{{ selectedChatChannel.group.toString() }}</span> -->
 				</p>
 			<!--<p class="chatStatus">Online</p>-->
 			</div>
