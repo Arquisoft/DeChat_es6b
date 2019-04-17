@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "solid-app": {
+    "dechat": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/solid-app",
+            "outputPath": "dist/dechat",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -58,18 +58,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "solid-app:build"
+            "browserTarget": "dechat:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "solid-app:build:production"
+              "browserTarget": "dechat:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "solid-app:build"
+            "browserTarget": "dechat:build"
           }
         },
         "test": {
@@ -105,7 +105,7 @@
         }
       }
     },
-    "solid-app-e2e": {
+    "dechat-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -113,11 +113,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "solid-app:serve"
+            "devServerTarget": "dechat:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "solid-app:serve:production"
+              "devServerTarget": "dechat:serve:production"
             }
           }
         },
@@ -133,5 +133,5 @@
       }
     }
   },
-  "defaultProject": "solid-app"
+  "defaultProject": "dechat"
 }

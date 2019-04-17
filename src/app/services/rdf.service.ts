@@ -415,6 +415,119 @@ export class RdfService {
       console.log("An error occurred while saving the message (" + msgUri + ")");
     }
   }
+  
+  /**
+   * Crea un nuevo grupo de chat, devuelve su URI si se creo correctamente, 
+   * null en caso contrario.
+   * 
+   * @param folderGroupUri Example: /private/dechat_groups
+   * @param makerWebId 
+   */
+  public async addNewChatGroupToFile(folderGroupUri: string, makerWebId: string): Promise<string> {
+    console.log("Creating a group...");
+    
+    let chatGroup = await this.generateUniqueUrlForResource(folderGroupUri + "/");
+    this.store.add(chatGroup, TYPE(), MEE("ChatGroup"), chatGroup.doc());
+    this.store.add(chatGroup, FLOW("participation"), makerWebId, chatGroup.doc());
+    await this.fetcher.putBack(chatGroup);
+
+    // Creamos el fichero .acl (permisos) y le asignamos el Owner (makerWebId)
+    await this.updateFile(chatGroup["value"] + ".acl", "");
+    await this.addOwnerToACL(chatGroup["value"], makerWebId);
+
+    return chatGroup["value"];
+  }
+
+  /**
+   * Añade un nuevo participante al grupo de chat especificado por parámetro, si el
+   * grupo no existe o el participante ya pertenece al grupo no se hace nada.
+   * 
+   * @param groupFileUri 
+   * @param newParticipant 
+   */
+  public addParticipantToGroup(groupFileUri: string, newParticipant: string) {
+    console.log("Adding a participant to the group...");
+
+    let group = this.store.sym(groupFileUri);
+    this.fetcher.load(group.doc()).then(async res => {
+      let d = await this.store.each(null, FLOW("participation"), null, group.doc());
+      let w = await this.store.each(null, FLOW("participation"), newParticipant, group.doc());
+
+      // Si contiene "participation" suponemos que es un grupo de chat válido
+      // Si no contiene ya al participante lo añadimos
+      if (d.length != 0 && w.length == 0) {
+        this.store.add(group, FLOW("participation"), newParticipant, group.doc());
+        this.fetcher.putBack(group);
+
+        // Asignamos permisos al nuevo participante
+        this.addOwnerToACL(groupFileUri, newParticipant);
+      } else {
+        console.log("Invalid group or participant already exists")
+      }
+    });
+  }
+
+  /**
+   * Elimina un participante del grupo de chat especificado por parámetro y sus permisos
+   * sobre el grupo de chat.
+   * 
+   * @param groupFileUri 
+   * @param oldParticipant 
+   */
+  public removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
+    console.log("Removing participant from the group...");
+
+    // Eliminar participante del grupo
+    let group = this.store.sym(groupFileUri);
+    this.fetcher.load(group.doc()).then(res => {
+      let ins = [];
+      let del = $rdf.st(group, FLOW("participation"), oldParticipant, group.doc());
+      
+      this.updateManager.update(del, ins, (uri, ok, message) => {
+        if (ok) console.log('Participant successfully deleted!');
+        else console.error(message)
+      });
+    });
+
+    // Eliminar permisos del participante sobre el grupo
+    let groupPermissions = this.store.sym(groupFileUri + ".acl");
+    let participant = this.store.sym(oldParticipant);
+    
+    this.fetcher.load(groupPermissions.doc()).then(async res => {
+      let uri = await this.store.match(null, ACL("agent"), participant, groupPermissions.doc()).map(st => { return (st.subject.value); });
+      uri = this.store.sym(uri[0]);
+
+      let ins = [];
+      let del = this.store.statementsMatching(uri, null, null, groupPermissions.doc());
+
+      this.updateManager.update(del, ins, (uri, ok, message) => {
+        if (ok) console.log('Participant permissions successfully removed!');
+        else console.error(message)
+      });
+    });
+  }
+
+  /**
+   * Devuelve todos los participantes de un grupo de chat.
+   * 
+   * @param groupFileUri 
+   */
+  public async getGroupChatParticipants(groupFileUri: string): Promise<Participant[]> {
+    let participants: Participant[] = new Array();
+    let group = this.store.sym(groupFileUri);
+
+    let promises = this.fetcher.load(group.doc()).then(res => {
+      return Promise.all(this.store.match(group, FLOW("participation"), null, group.doc()).map(async st => {
+        return st.object.value.toString();
+      }));
+    });
+
+    // Guardamos los participantes en un array
+    await promises.then(parts => { parts.forEach(part => { participants.push(part) })});
+
+    // Devolvemos el array de participantes (son promesas)
+    return participants;
+  }
 
   /**
    * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,
@@ -584,21 +697,25 @@ export class RdfService {
    * @param ownerWebId 
    * @param otherWebId 
    */
-  public addOwnerToACL(fileURI: string, ownerWebId: string) {
+  public async addOwnerToACL(fileURI: string, ownerWebId: string) {
     let file = this.store.sym(fileURI);
     let owner = this.store.sym(ownerWebId);
 
-    let aclFile = this.store.sym(fileURI + ".acl#owner");
+    let uniqueUri = await this.generateUniqueUrlForResource(fileURI + ".acl#owner");
+    let aclFile = this.store.sym(uniqueUri);
 
-    this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
-    this.store.add(aclFile, ACL("agent"), owner, aclFile.doc());
-    this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
-    this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
-    this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
-    this.store.add(aclFile, ACL("mode"), ACL("Write"), aclFile.doc());
-    this.store.add(aclFile, ACL("mode"), ACL("Control"), aclFile.doc());
+    this.fetcher.load(aclFile.doc()).then(response => {
 
-    this.fetcher.putBack(aclFile);
+      this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
+      this.store.add(aclFile, ACL("agent"), owner, aclFile.doc());
+      this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
+      this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
+      this.store.add(aclFile, ACL("mode"), ACL("Write"), aclFile.doc());
+      this.store.add(aclFile, ACL("mode"), ACL("Control"), aclFile.doc());
+
+      this.fetcher.putBack(aclFile);
+    });
   }
 
   /**
@@ -921,7 +1038,7 @@ export class RdfService {
         // Ok, this is not the most fail-safe thing.
         // TODO: check if there are any triples at all.
         while (d.length != 0) {
-          url = baseurl + '#' + uuid.v4();
+          url = this.store.sym(baseurl + '#' + uuid.v4());
           //d = this.store.each(url, RDF('type'));
           d = await this.store.each(url);
         }

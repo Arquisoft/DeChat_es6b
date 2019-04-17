@@ -17,6 +17,7 @@ const FILES_FOLDER = '/private/files'
 const CHAT_FOLDER = '/private/dechat_es6b';
 const INBOX_FOLDER = '/inbox/';
 const PROFILE_CARD_FOLDER = '/profile/card#me';
+const GROUPS_FOLDER = '/private/dechat_groups';
 
 
 @Injectable({
@@ -45,6 +46,7 @@ export class ChatService {
     await this.checkFolder(PRIVATE_FOLDER)
       .then(async () => { await this.checkFolder(FILES_FOLDER) })
       .then(async () => { await this.checkFolder(CHAT_FOLDER) })
+      .then(async () => { await this.checkFolder(GROUPS_FOLDER) })
       .then(async () => { await this.loadChatChannels() })
       .then(async () => { await this.checkInbox() });
 

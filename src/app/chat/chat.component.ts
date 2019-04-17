@@ -274,6 +274,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     await this.auth.solidSignOut();
   }
   
+  /**
+   * Busca patrones en el mensaje, si hay alguna coincidencia
+   * la sustituye por el código HTML correspondiente.
+   * 
+   * @param msg 
+   */
   analyzeMessage(msg: string): string {
     return this.chatUtils.analyzeMessage(msg.toString());
   }
