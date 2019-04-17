@@ -72,8 +72,10 @@
 			</div>
 			
 			<div class="leftSide">
-			<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
-        <span>{{ selectedChatChannel.participants[0].webId }}</span></p>
+				<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
+					<span *ngIf="!selectedChatChannel.group || selectedChatChannel.group.toString().length == 0">{{ selectedChatChannel.participants[0].webId }}</span>
+					<!-- <span *ngIf="selectedChatChannel.group.toString().length > 0">{{ selectedChatChannel.group.toString() }}</span> -->
+				</p>
 			<!--<p class="chatStatus">Online</p>-->
 			</div>
 		</div>
@@ -217,6 +219,13 @@
 	<p>Enter the WebId of the contact:</p>
 	<input type="text" class="write_msg" id="input_add_webid" placeholder="Type a friend's webid"/>
 	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
+</div>
+
+<!-- NEW GROUP CHANNEL OPTION -->
+<div class="newGroupChannel">
+	<p>Enter the name of the group:</p>
+	<input type="text" class="write_msg" id="input_group_name" placeholder="Type the name of the group"/>
+	<button id="button_add_group_channel" type="button" (click)="addNewGroupChatChannel()">Add Group Channel</button>
 </div>
 
 <!-- CONVERSATION OPTIONS MENU -->

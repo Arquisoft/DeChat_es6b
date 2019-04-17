@@ -390,8 +390,10 @@ export class RdfService {
     this.store.add(channel, DC("title"), newChatChannel.title, channel.doc());
     this.store.add(channel, DC("created"), newChatChannel.created, channel.doc());
     newChatChannel.participants.forEach(element => {
-      this.store.add(channel, FLOW("participation"), element.webId, channel.doc());
+      let part = this.store.sym(element.webId);
+      this.store.add(channel, FLOW("participation"), part, channel.doc());
     });
+    this.store.add(channel, DC("group"), (newChatChannel.group)? newChatChannel.group: "", channel.doc());
 
     this.fetcher.putBack(channel);
   }
@@ -423,12 +425,13 @@ export class RdfService {
    * @param folderGroupUri Example: /private/dechat_groups
    * @param makerWebId 
    */
-  public async addNewChatGroupToFile(folderGroupUri: string, makerWebId: string): Promise<string> {
+  public async addNewChatGroupToFile(folderGroupUri: string, makerWebId: string, title: string): Promise<string> {
     console.log("Creating a group...");
     
     let participant = this.store.sym(makerWebId);
     let chatGroup = await this.generateUniqueUrlForResource(folderGroupUri + "/");
     this.store.add(chatGroup, TYPE(), MEE("ChatGroup"), chatGroup.doc());
+    this.store.add(chatGroup, DC("title"), title, chatGroup.doc());
     this.store.add(chatGroup, FLOW("participation"), participant, chatGroup.doc());
     await this.fetcher.putBack(chatGroup);
 
@@ -520,15 +523,32 @@ export class RdfService {
 
     let promises = this.fetcher.load(group.doc()).then(res => {
       return Promise.all(this.store.match(group, FLOW("participation"), null, group.doc()).map(async st => {
-        return st.object.value.toString();
+        return this.loadParticipantData(st.object.value.toString());
       }));
     });
 
     // Guardamos los participantes en un array
-    await promises.then(parts => { parts.forEach(part => { participants.push(part) })});
+    await promises.then(parts => { parts.forEach(part => { participants.push(part); })});
 
     // Devolvemos el array de participantes (son promesas)
     return participants;
+  }
+
+  /**
+   * Devuelve el título de un grupo de chat
+   * 
+   * @param groupFileUri 
+   */
+  public async getChatGroupTitle(groupFileUri: string): Promise<string> {
+    let group = this.store.sym(groupFileUri);
+
+    let promise = this.fetcher.load(group.doc()).then(res => {
+      return Promise.all(this.store.match(group, DC("title"), null, group.doc()).map(async st => {
+        return st.object.value.toString();
+      }));
+    });
+
+    return (await promise.then(title => { return title })).toString();
   }
 
   /**
@@ -540,7 +560,7 @@ export class RdfService {
    * 
    * @param inboxUri 
    */
-  public async getInboxMessages(inboxUri: string): Promise<Message[]> {
+  public async getInboxMessages(inboxUri: string): Promise<any[]> {
     let messages: Message[] = new Array();
     let fileUri = this.store.sym(inboxUri);
         
@@ -550,7 +570,7 @@ export class RdfService {
         if (st.object.value == JSONLD_CONTENT_TYPE) {
           let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
           try {
-            let jsonMessage: Message = JSON.parse(jsonld);
+            let jsonMessage: any = JSON.parse(jsonld);
             // Verificamos que sea un mensaje válido
             if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
               this.deleteFile(st.subject.value);
@@ -587,20 +607,20 @@ export class RdfService {
         
         // Obtenemos los datos del canal de chat
         return this.fetcher.load(fileUri.doc()).then(async response => {
-          var d = await this.store.each(null, FLOW("participation"), null, fileUri.doc()); 
-          // Si contiene "participation" suponemos que es un canal de chat válido
+          var d = await this.store.each(null, TYPE(), MEE("LongChat"), fileUri.doc()); 
           // Comprobamos que sea un canal de chat válido
           if (d.length != 0) {
             let id = st.object.value.split('/').pop();
             let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
             let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            let group = this.store.match(fileUri, DC("group"), null, fileUri.doc()).map(st => { return (st.object.value) });
             
             // Obtenemos participantes y mensajes del canal de chat
             let messages = await this.getMessagesChatChannel(st.object.value);
             let participants = await this.getParticipantsChatChannel(st.object.value);
 
             // Retornamos el canal de chat con los datos obtenidos
-            return new ChatChannel(id, title, new Date(created), messages, participants);
+            return new ChatChannel(id, title, group, new Date(created), messages, participants);
           } else {
             console.log(st.object.value + " is not a valid chat channel");
           }

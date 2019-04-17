@@ -57,6 +57,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".overlay, .newChannel").fadeOut(180);
     });
 
+    /* make newGroupChannel option show up */
+    $(".ng").click(function() {
+      $(".newGroupChannel").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+    /* close newGroupChannel option when adding */
+    $("#button_add_group_channel").click(function () {
+      $(".overlay, .newGroupChannel").fadeOut(180);
+    });
+
     // Show/Hide the other notification options
     $(".deskNotif").click(function(){
       $(".showSName, .showPreview, .playSounds").toggle();
@@ -64,7 +76,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* close all overlay elements */
     $(".overlay").click(function () {
-      $(".overlay, .menuWrap, .newChannel").fadeOut(180);
+      $(".overlay, .menuWrap, .newChannel, .newGroupChannel").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
       $(".config").animate({opacity: '0', right: '-200vw'}, 180);
     });
@@ -130,6 +142,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
       const msg: string = inputElement.value;
       this.chatService.sendMessage(this.selectedChatChannel, msg);
+      this.scrollBottom = true;
     }
   }
 
@@ -148,6 +161,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     if (this.selectedChatChannel != null) {
       const file: File = event.target.files[0];
       this.chatService.sendFile(this.selectedChatChannel, '', file);
+      this.scrollBottom = true;
     }
   }
 
@@ -173,6 +187,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     const webid: string = inputElement.value;
     if (webid.length > 0) {
       let channel = await this.chatService.createNewChatChannel(webid);
+      this.selectedChatChannel = channel;
+    }
+  }
+
+  async addNewGroupChatChannel() {
+    const inputElement: HTMLInputElement = document.getElementById('input_group_name') as HTMLInputElement;
+    const groupName: string = inputElement.value;
+    if (groupName.length > 0) {
+      let channel = await this.chatService.createNewChatGroup(groupName);
       this.selectedChatChannel = channel;
     }
   }
