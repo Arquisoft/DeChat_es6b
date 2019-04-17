@@ -221,9 +221,11 @@
 
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
+	<!--
 	<button class="option about">See Info</button>
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
+	-->
 	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
 </div>
 
@@ -251,8 +253,9 @@
 		<p class="pWebId" *ngIf="myProfile">{{ myProfile.webId }}</p>
 		</div>
 			
-		<button class="changePic">Change Profile Picture</button>
-		<button class="edit">Edit Profile Info</button>
+		<button class="changePic" (click)="goToWebProfile()">Edit Profile Info</button>
+		<!--<button class="changePic">Change Profile Picture</button>
+		<button class="edit">Edit Profile Info</button>-->
 	</div>
 	</section>
 	
@@ -262,14 +265,17 @@
 		<p class="confTitle">Your Info</p>
 		
 		<div class="information">
+			<!--
 			<ul>
-				<li>Phone Number: <span class="blue phone">+1 12 1234 5678</span></li>
-				<li>Username: <span class="blue username">@USERNAME</span></li>
-				<li>Profile: <span class="blue">https://t.me/USERNAME</span></li>
+				<li>Phone Number: <span class="blue phone"></span></li>
+				<li>Username: <span class="blue username"></span></li>
+				<li>Profile: <span class="blue"></span></li>
 			</ul>
+			-->
 		</div>
 		
 		<!-- NOTIFICATIONS SECTION -->
+		<!--
 		<p class="confTitle">Notifications</p>
 		
 		<div class="optionWrapper deskNotif">
@@ -319,6 +325,7 @@
 				</label>
 				<p>Night Mode</p>
 			</div>
+		-->
 		
 	</section>
 </section>

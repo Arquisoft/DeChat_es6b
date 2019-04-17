@@ -43,6 +43,20 @@ export class ChatService {
     this.webid = await this.rdf.getWebId();
     this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
 
+
+
+    // let temp = await this.rdf.addNewChatGroupToFile(this.uri + GROUPS_FOLDER, this.webid);
+    // console.log(temp)
+
+    // this.rdf.addParticipantToGroup("https://davidcarballo.solid.community/private/dechat_groups/abba3bbf-3e65-425a-93e3-acf625c5b973", "https://dcarballob01.inrupt.net/profile/card#me");
+
+    // this.rdf.removeParticipantFromGroup("https://davidcarballo.solid.community/private/dechat_groups/abba3bbf-3e65-425a-93e3-acf625c5b973", "https://dcarballob01.inrupt.net/profile/card#me")
+
+    // let temp = await this.rdf.getGroupChatParticipants("https://davidcarballo.solid.community/private/dechat_groups/abba3bbf-3e65-425a-93e3-acf625c5b973");
+    // console.log(temp);
+
+
+
     await this.checkFolder(PRIVATE_FOLDER)
       .then(async () => { await this.checkFolder(FILES_FOLDER) })
       .then(async () => { await this.checkFolder(CHAT_FOLDER) })
@@ -275,6 +289,22 @@ export class ChatService {
     }
 
     return null;
+  }
+
+  /**
+   * Crea un nuevo canal de chat grupal
+   */
+  public createNewGroupChatChannel() {
+    
+    
+  }
+
+  /**
+   * Crea un nuevo grupo de chat y el canal de chat grupal
+   */
+  public async createNewChatGroup() {
+    await this.rdf.addNewChatGroupToFile(GROUPS_FOLDER, this.webid);
+
   }
 
   /**

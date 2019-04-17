@@ -17,6 +17,7 @@ import { Participant } from '../models/participant.model';
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private scrollMe: ElementRef;
+  scrollBottom = false;
 
   defaultImage = "assets/images/default.jpg";
   selectedChatChannel: ChatChannel; 
@@ -152,6 +153,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
+    this.scrollBottom = true;
   }
 
   getMessagesSelectedChatChannel() {
@@ -251,7 +253,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   // Ajusta el scroll del chat a la parte inferior de este
   moveChatScrollToBottom() {
-    this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+    if (this.scrollBottom) {
+      this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+      this.scrollBottom = false;
+    }
   }
 
   // Elimina un chat de la lista y del POD del usuario
@@ -282,6 +287,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
    */
   analyzeMessage(msg: string): string {
     return this.chatUtils.analyzeMessage(msg.toString());
+  }
+
+  goToWebProfile() {
+    window.open(this.chatService.webid, "_blank");
   }
 
 }

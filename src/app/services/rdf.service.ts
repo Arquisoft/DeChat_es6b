@@ -426,14 +426,15 @@ export class RdfService {
   public async addNewChatGroupToFile(folderGroupUri: string, makerWebId: string): Promise<string> {
     console.log("Creating a group...");
     
+    let participant = this.store.sym(makerWebId);
     let chatGroup = await this.generateUniqueUrlForResource(folderGroupUri + "/");
     this.store.add(chatGroup, TYPE(), MEE("ChatGroup"), chatGroup.doc());
-    this.store.add(chatGroup, FLOW("participation"), makerWebId, chatGroup.doc());
+    this.store.add(chatGroup, FLOW("participation"), participant, chatGroup.doc());
     await this.fetcher.putBack(chatGroup);
 
     // Creamos el fichero .acl (permisos) y le asignamos el Owner (makerWebId)
     await this.updateFile(chatGroup["value"] + ".acl", "");
-    await this.addOwnerToACL(chatGroup["value"], makerWebId);
+    await this.addOwnerToACL(chatGroup["value"], participant);
 
     return chatGroup["value"];
   }
@@ -448,21 +449,22 @@ export class RdfService {
   public addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
 
+    let participant = this.store.sym(newParticipant);
     let group = this.store.sym(groupFileUri);
     this.fetcher.load(group.doc()).then(async res => {
       let d = await this.store.each(null, FLOW("participation"), null, group.doc());
-      let w = await this.store.each(null, FLOW("participation"), newParticipant, group.doc());
+      let w = await this.store.each(null, FLOW("participation"), participant, group.doc());
 
       // Si contiene "participation" suponemos que es un grupo de chat válido
       // Si no contiene ya al participante lo añadimos
       if (d.length != 0 && w.length == 0) {
-        this.store.add(group, FLOW("participation"), newParticipant, group.doc());
+        this.store.add(group, FLOW("participation"), participant, group.doc());
         this.fetcher.putBack(group);
 
         // Asignamos permisos al nuevo participante
-        this.addOwnerToACL(groupFileUri, newParticipant);
+        this.addOwnerToACL(groupFileUri, participant);
       } else {
-        console.log("Invalid group or participant already exists")
+        console.error("Invalid group or participant already exists")
       }
     });
   }
@@ -476,12 +478,13 @@ export class RdfService {
    */
   public removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
     console.log("Removing participant from the group...");
-
+    
+    let participant = this.store.sym(oldParticipant);
     // Eliminar participante del grupo
     let group = this.store.sym(groupFileUri);
     this.fetcher.load(group.doc()).then(res => {
       let ins = [];
-      let del = $rdf.st(group, FLOW("participation"), oldParticipant, group.doc());
+      let del = $rdf.st(group, FLOW("participation"), participant, group.doc());
       
       this.updateManager.update(del, ins, (uri, ok, message) => {
         if (ok) console.log('Participant successfully deleted!');
@@ -491,7 +494,6 @@ export class RdfService {
 
     // Eliminar permisos del participante sobre el grupo
     let groupPermissions = this.store.sym(groupFileUri + ".acl");
-    let participant = this.store.sym(oldParticipant);
     
     this.fetcher.load(groupPermissions.doc()).then(async res => {
       let uri = await this.store.match(null, ACL("agent"), participant, groupPermissions.doc()).map(st => { return (st.subject.value); });
