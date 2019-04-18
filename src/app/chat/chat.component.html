@@ -250,8 +250,8 @@
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
 	-->
-	<button *ngIf="isGroupChannel()" class="option addParticipant">Add Participant To Group</button>
-	<button *ngIf="isGroupChannel()" class="option removeParticipant">Remove Participant From Group</button>
+	<button class="option addParticipant" *ngIf="isGroupChannel()" (click)="showAddParticipant()">Add Participant To Group</button>
+	<button class="option removeParticipant" *ngIf="isGroupChannel()" (click)="showRemoveParticipant()">Remove Participant From Group</button>
 	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
 </div>
 

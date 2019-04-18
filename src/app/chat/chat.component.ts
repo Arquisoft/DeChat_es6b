@@ -72,12 +72,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
 
     /* make addParticipantToGroup option show up */
-    $(".addParticipant").click(function() {
-      $(".addParticipantToGroup").fadeIn(180);
-      $(".overlay").fadeIn(180);
-      /* hide others */
-      $(".menuWrap").fadeOut(180);
-    });
+    // $(".addParticipant").click(function() {
+    //   $(".addParticipantToGroup").fadeIn(180);
+    //   $(".overlay").fadeIn(180);
+    //   /* hide others */
+    //   $(".menuWrap").fadeOut(180);
+    // });
 
     /* close addParticipantToGroup option when adding */
     $("#button_add_part_group_channel").click(function () {
@@ -85,12 +85,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
 
     /* make removeParticipantFromGroup option show up */
-    $(".removeParticipant").click(function() {
-      $(".removeParticipantFromGroup").fadeIn(180);
-      $(".overlay").fadeIn(180);
-      /* hide others */
-      $(".menuWrap").fadeOut(180);
-    });
+    // $(".removeParticipant").click(function() {
+    //   $(".removeParticipantFromGroup").fadeIn(180);
+    //   $(".overlay").fadeIn(180);
+    //   /* hide others */
+    //   $(".menuWrap").fadeOut(180);
+    // });
 
     /* close removeParticipantFromGroup option when adding */
     $("#button_remove_part_group_channel").click(function () {
@@ -372,6 +372,22 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
       await this.rdf.removeParticipantFromGroup(this.selectedChatChannel.group, webid);
     }
+  }
+
+  showAddParticipant() {
+    $(".addParticipantToGroup").fadeIn(180);
+    $(".overlay").fadeIn(180);
+    /* hide others */
+    $(".moreMenu").slideToggle("fast");
+    $(".menuWrap").fadeOut(180);
+  }
+
+  showRemoveParticipant() {
+    $(".removeParticipantFromGroup").fadeIn(180);
+    $(".overlay").fadeIn(180);
+    /* hide others */
+    $(".moreMenu").slideToggle("fast");
+    $(".menuWrap").fadeOut(180);
   }
 
   /**
