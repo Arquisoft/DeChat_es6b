@@ -74,7 +74,7 @@
 			<div class="leftSide">
 				<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
 					<span *ngIf="!selectedChatChannel.group || selectedChatChannel.group.toString().length == 0">{{ selectedChatChannel.participants[0].webId }}</span>
-					<!-- <span *ngIf="selectedChatChannel.group || selectedChatChannel.group.toString().length > 0">{{ selectedChatChannel.group.toString() }}</span> -->
+					<span *ngIf="selectedChatChannel.group || selectedChatChannel.group.toString().length > 0">{{ selectedChatChannel.group.toString() }}</span>
 				</p>
 			<!--<p class="chatStatus">Online</p>-->
 			</div>
@@ -228,6 +228,21 @@
 	<button id="button_add_group_channel" type="button" (click)="addNewGroupChatChannel()">Add Group Channel</button>
 </div>
 
+<!-- ADD PARTICIPANT TO GROUP -->
+<div class="addParticipantToGroup">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_add_part_group_webid" placeholder="Type a friend's webid"/>
+	<button id="button_add_part_group_channel" type="button" (click)="addParticipantToGroup()">Add Participant To Group Channel</button>
+</div>
+
+<!-- REMOVE PARTICIPANT FROM GROUP -->
+<div class="removeParticipantFromGroup">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_remove_part_group_webid" placeholder="Type a friend's webid"/>
+	<button id="button_remove_part_group_channel" type="button" (click)="removeParticipantFromGroup()">Remove Participant From Group Channel</button>
+</div>
+
+
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
 	<!--
@@ -235,6 +250,8 @@
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
 	-->
+	<button *ngIf="isGroupChannel()" class="option addParticipant">Add Participant To Group</button>
+	<button *ngIf="isGroupChannel()" class="option removeParticipant">Remove Participant From Group</button>
 	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
 </div>
 

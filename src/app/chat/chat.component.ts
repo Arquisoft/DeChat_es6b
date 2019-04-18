@@ -20,6 +20,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   scrollBottom = false;
 
   defaultImage = "assets/images/default.jpg";
+  defaultGroupImage = "assets/images/groups.png";
+
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
 
@@ -69,6 +71,32 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".overlay, .newGroupChannel").fadeOut(180);
     });
 
+    /* make addParticipantToGroup option show up */
+    $(".addParticipant").click(function() {
+      $(".addParticipantToGroup").fadeIn(180);
+      $(".overlay").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+    /* close addParticipantToGroup option when adding */
+    $("#button_add_part_group_channel").click(function () {
+      $(".overlay, .addParticipantToGroup").fadeOut(180);
+    });
+
+    /* make removeParticipantFromGroup option show up */
+    $(".removeParticipant").click(function() {
+      $(".removeParticipantFromGroup").fadeIn(180);
+      $(".overlay").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+    /* close removeParticipantFromGroup option when adding */
+    $("#button_remove_part_group_channel").click(function () {
+      $(".overlay, .removeParticipantFromGroup").fadeOut(180);
+    });
+
     // Show/Hide the other notification options
     $(".deskNotif").click(function(){
       $(".showSName, .showPreview, .playSounds").toggle();
@@ -76,7 +104,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* close all overlay elements */
     $(".overlay").click(function () {
-      $(".overlay, .menuWrap, .newChannel, .newGroupChannel").fadeOut(180);
+      $(".overlay, .menuWrap, .newChannel, .newGroupChannel, .addParticipantToGroup, .removeParticipantFromGroup").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
       $(".config").animate({opacity: '0', right: '-200vw'}, 180);
     });
@@ -259,13 +287,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.chatService.setChatChannels(this.chatService.allActiveChats);
   }
 
-  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
-  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  // Método para cargar las imágenes, en este momento, para los chats grupales en este momento
+  // se usa una por defecto
   public getImagenChat(channel: ChatChannel) {
-    if (channel.participants[0]) {
-      return (channel.participants[0].imageURL.length > 0)? channel.participants[0].imageURL : this.defaultImage;
+    if (!channel.group || channel.group.toString().length == 0) {
+      // if (channel.participants[0]) {
+        return (channel.participants[0].imageURL.length > 0)? channel.participants[0].imageURL : this.defaultImage;
+      // } else {
+      //   return this.defaultImage;
+      // }
     } else {
-      return this.defaultImage;
+      return this.defaultGroupImage;
     }
   }
 
@@ -314,6 +346,40 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   goToWebProfile() {
     window.open(this.chatService.webid, "_blank");
+  }
+
+  /**
+   * 
+   */
+  async addParticipantToGroup() {
+    const inputElement: HTMLInputElement = document.getElementById('input_add_part_group_webid') as HTMLInputElement;
+    const webid: string = inputElement.value;
+    if (webid.length > 0 && (this.selectedChatChannel.group
+                            && this.selectedChatChannel.group.toString().length > 0)) {
+
+      await this.rdf.addParticipantToGroup(this.selectedChatChannel.group, webid);
+    }
+  }
+
+  /**
+   * 
+   */
+  async removeParticipantFromGroup() {
+    const inputElement: HTMLInputElement = document.getElementById('input_remove_part_group_webid') as HTMLInputElement;
+    const webid: string = inputElement.value;
+    if (webid.length > 0 && (this.selectedChatChannel.group
+                            && this.selectedChatChannel.group.toString().length > 0)) {
+
+      await this.rdf.removeParticipantFromGroup(this.selectedChatChannel.group, webid);
+    }
+  }
+
+  /**
+   * 
+   */
+  isGroupChannel(): boolean {
+    if (this.selectedChatChannel)
+      return (this.selectedChatChannel.group && this.selectedChatChannel.group.toString().length > 0);
   }
 
 }

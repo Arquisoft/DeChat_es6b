@@ -453,7 +453,7 @@ export class RdfService {
     console.log("Adding a participant to the group...");
 
     let participant = this.store.sym(newParticipant);
-    let group = this.store.sym(groupFileUri);
+    let group = this.store.sym(groupFileUri.toString());
     this.fetcher.load(group.doc()).then(async res => {
       let d = await this.store.each(null, FLOW("participation"), null, group.doc());
       let w = await this.store.each(null, FLOW("participation"), participant, group.doc());
@@ -465,7 +465,7 @@ export class RdfService {
         this.fetcher.putBack(group);
 
         // Asignamos permisos al nuevo participante
-        this.addOwnerToACL(groupFileUri, participant);
+        this.addOwnerToACL(groupFileUri.toString(), participant);
       } else {
         console.error("Invalid group or participant already exists")
       }
@@ -484,7 +484,7 @@ export class RdfService {
     
     let participant = this.store.sym(oldParticipant);
     // Eliminar participante del grupo
-    let group = this.store.sym(groupFileUri);
+    let group = this.store.sym(groupFileUri.toString());
     this.fetcher.load(group.doc()).then(res => {
       let ins = [];
       let del = $rdf.st(group, FLOW("participation"), participant, group.doc());
@@ -496,7 +496,7 @@ export class RdfService {
     });
 
     // Eliminar permisos del participante sobre el grupo
-    let groupPermissions = this.store.sym(groupFileUri + ".acl");
+    let groupPermissions = this.store.sym(groupFileUri.toString() + ".acl");
     
     this.fetcher.load(groupPermissions.doc()).then(async res => {
       let uri = await this.store.match(null, ACL("agent"), participant, groupPermissions.doc()).map(st => { return (st.subject.value); });
@@ -519,7 +519,7 @@ export class RdfService {
    */
   public async getGroupChatParticipants(groupFileUri: string): Promise<Participant[]> {
     let participants: Participant[] = new Array();
-    let group = this.store.sym(groupFileUri);
+    let group = this.store.sym(groupFileUri.toString());
 
     let promises = this.fetcher.load(group.doc()).then(res => {
       return Promise.all(this.store.match(group, FLOW("participation"), null, group.doc()).map(async st => {
@@ -540,7 +540,7 @@ export class RdfService {
    * @param groupFileUri 
    */
   public async getChatGroupTitle(groupFileUri: string): Promise<string> {
-    let group = this.store.sym(groupFileUri);
+    let group = this.store.sym(groupFileUri.toString());
 
     let promise = this.fetcher.load(group.doc()).then(res => {
       return Promise.all(this.store.match(group, DC("title"), null, group.doc()).map(async st => {

@@ -170,7 +170,7 @@ export class ChatService {
 
         // Si es un canal grupal actualizamos los participantes
         // y añadimos el grupo al mensaje en una nueva propiedad
-        if (chatChannel.group.toString().length > 0) {
+        if (chatChannel.group && chatChannel.group.toString().length > 0) {
           chatChannel.participants = await this.rdf.getGroupChatParticipants(chatChannel.group.toString());
           message["group"] = chatChannel.group.toString();
         }
@@ -217,7 +217,7 @@ export class ChatService {
 
         // Si es un canal grupal actualizamos los participantes
         // y añadimos el grupo al mensaje en una nueva propiedad
-        if (chatChannel.group.toString().length > 0) {
+        if (chatChannel.group && chatChannel.group.toString().length > 0) {
           chatChannel.participants = await this.rdf.getGroupChatParticipants(chatChannel.group.toString());
           message["group"] = chatChannel.group.toString();
         }
@@ -266,11 +266,49 @@ export class ChatService {
    * @param urlFile
    */
   private async processNewMessage(newMessage: any) {
-
-    //---- CHATS INDIVIDUALES ----//
     if (!newMessage.group) {
-      let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
+      this.processRegularMessage(newMessage);
+    } else {
+      this.processGroupMessage(newMessage);
+    }
+  }
+
+  /**
+   * 
+   * @param newMessage 
+   */
+  private async processRegularMessage(newMessage: any) {
+    let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
       
+    // Añadimos el mensaje al canal correspondiente si ya existe
+    if (channel != null) {
+      this.addNewMessageToChannel(channel, newMessage);
+      channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
+
+      // Guardamos el mensaje en el chat en el POD propio
+      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
+
+    } else {
+      // Si no hay canal asociado creamos uno
+      let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
+      
+      this.addNewMessageToChannel(newChannel, newMessage);
+      // Guardamos el mensaje en el chat en el POD propio
+      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
+    }
+  }
+
+  /**
+   * 
+   * @param newMessage 
+   */
+  private async processGroupMessage(newMessage: any) {
+    let channel:ChatChannel = this.searchChatChannelByGroup(newMessage.group.toString());
+    let validParticipant = (await this.rdf.getGroupChatParticipants(newMessage.group))
+                            .filter(p => { return p.webId == newMessage.makerWebId });
+
+    // Si no existe el participante en el grupo entendemos que ha sido expulsado, por tanto ignorar
+    if (validParticipant.length != 0) {
       // Añadimos el mensaje al canal correspondiente si ya existe
       if (channel != null) {
         this.addNewMessageToChannel(channel, newMessage);
@@ -281,38 +319,12 @@ export class ChatService {
 
       } else {
         // Si no hay canal asociado creamos uno
-        let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
-        
+        let newChannel = await this.createNewGroupChatChannel(newMessage.group.toString(),
+                              await this.rdf.getChatGroupTitle(newMessage.group.toString()));
+
         this.addNewMessageToChannel(newChannel, newMessage);
         // Guardamos el mensaje en el chat en el POD propio
         await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
-      }
-
-    //---- CHATS GRUPALES ----//
-    } else {
-      let channel:ChatChannel = this.searchChatChannelByGroup(newMessage.group.toString());
-      let validParticipant = (await this.rdf.getGroupChatParticipants(newMessage.group))
-                              .filter(p => { return p.webId == newMessage.makerWebId });
-
-      // Si no existe el participante en el grupo entendemos que ha sido expulsado, por tanto ignorar
-      if (validParticipant.length != 0) {
-        // Añadimos el mensaje al canal correspondiente si ya existe
-        if (channel != null) {
-          this.addNewMessageToChannel(channel, newMessage);
-          channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
-
-          // Guardamos el mensaje en el chat en el POD propio
-          await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
-
-        } else {
-          // Si no hay canal asociado creamos uno
-          let newChannel = await this.createNewGroupChatChannel(newMessage.group.toString(),
-                                await this.rdf.getChatGroupTitle(newMessage.group.toString()));
-
-          this.addNewMessageToChannel(newChannel, newMessage);
-          // Guardamos el mensaje en el chat en el POD propio
-          await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
-        }
       }
     }
   }
