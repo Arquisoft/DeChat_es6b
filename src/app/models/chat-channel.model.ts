@@ -24,4 +24,8 @@ export class ChatChannel {
     getLastMessage(): Message {
         return (this.messages[this.messages.length-1] != undefined)? (this.messages[this.messages.length-1]) : null;
     }
+
+    getPendingMessages(): Message[] {
+        return this.messages.filter(m => { m.status == Message.Status.PENDING });
+    }
 }

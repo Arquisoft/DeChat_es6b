@@ -399,10 +399,12 @@ export class RdfService {
   }
 
   /**
+   * Guarda un mensaje en el POD, devuelve la URI asignada al mensaje.
+   * 
    * @param chatUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
    * @param msg Mensaje a guardar en el POD
    */
-  async saveMessage(chatUri: String, message: Message) {
+  async saveMessage(chatUri: String, message: Message): Promise<string> {
     let msgUri = await this.generateUniqueUrlForResource(chatUri + "#");
     try {
       let msg = this.store.sym(msgUri);
@@ -410,11 +412,13 @@ export class RdfService {
       this.store.add(msg, TERMS("created"), message.sendTime, msg.doc());
       this.store.add(msg, FOAF("maker"), message.makerWebId, msg.doc());
       this.store.add(msg, SIOC("content"), message.message, msg.doc());
+      this.store.add(msg, DC("status"), message.status, msg.doc());
 
       this.fetcher.putBack(msg);
       console.log("Message saved! (" + msgUri + ")");
+      return msgUri["value"];
     } catch (err) {
-      console.log("An error occurred while saving the message (" + msgUri + ")");
+      console.error("An error occurred while saving the message (" + msgUri + ")");
     }
   }
   
@@ -577,7 +581,7 @@ export class RdfService {
               return jsonMessage;
             }
           } catch (err) {
-            console.log("The message does not have the correct structure. (" + st.subject.value + ")");
+            console.error("The message does not have the correct structure. (" + st.subject.value + ")");
           }
         }
       }));
@@ -622,7 +626,7 @@ export class RdfService {
             // Retornamos el canal de chat con los datos obtenidos
             return new ChatChannel(id, title, group, new Date(created), messages, participants);
           } else {
-            console.log(st.object.value + " is not a valid chat channel");
+            console.error(st.object.value + " is not a valid chat channel");
           }
         });
       }));
@@ -688,7 +692,8 @@ export class RdfService {
           let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
-          return new Message(msgMaker, msgContent, new Date(msgCreated));
+          let msgStatus = this.store.match(messageUri, DC("status"), null, messageUri.doc()).map(st => { return (st.object.value) });
+          return new Message(msgMaker, msgContent, new Date(msgCreated), st.subject.value, msgStatus);
         });
       }));
     });
@@ -804,7 +809,7 @@ export class RdfService {
       let imageURL = await this.getVCardImage(webid);
       let name = await this.getVCardName(webid);
       return new Participant(webid, imageURL, name);
-    } catch (err) { console.log("An error occurred when loading the participant: " + err); }
+    } catch (err) { console.error("An error occurred when loading the participant: " + err); }
   }
 
   /**

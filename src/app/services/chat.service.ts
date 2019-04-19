@@ -43,23 +43,6 @@ export class ChatService {
     this.webid = await this.rdf.getWebId();
     this.uri = this.webid.replace(PROFILE_CARD_FOLDER, "");
 
-
-
-    // let temp = await this.rdf.addNewChatGroupToFile(this.uri + GROUPS_FOLDER, this.webid);
-    // console.log(temp)
-
-    // this.rdf.addParticipantToGroup("https://davidcarballo.solid.community/private/dechat_groups/e9ef36ef-5b96-4bcd-bb24-7240172b0611", "https://dcarballob01.inrupt.net/profile/card#me");
-
-    // this.rdf.removeParticipantFromGroup("https://davidcarballo.solid.community/private/dechat_groups/abba3bbf-3e65-425a-93e3-acf625c5b973", "https://dcarballob01.inrupt.net/profile/card#me")
-
-    // let temp = await this.rdf.getGroupChatParticipants("https://davidcarballo.solid.community/private/dechat_groups/796e56a2-029b-4f99-a009-96e27725d459");
-    // console.log(temp);
-
-    // let temp = await this.rdf.getChatGroupTitle("https://davidcarballo.solid.community/private/dechat_groups/e9ef36ef-5b96-4bcd-bb24-7240172b0611");
-    // console.log(temp);
-
-
-
     await this.checkFolder(PRIVATE_FOLDER)
       .then(async () => { await this.checkFolder(FILES_FOLDER) })
       .then(async () => { await this.checkFolder(CHAT_FOLDER) })
@@ -83,7 +66,6 @@ export class ChatService {
         this.waitForCheckInbox = false;
       }
     });
-
   }
 
   /**
@@ -176,7 +158,8 @@ export class ChatService {
         }
 
         // Actualizamos canal de chat en POD propio
-        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
+        let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
+        message.id = msgUri;
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
@@ -209,7 +192,6 @@ export class ChatService {
  
         // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
         let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name, file);
-        // message.message = this.chatUtils.codeUrlImage(urlFile);
         message.message = urlFile;
         
         // Guardamos el mensaje (url)
@@ -227,7 +209,9 @@ export class ChatService {
         await this.rdf.addOwnerToACL(urlFile, this.webid);
 
         // Actualizamos canal de chat en POD propio
-        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
+        let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
+        message.id = msgUri;
+
 
         // Enviamos el mensaje a todos los participantes del chat
         let newMsg = JSON.stringify(message);
