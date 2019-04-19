@@ -269,6 +269,7 @@ export class ChatService {
       // Guardamos el chat a nuestro POD
       await this.rdf.saveNewChatChannel(this.uri + CHAT_FOLDER + "/", newChatChannel);
 
+
       return newChatChannel;
     }
 
