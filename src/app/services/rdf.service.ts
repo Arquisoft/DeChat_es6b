@@ -425,19 +425,21 @@ export class RdfService {
   /**
    * Actualiza el estado de un mensaje en el POD a READ.
    * 
-   * @param msgUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc#aaaaa-bbbbb-ccccc
+   * @param msgsUris Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc#aaaaa-bbbbb-ccccc
    */
-  async updateMessageToRead(msgUri: string) {
-    let msg = this.store.sym(msgUri);
+  async updateMessageToRead(msgsUris: string[]) {
+    let ins = [];
+    let del = [];
 
-    this.fetcher.load(msg.doc()).then(res => {
-      let ins = $rdf.st(msg, DC("status"), Message.Status.READ, msg.doc());
-      let del = $rdf.st(msg, DC("status"), Message.Status.PENDING, msg.doc());
+    msgsUris.forEach(msgUri => { 
+      let msg = this.store.sym(msgUri);
+      ins.push($rdf.st(msg, DC("status"), Message.Status.READ, msg.doc()))
+      del.push($rdf.st(msg, DC("status"), Message.Status.PENDING, msg.doc()));
+    });
       
-      this.updateManager.update(del, ins, (uri, ok, message) => {
-        if (ok) console.log('Message marked as read successfully!');
-        else console.error("An error occurred when marking the message as read.")
-      });
+    this.updateManager.update(del, ins, (uri, ok, message) => {
+      if (ok) console.log('Messages marked as read successfully!');
+      else console.error("An error occurred when marking the messages as read.")
     });
   }
   

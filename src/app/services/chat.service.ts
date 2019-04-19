@@ -242,13 +242,19 @@ export class ChatService {
    * 
    * @param channel 
    */
-  markPendingMessagesAsRead(channel: ChatChannel) {
+  async markPendingMessagesAsRead(channel: ChatChannel) {
     let pendingMessages = channel.getPendingMessages();
 
-    pendingMessages.forEach(m => {
-      m.status = Message.Status.READ; // En este punto no parece detectar "m.markMessageAsRead()"
-      this.rdf.updateMessageToRead(this.uri + CHAT_FOLDER + "/" + channel.id + "#" + m.id);
-    });
+    if (pendingMessages.length > 0) {
+      pendingMessages.forEach(m => {
+        m.status = Message.Status.READ; // En este punto no parece detectar "m.markMessageAsRead()"
+      });
+
+      await this.rdf.updateMessageToRead(pendingMessages.map(m => {
+        let msgUri = (this.uri + CHAT_FOLDER + "/" + channel.id + "#" + m.id);
+        return msgUri;
+      }));
+    }
   }
 
   /**

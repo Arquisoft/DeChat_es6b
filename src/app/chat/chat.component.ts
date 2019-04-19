@@ -177,9 +177,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  setSelectedChatChannel(selectedChatChannel: ChatChannel){
+  async setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
-    this.chatService.markPendingMessagesAsRead(this.selectedChatChannel);
+    await this.chatService.markPendingMessagesAsRead(this.selectedChatChannel);
     this.scrollBottom = true;
   }
 
