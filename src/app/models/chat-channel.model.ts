@@ -26,6 +26,6 @@ export class ChatChannel {
     }
 
     getPendingMessages(): Message[] {
-        return this.messages.filter(m => { m.status == Message.Status.PENDING });
+        return this.messages.filter(m => { return m.status == Message.Status.PENDING });
     }
 }

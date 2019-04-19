@@ -421,6 +421,25 @@ export class RdfService {
       console.error("An error occurred while saving the message (" + msgUri + ")");
     }
   }
+
+  /**
+   * Actualiza el estado de un mensaje en el POD a READ.
+   * 
+   * @param msgUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc#aaaaa-bbbbb-ccccc
+   */
+  async updateMessageToRead(msgUri: string) {
+    let msg = this.store.sym(msgUri);
+
+    this.fetcher.load(msg.doc()).then(res => {
+      let ins = $rdf.st(msg, DC("status"), Message.Status.READ, msg.doc());
+      let del = $rdf.st(msg, DC("status"), Message.Status.PENDING, msg.doc());
+      
+      this.updateManager.update(del, ins, (uri, ok, message) => {
+        if (ok) console.log('Message marked as read successfully!');
+        else console.error("An error occurred when marking the message as read.")
+      });
+    });
+  }
   
   /**
    * Crea un nuevo grupo de chat, devuelve su URI si se creo correctamente, 
@@ -495,7 +514,7 @@ export class RdfService {
       
       this.updateManager.update(del, ins, (uri, ok, message) => {
         if (ok) console.log('Participant successfully deleted!');
-        else console.error(message)
+        else console.error("An error occurred when deleting the participant from the group.")
       });
     });
 
@@ -511,7 +530,7 @@ export class RdfService {
 
       this.updateManager.update(del, ins, (uri, ok, message) => {
         if (ok) console.log('Participant permissions successfully removed!');
-        else console.error(message)
+        else console.error("An error occurred when deleting group participant permissions.")
       });
     });
   }
@@ -687,13 +706,14 @@ export class RdfService {
     let promises = this.fetcher.load(fileUri.doc()).then(res => {
        return Promise.all(this.store.match(null, SIOC("content"), null, fileUri.doc()).map(async st => {
         let messageUri = this.store.sym(st.subject.value);
+        let messageId = st.subject.value.split('#').pop();
 
         return this.fetcher.load(messageUri.doc()).then(res => {
           let msgCreated = this.store.match(messageUri, TERMS("created"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgStatus = this.store.match(messageUri, DC("status"), null, messageUri.doc()).map(st => { return (st.object.value) });
-          return new Message(msgMaker, msgContent, new Date(msgCreated), st.subject.value, msgStatus);
+          return new Message(msgMaker, msgContent, new Date(msgCreated), messageId, msgStatus.toString());
         });
       }));
     });

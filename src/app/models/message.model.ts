@@ -4,7 +4,7 @@ export class Message {
     makerWebId: string;
     sendTime: Date;
     message: string;
-    status;
+    status: Message.Status;
 
     constructor(makerWebId: string, message: string, sendTime: Date = new Date(), id?:string, status = Message.Status.PENDING) {
         this.id = id;
@@ -12,6 +12,14 @@ export class Message {
         this.message = message;
         this.sendTime = sendTime;
         this.status = status;
+    }
+
+    markMessageAsRead() {
+        this.status = Message.Status.READ;
+    }
+
+    markMessageAsPending() {
+        this.status = Message.Status.PENDING;
     }
 
 }

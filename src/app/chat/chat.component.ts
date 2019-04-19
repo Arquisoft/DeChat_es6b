@@ -71,26 +71,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".overlay, .newGroupChannel").fadeOut(180);
     });
 
-    /* make addParticipantToGroup option show up */
-    // $(".addParticipant").click(function() {
-    //   $(".addParticipantToGroup").fadeIn(180);
-    //   $(".overlay").fadeIn(180);
-    //   /* hide others */
-    //   $(".menuWrap").fadeOut(180);
-    // });
-
     /* close addParticipantToGroup option when adding */
     $("#button_add_part_group_channel").click(function () {
       $(".overlay, .addParticipantToGroup").fadeOut(180);
     });
-
-    /* make removeParticipantFromGroup option show up */
-    // $(".removeParticipant").click(function() {
-    //   $(".removeParticipantFromGroup").fadeIn(180);
-    //   $(".overlay").fadeIn(180);
-    //   /* hide others */
-    //   $(".menuWrap").fadeOut(180);
-    // });
 
     /* close removeParticipantFromGroup option when adding */
     $("#button_remove_part_group_channel").click(function () {
@@ -195,6 +179,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
+    this.chatService.markPendingMessagesAsRead(this.selectedChatChannel);
     this.scrollBottom = true;
   }
 

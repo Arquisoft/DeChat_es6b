@@ -158,11 +158,14 @@ export class ChatService {
         }
 
         // Actualizamos canal de chat en POD propio
+        message.markMessageAsRead();
         let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
         message.id = msgUri;
 
         // Enviamos el mensaje a todos los participantes del chat
+        message.markMessageAsPending();
         let newMsg = JSON.stringify(message);
+        message.markMessageAsRead(); // En memoria debe quedar en READ (mensaje propio)
 
         chatChannel.participants.forEach(async participant => { 
           if (participant.webId != this.webid) {
@@ -209,12 +212,16 @@ export class ChatService {
         await this.rdf.addOwnerToACL(urlFile, this.webid);
 
         // Actualizamos canal de chat en POD propio
+        message.markMessageAsRead();
         let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
         message.id = msgUri;
 
 
         // Enviamos el mensaje a todos los participantes del chat
+        message.markMessageAsPending();
         let newMsg = JSON.stringify(message);
+        message.markMessageAsRead(); // En memoria debe quedar en READ (mensaje propio)
+
         chatChannel.participants.forEach(async participant => {
           if (participant.webId != this.webid) {
             let uriParticipant = participant.webId.toString().replace(PROFILE_CARD_FOLDER, "");
@@ -229,6 +236,19 @@ export class ChatService {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  /**
+   * 
+   * @param channel 
+   */
+  markPendingMessagesAsRead(channel: ChatChannel) {
+    let pendingMessages = channel.getPendingMessages();
+
+    pendingMessages.forEach(m => {
+      m.status = Message.Status.READ; // En este punto no parece detectar "m.markMessageAsRead()"
+      this.rdf.updateMessageToRead(this.uri + CHAT_FOLDER + "/" + channel.id + "#" + m.id);
+    });
   }
 
   /**
@@ -250,19 +270,25 @@ export class ChatService {
    * @param urlFile
    */
   private async processNewMessage(newMessage: any) {
+    let msgId: string;
+
     if (!newMessage.group) {
-      this.processRegularMessage(newMessage);
+      msgId = await this.processRegularMessage(newMessage);
     } else {
-      this.processGroupMessage(newMessage);
+      msgId = await this.processGroupMessage(newMessage);
     }
+
+    newMessage.id = msgId.split("#").pop();
   }
 
   /**
+   * Procesa un mensaje regular y devuelve la ID asignada al mensaje.
    * 
    * @param newMessage 
    */
-  private async processRegularMessage(newMessage: any) {
+  private async processRegularMessage(newMessage: any): Promise<string> {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
+    
       
     // Añadimos el mensaje al canal correspondiente si ya existe
     if (channel != null) {
@@ -270,23 +296,24 @@ export class ChatService {
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
       // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
-
+      return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
+      
     } else {
       // Si no hay canal asociado creamos uno
       let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
       
       this.addNewMessageToChannel(newChannel, newMessage);
       // Guardamos el mensaje en el chat en el POD propio
-      await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
+      return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
     }
   }
 
   /**
+   * Procesa un mensaje grupal y devuelve la ID asignada al mensaje.
    * 
    * @param newMessage 
    */
-  private async processGroupMessage(newMessage: any) {
+  private async processGroupMessage(newMessage: any): Promise<string> {
     let channel:ChatChannel = this.searchChatChannelByGroup(newMessage.group.toString());
     let validParticipant = (await this.rdf.getGroupChatParticipants(newMessage.group))
                             .filter(p => { return p.webId == newMessage.makerWebId });
@@ -299,7 +326,7 @@ export class ChatService {
         channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
         // Guardamos el mensaje en el chat en el POD propio
-        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
+        return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
 
       } else {
         // Si no hay canal asociado creamos uno
@@ -308,7 +335,7 @@ export class ChatService {
 
         this.addNewMessageToChannel(newChannel, newMessage);
         // Guardamos el mensaje en el chat en el POD propio
-        await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
+        return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
       }
     }
   }

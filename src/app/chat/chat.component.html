@@ -53,7 +53,7 @@
           </div>
           <div class="status normal">
             <p class="date" *ngIf="channel.getLastMessage()">{{ channel.getLastMessage().sendTime | date:'LLL d' }}</p>
-            <p class="count">42</p>
+            <p class="count">{{ channel.getPendingMessages().length }}</p>
             <!--<i class="material-icons read">done_all</i>-->
             <i class="material-icons fixed">loyalty</i>
           </div>
