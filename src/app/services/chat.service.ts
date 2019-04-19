@@ -72,7 +72,6 @@ export class ChatService {
    * se crea la carpeta
    * 
    * @param folder Example: '/private'
-   * @returns true si existe el folder, false en caso contrario
    */
   private async checkFolder(folder: string) {
     // Si no esta creada la carpeta la creamos
@@ -80,9 +79,11 @@ export class ChatService {
     if (checkFolder === undefined) {
       console.log("The '"+folder+"' folder does not exist, creating it...");
       await this.rdf.createFolder(this.uri + folder);
-      return false;
     }
-    return true;
+  }
+
+  getRdfService() {
+    return this.rdf;
   }
 
   /**
