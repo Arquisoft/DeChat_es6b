@@ -72,6 +72,7 @@ export class ChatService {
    * se crea la carpeta
    * 
    * @param folder Example: '/private'
+   * @returns true si existe el folder, false en caso contrario
    */
   private async checkFolder(folder: string) {
     // Si no esta creada la carpeta la creamos
@@ -79,7 +80,9 @@ export class ChatService {
     if (checkFolder === undefined) {
       console.log("The '"+folder+"' folder does not exist, creating it...");
       await this.rdf.createFolder(this.uri + folder);
+      return false;
     }
+    return true;
   }
 
   /**
@@ -268,7 +271,6 @@ export class ChatService {
 
       // Guardamos el chat a nuestro POD
       await this.rdf.saveNewChatChannel(this.uri + CHAT_FOLDER + "/", newChatChannel);
-
 
       return newChatChannel;
     }

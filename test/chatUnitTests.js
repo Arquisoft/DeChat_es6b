@@ -10,18 +10,17 @@ const webID = "https://pruebases6b.solid.community/profile/card#mey";
 describe('Chat service logic', function() {
     it ('new chat', async function() {
         this.timeout(timeout);
-        ChatService.createNewChatChannel(this.webId, "chat de pruebas");
-        const channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
-        assert.equal(channel.title, "chat de pruebas");
+        let channel = ChatService.createNewChatChannel(this.webId, "chat de pruebas");
+        assert.equal(true, ChatService.checkFolder("/private/dechat_es6b/"+channel.id));
     });
     it ('search chat', async function() {
         this.timeout(timeout);
-        const channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
+        let channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
         assert.equal(channel.title, "chat de pruebas");
     }); 
     it ('delete chat', async function() {
         this.timeout(timeout);
-        const channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
+        let channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
         ChatService.delete(channel);
         channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
         assert.equal(channel, null);
