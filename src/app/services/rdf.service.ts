@@ -645,7 +645,7 @@ export class RdfService {
             let participants = await this.getParticipantsChatChannel(st.object.value);
 
             // Retornamos el canal de chat con los datos obtenidos
-            return new ChatChannel(id, title, group, new Date(created), messages, participants);
+            return new ChatChannel(id, title, group.toString(), new Date(created), messages, participants);
           } else {
             console.error(st.object.value + " is not a valid chat channel");
           }
@@ -684,7 +684,7 @@ export class RdfService {
           let imageURL = this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { return (st.object.value) });
           let selectedName = (nameFN != undefined && nameFN.length != 0)? nameFN.toString() : nameNAME.toString();
           let selectedImageURL = (imageURL.length > 0)? imageURL[0].toString() : ""; // Seleccionamos la primera imagen (si la hay)
-          return new Participant(st.object.value.toString(), selectedImageURL, selectedName);
+          return new Participant(st.object.value.toString(), selectedImageURL.toString(), selectedName.toString());
         });
       }));
     });
@@ -715,7 +715,7 @@ export class RdfService {
           let msgContent = this.store.match(messageUri, SIOC("content"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgMaker = this.store.match(messageUri, FOAF("maker"), null, messageUri.doc()).map(st => { return (st.object.value) });
           let msgStatus = this.store.match(messageUri, DC("status"), null, messageUri.doc()).map(st => { return (st.object.value) });
-          return new Message(msgMaker, msgContent, new Date(msgCreated), messageId, msgStatus.toString());
+          return new Message(msgMaker.toString(), msgContent.toString(), new Date(msgCreated), messageId, msgStatus.toString());
         });
       }));
     });

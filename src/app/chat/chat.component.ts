@@ -153,7 +153,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     if (this.selectedChatChannel != null) {
       const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
       const msg: string = inputElement.value;
-      this.chatService.sendMessage(this.selectedChatChannel, msg);
+      if (inputElement.value.length > 0) 
+        this.chatService.sendMessage(this.selectedChatChannel, msg);
       this.scrollBottom = true;
     }
   }
@@ -381,6 +382,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   isGroupChannel(): boolean {
     if (this.selectedChatChannel)
       return (this.selectedChatChannel.group && this.selectedChatChannel.group.toString().length > 0);
+  }
+
+  getParticipantUri(webid: string): string {
+    return webid.match(this.chatUtils.regexUrlDomain)[0].split('/').pop();
   }
 
 }
