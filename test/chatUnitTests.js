@@ -31,4 +31,18 @@ describe('Chat service logic', function() {
         channel = ChatService.searchChatChannelByParticipantWebid(this.webId);
         assert.equal(channel, null);
     });
+    it ('send message', async function() {
+        this.timeout(timeout);
+        let channel = ChatService.createNewChatChannel(this.webId, "chat de pruebas");
+        this.ChatService.sendMessage(channel, "pruebas");
+        assert.equal(channel.messages[0], "pruebas");
+        ChatService.delete(channel);
+    });
+    it ('send file', async function() {
+        this.timeout(timeout);
+        let channel = ChatService.createNewChatChannel(this.webId, "chat de pruebas");
+        let file = new File(['foo', 'bar'], 'foobar.txt')
+        this.ChatService.sendFile(channel, "pruebas", file);
+        //channel.messages
+    });
 });

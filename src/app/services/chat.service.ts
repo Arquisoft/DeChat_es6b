@@ -139,7 +139,8 @@ export class ChatService {
   }
 
   /**
-   * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio y envía el mensaje al Inbox de los participantes del chat
+   * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio 
+   * y envía el mensaje al Inbox de los participantes del chat
    *
    * @param chatChannel
    * @param msg
