@@ -25,6 +25,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
 
+  assignedColors = {};
+
+
   constructor(private chatService: ChatService, private rdf: RdfService, 
 				private auth: AuthService, private chatUtils: UtilsService) {
 
@@ -384,8 +387,23 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       return (this.selectedChatChannel.group && this.selectedChatChannel.group.toString().length > 0);
   }
 
+  /**
+   * 
+   * @param webid 
+   */
   getParticipantUri(webid: string): string {
     return webid.match(this.chatUtils.regexUrlDomain)[0].split('/').pop();
+  }
+
+  /**
+   * 
+   * @param webid 
+   */
+  getUniqueColorForWebid(webid: string): string {
+    if (!this.assignedColors[webid])
+      this.assignedColors[webid] = this.chatUtils.getRandomDarkColor();
+
+      return this.assignedColors[webid];
   }
 
 }

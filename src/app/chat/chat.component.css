@@ -880,6 +880,13 @@ div[class~="onTop"] > .count {
   right: 12px;
 }
 
+.participantName {
+  margin-top: -12px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  
+}
+
 /* THE REPLY BAR CSS */
 
 .replyBar {
