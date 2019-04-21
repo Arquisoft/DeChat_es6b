@@ -72,8 +72,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
 
      /* make contacts option show up */
-     this.loadFriends();
-     $(".cn").click(function() {
+    this.loadFriends();
+    $(".cn").click(function() {
       $(".contacts").fadeIn(180);
       /* hide others */
       $(".menuWrap").fadeOut(180);
@@ -398,15 +398,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   showRemoveParticipant() {
     $(".removeParticipantFromGroup").fadeIn(180);
-    $(".overlay").fadeIn(180);
-    /* hide others */
-    $(".moreMenu").slideToggle("fast");
-    $(".menuWrap").fadeOut(180);
-  }
-
-  confirmDeleteChat(){
-    console.log("SI COÑO");
-    $(".checkDeleteChat").fadeIn(180);
     $(".overlay").fadeIn(180);
     /* hide others */
     $(".moreMenu").slideToggle("fast");
