@@ -104,6 +104,14 @@ input[type="checkbox"] {
   margin: 10px 0px 15px 5px;
 }
 
+.contacts_list {
+  margin: 25px;
+  font: Arial;
+  font-size: 18px;
+  font-weight:lighter;
+  color: #222;
+}
+
 .newGroupChannel input,
 .addParticipantToGroup input,
 .removeParticipantFromGroup input,

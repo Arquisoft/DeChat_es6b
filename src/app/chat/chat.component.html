@@ -248,8 +248,8 @@
 <!-- SHOW CONTACTS LIST -->
 <div class="contacts">
 	<p>These are your contacts:</p>
-	<div *ngFor="let user of userListPopup">
-		<label class="userLabel">{{user.username}}</label>
+	<div  *ngFor="let user of userListPopup">
+		<label class="contacts_list">- {{user.username}}</label>
 </div>
 	<button  id="button_contacts" type="button_contacts">Close</button>
 </div>
