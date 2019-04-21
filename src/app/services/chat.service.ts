@@ -5,6 +5,7 @@ import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
 
 import * as uuid from 'uuid';
+import * as manager from 'solid-file-client';
 
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
@@ -177,6 +178,16 @@ export class ChatService {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  /**
+   * 
+   * @param users Obtener la lista de contactos del usuario.
+   */
+  async getFriends(users){
+    await manager.popupLogin().then((webId) => {
+      this.rdf.getFriends(users);
+  });
   }
   
  /**

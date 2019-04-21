@@ -248,7 +248,10 @@
 <!-- SHOW CONTACTS LIST -->
 <div class="contacts">
 	<p>These are your contacts:</p>
-	<button  type="button" (click)="close()">Close</button>
+	<div *ngFor="let user of userListPopup">
+		<label class="userLabel">{{user.username}}</label>
+</div>
+	<button  id="button_contacts" type="button_contacts">Close</button>
 </div>
 
 <!-- CHECK IF USER WANTS TO DELETE CHAT-->

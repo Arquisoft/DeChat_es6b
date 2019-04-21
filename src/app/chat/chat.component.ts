@@ -19,6 +19,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private scrollMe: ElementRef;
   scrollBottom = false;
 
+  userListPopup;
+
   defaultImage = "assets/images/default.jpg";
   defaultGroupImage = "assets/images/groups.png";
 
@@ -70,6 +72,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
 
      /* make contacts option show up */
+     this.loadFriends();
      $(".cn").click(function() {
       $(".contacts").fadeIn(180);
       /* hide others */
@@ -89,6 +92,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     /* close removeParticipantFromGroup option when adding */
     $("#button_remove_part_group_channel").click(function () {
       $(".overlay, .removeParticipantFromGroup").fadeOut(180);
+    });
+
+    /* close contacts option after showing them */
+    $("#button_contacts").click(function () {
+      $(".overlay, .contacts").fadeOut(180);
     });
 
     // Show/Hide the other notification options
@@ -144,6 +152,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".emojiBar").fadeOut(120);
     });
   }
+
+  async loadFriends(){
+    this.userListPopup = [];
+    await this.chatService.getFriends(this.userListPopup);
+  }
+
+  
 
   ngAfterViewChecked() {
     this.moveChatScrollToBottom();

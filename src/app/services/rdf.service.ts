@@ -356,7 +356,7 @@ export class RdfService {
     return '';
   }
 
-  getFriends = () =>
+  /* getFriends = () =>
   {
     const user = this.session.webId;
     const amigos = this.store.each($rdf.sym(user), FOAF('knows'));
@@ -371,7 +371,7 @@ export class RdfService {
     } catch (error) {
       console.log(`Error fetching data: ${error}`);
     }
-  }
+  } */ 
 
 
   /*********************************/
@@ -1101,5 +1101,44 @@ export class RdfService {
       return url;
     }
   }
+  
+  /**
+   * Métodoque devuelve la lista de contactos de un usuario.
+   */
+  getFriends = async (list: { username: string; id: string }[]) => {
+    if (!this.session) {
+        await this.getSession();
+    }
+    try {
+        var store = $rdf.graph();
+        var timeout = 5000; // 5000 ms timeout
+        var fetcher = new $rdf.Fetcher(store, timeout);
 
+        let url = this.session.webId;
+
+        fetcher.nowOrWhenFetched(url, async function (ok, body, xhr) {
+            if (!ok) {
+                console.log('Error getting the data');
+            } else {
+                const subject = $rdf.sym(url);
+                const friends = await store.each(subject, FOAF('knows'));
+                await friends.forEach(async (friend) => {
+                    await fetcher.load(friend);
+                    const webId = friend.value;
+                    const nameNode = await store.any(friend, FOAF('name'));
+                    let fullName = '';
+                    if (nameNode == null || typeof (nameNode) === 'undefined') {
+                        fullName = (webId.split('://')[1]).split('.')[0];
+                    } else {
+                        fullName = nameNode.value;
+                    }
+
+                    await list.push({username: fullName + '', id: webId});
+                });
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
 }
