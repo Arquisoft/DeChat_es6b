@@ -301,6 +301,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
       this.scrollBottom = false;
     }
+
+    // Ajustar a la parta inferior si estamos próximos
+    if ((this.scrollMe.nativeElement.scrollHeight - this.scrollMe.nativeElement.scrollTop) <= 1000 ) {
+      this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight
+    }
   }
 
   // Elimina un chat de la lista y del POD del usuario
