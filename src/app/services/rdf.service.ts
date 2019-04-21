@@ -371,7 +371,7 @@ export class RdfService {
     } catch (error) {
       console.log(`Error fetching data: ${error}`);
     }
-  } */ 
+  }
 
 
   /*********************************/
@@ -1103,7 +1103,7 @@ export class RdfService {
   }
   
   /**
-   * Métodoque devuelve la lista de contactos de un usuario.
+   * Método que devuelve la lista de contactos de un usuario.
    */
   getFriends = async (list: { username: string; id: string }[]) => {
     if (!this.session) {
