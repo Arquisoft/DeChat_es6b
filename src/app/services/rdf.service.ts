@@ -638,7 +638,13 @@ export class RdfService {
             let id = st.object.value.split('/').pop();
             let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
             let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
-            let group = this.store.match(fileUri, DC("group"), null, fileUri.doc()).map(st => { return (st.object.value) });
+            let group = await this.store.match(fileUri, DC("group"), null, fileUri.doc()).map(st => { return (st.object.value) });
+
+            // FETCHEAMOS todos los participantes del chat grupal
+            if (group && group.toString().trim().length > 0) {
+              let participants = await this.getGroupChatParticipants(group.toString());
+              participants.forEach(async p => { await this.fetchNewParticipant(p.webId.toString()) });
+            }
             
             // Obtenemos participantes y mensajes del canal de chat
             let messages = await this.getMessagesChatChannel(st.object.value);
@@ -673,10 +679,7 @@ export class RdfService {
       return Promise.all(this.store.match(fileUri, FLOW("participation"), null, fileUri.doc()).map(async st => {
         let me = this.store.sym(st.object.value.toString());
 
-        /* Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
-         * de la cuenta con la que hemos iniciado sesión */
-        this.fetch(st.object.value.toString().match(this.chatUtils.regexUrlDomain)[0]);
-        /*******************************************************************************/
+        await this.fetchNewParticipant(st.object.value.toString());
 
         return this.fetcher.load(me.doc()).then(res => {
           let nameFN = this.store.match(me, VCARD("fn"), null, me.doc()).map(st => { return (st.object.value) });
@@ -945,7 +948,24 @@ export class RdfService {
     }, err => {} ); // console.log(err) );
   }
 
-
+  /*******************************************************************************
+   * Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
+   * de la cuenta con la que hemos iniciado sesión
+   * 
+   * Usado en:
+   *  - loadChatChannels() [rdf.service.ts]
+   *  - getParticipantsChatChannel() [rdf.service.ts]
+   *  - processGroupMessage() [chat.service.ts]
+  ********************************************************************************/
+ fetcheatedParticipants = [];
+ async fetchNewParticipant(webid: string) {
+   if (!this.fetcheatedParticipants.includes(webid)) {
+    this.fetcheatedParticipants.push(webid);
+    this.store.sym(webid);
+    // let uri = webid.match(this.chatUtils.regexUrlDomain)[0];
+    // await fileClient.fetch(uri).then( results => {}, err => {} );
+   }
+ }
   
 
 

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Message } from '../models/message.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,11 @@ export class UtilsService {
    * 
    * @param msg 
    */
-  public analyzeMessage(msg: string): string {
-    let newMsg = msg.replace(this.regexUrlFiles, this.convertUrlToHtml.bind(this));
+  public analyzeMessage(msg: Message): string {
+    let newMsg = msg.message.replace(this.regexUrlFiles, this.convertUrlToHtml.bind(this));
     newMsg = newMsg.replace(this.regexEmotes, this.convertEmoteToHtml.bind(this));
 
-    return (newMsg)? newMsg : msg;
+    return (newMsg)? newMsg : msg.message;
   }
 
   /**

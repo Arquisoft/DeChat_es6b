@@ -354,8 +354,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
    * 
    * @param msg 
    */
-  analyzeMessage(msg: string): string {
-    return this.chatUtils.analyzeMessage(msg.toString());
+  analyzeMessage(msg: Message): string {
+    return this.chatUtils.analyzeMessage(msg);
   }
 
   goToWebProfile() {

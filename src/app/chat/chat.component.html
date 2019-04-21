@@ -88,7 +88,7 @@
 					<p class="participantName" [style.color]="getUniqueColorForWebid(msg.makerWebId)" *ngIf="isGroupChannel() && (msg.makerWebId != getChatService().webid)">
 						{{ getParticipantUri(msg.makerWebId) }}
 					</p>
-          <ul [innerHtml]="analyzeMessage(msg.message)"></ul>
+          <ul [innerHtml]="analyzeMessage(msg)"></ul>
           <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
         </div>
       </ul>

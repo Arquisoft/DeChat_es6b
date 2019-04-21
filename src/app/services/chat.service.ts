@@ -337,6 +337,8 @@ export class ChatService {
 
     // Si no existe el participante en el grupo entendemos que ha sido expulsado, por tanto ignorar
     if (validParticipant.length != 0) {
+      await this.rdf.fetchNewParticipant(newMessage.makerWebId);
+
       // Añadimos el mensaje al canal correspondiente si ya existe
       if (channel != null) {
         this.addNewMessageToChannel(channel, newMessage);
