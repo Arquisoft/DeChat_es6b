@@ -245,6 +245,19 @@
 	<button id="button_remove_part_group_channel" type="button" (click)="removeParticipantFromGroup()">Remove Participant From Group Channel</button>
 </div>
 
+<!-- SHOW CONTACTS LIST -->
+<div class="contacts">
+	<p>These are your contacts:</p>
+	<button  type="button" (click)="close()">Close</button>
+</div>
+
+<!-- CHECK IF USER WANTS TO DELETE CHAT-->
+<div class="deleteChat">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_remove_part_group_webid" placeholder="Type a friend's webid"/>
+	<button id="button_remove_part_group_channel" type="button" (click)="removeParticipantFromGroup()">Remove Participant From Group Channel</button>
+</div>
+
 
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
@@ -252,10 +265,10 @@
 	<button class="option about">See Info</button>
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
-	-->
+	(click)="deleteChat()"-->
 	<button class="option addParticipant" *ngIf="isGroupChannel()" (click)="showAddParticipant()">Add Participant To Group</button>
 	<button class="option removeParticipant" *ngIf="isGroupChannel()" (click)="showRemoveParticipant()">Remove Participant From Group</button>
-	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
+	<button class="option delete" (click)="confirmDeleteChat()">Delete chat channel</button>
 </div>
 
 <!-- MOBILE OVERLAY -->

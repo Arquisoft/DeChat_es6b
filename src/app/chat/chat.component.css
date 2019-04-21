@@ -74,9 +74,29 @@ input[type="checkbox"] {
   border-radius: 10px;
 }
 
+.contacts {
+  color: #666;
+  font: 400 13.3333px Arial;
+  position: absolute;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  min-width: 400px;
+  max-width: 600px;
+  height: 70%;
+  width: 70%;
+  z-index: 12;
+  display: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
 .newGroupChannel p,
 .addParticipantToGroup p,
 .removeParticipantFromGroup p,
+.contacts p,
 .newChannel p {
   font-size: 20px;
   font-weight: 600;
@@ -101,6 +121,7 @@ input[type="checkbox"] {
 .newGroupChannel button,
 .addParticipantToGroup button,
 .removeParticipantFromGroup button,
+.contacts button,
 .newChannel button {
   margin-top: 10px;
   margin-left: 5px;
@@ -127,6 +148,7 @@ input[type="checkbox"] {
 .newGroupChannel button:hover,
 .addParticipantToGroup button:hover,
 .removeParticipantFromGroup button:hover,
+.contacts button:hover,
 .newChannel button:hover {
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed));
 	background:-moz-linear-gradient(top, #dfdfdf 5%, #ededed 100%);
