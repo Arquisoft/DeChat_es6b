@@ -62,7 +62,7 @@ export class CardComponent implements OnInit  {
     }
   }
 
-  async loadFriends() {
+  /* async loadFriends() {
     try {
       const list_friends = await this.rdf.getFriends();
       if(list_friends)
@@ -70,7 +70,7 @@ export class CardComponent implements OnInit  {
     }catch (error) {
       console.log(`Error: ${error}`);
     }
-  }
+  }*/
 
   // Submits the form, and saves the profile data using the auth/rdf service
   async onSubmit () {
