@@ -158,8 +158,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     await this.chatService.getFriends(this.userListPopup);
   }
 
-  
-
   ngAfterViewChecked() {
     this.moveChatScrollToBottom();
   }

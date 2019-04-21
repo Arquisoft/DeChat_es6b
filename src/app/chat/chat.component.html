@@ -249,7 +249,7 @@
 <div class="contacts">
 	<p>These are your contacts:</p>
 	<div  *ngFor="let user of userListPopup">
-		<label class="contacts_list">- {{user.username}}</label>
+		<label class="contacts_list" >- {{user.username}}</label>
 </div>
 	<button  id="button_contacts" type="button_contacts">Close</button>
 </div>
@@ -268,10 +268,10 @@
 	<button class="option about">See Info</button>
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
-	(click)="deleteChat()"-->
+	-->
 	<button class="option addParticipant" *ngIf="isGroupChannel()" (click)="showAddParticipant()">Add Participant To Group</button>
 	<button class="option removeParticipant" *ngIf="isGroupChannel()" (click)="showRemoveParticipant()">Remove Participant From Group</button>
-	<button class="option delete" (click)="confirmDeleteChat()">Delete chat channel</button>
+	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
 </div>
 
 <!-- MOBILE OVERLAY -->
