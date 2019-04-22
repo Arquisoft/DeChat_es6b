@@ -395,7 +395,7 @@ export class RdfService {
     });
     this.store.add(channel, DC("group"), (newChatChannel.group)? this.store.sym(newChatChannel.group) : "", channel.doc());
 
-    this.fetcher.putBack(channel);
+    await this.fetcher.putBack(channel);
   }
 
   /**
@@ -414,7 +414,7 @@ export class RdfService {
       this.store.add(msg, SIOC("content"), message.message, msg.doc());
       this.store.add(msg, DC("status"), message.status, msg.doc());
 
-      this.fetcher.putBack(msg);
+      await this.fetcher.putBack(msg);
       console.log("Message saved! (" + msgUri + ")");
       return msgUri;
     } catch (err) {
@@ -476,13 +476,13 @@ export class RdfService {
    * @param groupFileUri 
    * @param newParticipant 
    */
-  public addParticipantToGroup(groupFileUri: string, newParticipant: string) {
+  public async addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
 
     let participant = this.store.sym(newParticipant);
     let group = this.store.sym(groupFileUri.toString());
     
-    this.fetcher.load(group.doc()).then(async res => {
+    await this.fetcher.load(group.doc()).then(async res => {
       let d = await this.store.each(null, FLOW("participation"), null, group.doc());
       let w = await this.store.each(null, FLOW("participation"), participant, group.doc());
 
@@ -512,13 +512,13 @@ export class RdfService {
    * @param groupFileUri 
    * @param oldParticipant 
    */
-  public removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
+  public async removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
     console.log("Removing participant from the group...");
     
     let participant = this.store.sym(oldParticipant);
     // Eliminar participante del grupo
     let group = this.store.sym(groupFileUri.toString());
-    this.fetcher.load(group.doc()).then(res => {
+    await this.fetcher.load(group.doc()).then(res => {
       let ins = [];
       let del = $rdf.st(group, FLOW("participation"), participant, group.doc());
       
@@ -531,7 +531,7 @@ export class RdfService {
     // Eliminar permisos del participante sobre el grupo
     let groupPermissions = this.store.sym(groupFileUri.toString() + ".acl");
     
-    this.fetcher.load(groupPermissions.doc()).then(async res => {
+    await this.fetcher.load(groupPermissions.doc()).then(async res => {
       let uri = await this.store.match(null, ACL("agent"), participant, groupPermissions.doc()).map(st => { return (st.subject.value); });
       uri = this.store.sym(uri[0]);
 
@@ -764,7 +764,7 @@ export class RdfService {
     let uniqueUri = await this.generateUniqueUrlForResource(fileURI + ".acl#owner");
     let aclFile = this.store.sym(uniqueUri);
 
-    this.fetcher.load(aclFile.doc()).then(response => {
+    await this.fetcher.load(aclFile.doc()).then(response => {
       let ins = [];
       ins.push($rdf.st(aclFile, TYPE(), ACL("Authorization"), aclFile.doc()));
       ins.push($rdf.st(aclFile, ACL("agent"), owner, aclFile.doc()));
@@ -805,7 +805,7 @@ export class RdfService {
     let uniqueUri = await this.generateUniqueUrlForResource(fileURI + ".acl#reader");
     let aclFile = this.store.sym(uniqueUri);
 
-    this.fetcher.load(aclFile.doc()).then(response => {
+    await this.fetcher.load(aclFile.doc()).then(response => {
       let ins = [];
       ins.push($rdf.st(aclFile, TYPE(), ACL("Authorization"), aclFile.doc()));
       ins.push($rdf.st(aclFile, ACL("agent"), other, aclFile.doc()));
