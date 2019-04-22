@@ -17,10 +17,18 @@ import { Participant } from '../models/participant.model';
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private scrollMe: ElementRef;
+  scrollBottom = false;
+
+  userListPopup;
 
   defaultImage = "assets/images/default.jpg";
+  defaultGroupImage = "assets/images/groups.png";
+
   selectedChatChannel: ChatChannel; 
   myProfile: Participant;
+
+  assignedColors = {};
+
 
   constructor(private chatService: ChatService, private rdf: RdfService, 
 				private auth: AuthService, private chatUtils: UtilsService) {
@@ -56,6 +64,41 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".overlay, .newChannel").fadeOut(180);
     });
 
+    /* make newGroupChannel option show up */
+    $(".ng").click(function() {
+      $(".newGroupChannel").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+     /* make contacts option show up */
+    this.loadFriends();
+    $(".cn").click(function() {
+      $(".contacts").fadeIn(180);
+      /* hide others */
+      $(".menuWrap").fadeOut(180);
+    });
+
+    /* close newGroupChannel option when adding */
+    $("#button_add_group_channel").click(function () {
+      $(".overlay, .newGroupChannel").fadeOut(180);
+    });
+
+    /* close addParticipantToGroup option when adding */
+    $("#button_add_part_group_channel").click(function () {
+      $(".overlay, .addParticipantToGroup").fadeOut(180);
+    });
+
+    /* close removeParticipantFromGroup option when adding */
+    $("#button_remove_part_group_channel").click(function () {
+      $(".overlay, .removeParticipantFromGroup").fadeOut(180);
+    });
+
+    /* close contacts option after showing them */
+    $("#button_contacts").click(function () {
+      $(".overlay, .contacts").fadeOut(180);
+    });
+
     // Show/Hide the other notification options
     $(".deskNotif").click(function(){
       $(".showSName, .showPreview, .playSounds").toggle();
@@ -63,7 +106,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* close all overlay elements */
     $(".overlay").click(function () {
-      $(".overlay, .menuWrap, .newChannel").fadeOut(180);
+      $(".overlay, .menuWrap, .newChannel, .newGroupChannel, .contacts, .addParticipantToGroup, .removeParticipantFromGroup").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
       $(".config").animate({opacity: '0', right: '-200vw'}, 180);
     });
@@ -75,6 +118,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         $(".menu").animate({opacity: '0', left: '-320px'}, 180);
         $(".config").animate({opacity: '0', right: '-200vw'}, 180);
       }
+    });
+
+    // Show emojis panel and hide the others
+    $("#panelEmoji").click(function(){
+      $(".gifList").hide();
+      $(".emojiList").show();
+    });
+
+    // Show gifs panel and hide the others
+    $("#panelGIFs").click(function(){
+      $(".emojiList").hide();
+      $(".gifList").show();
     });
 
     /* small conversation menu */
@@ -98,6 +153,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  async loadFriends(){
+    this.userListPopup = [];
+    await this.chatService.getFriends(this.userListPopup);
+  }
+
   ngAfterViewChecked() {
     this.moveChatScrollToBottom();
   }
@@ -116,7 +176,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     if (this.selectedChatChannel != null) {
       const inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
       const msg: string = inputElement.value;
-      this.chatService.sendMessage(this.selectedChatChannel, msg);
+      if (inputElement.value.length > 0) 
+        this.chatService.sendMessage(this.selectedChatChannel, msg);
+      this.scrollBottom = true;
     }
   }
 
@@ -125,16 +187,24 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     let msg: string = "";
     inputElement.value = msg;
   }
+
+  putTextInInput(text: string) {
+    let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
+    inputElement.value += text;
+  }
   
   async sendFile(event) {
     if (this.selectedChatChannel != null) {
       const file: File = event.target.files[0];
       this.chatService.sendFile(this.selectedChatChannel, '', file);
+      this.scrollBottom = true;
     }
   }
 
-  setSelectedChatChannel(selectedChatChannel: ChatChannel){
+  async setSelectedChatChannel(selectedChatChannel: ChatChannel){
     this.selectedChatChannel = selectedChatChannel;
+    await this.chatService.markPendingMessagesAsRead(this.selectedChatChannel);
+    this.scrollBottom = true;
   }
 
   getMessagesSelectedChatChannel() {
@@ -157,6 +227,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.selectedChatChannel = channel;
     }
   }
+
+  async addNewGroupChatChannel() {
+    const inputElement: HTMLInputElement = document.getElementById('input_group_name') as HTMLInputElement;
+    const groupName: string = inputElement.value;
+    if (groupName.length > 0) {
+      let channel = await this.chatService.createNewChatGroup(groupName);
+      this.selectedChatChannel = channel;
+    }
+  }
   
   search() {
     const inputSearch: HTMLInputElement = document.getElementById('input_search') as HTMLInputElement;
@@ -172,7 +251,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private searchChat(name: string) {
     var newChatChannels: ChatChannel[] = new Array();
     for (let channel of this.chatService.allActiveChats) {
-      if ( channel.title.toString().toLowerCase() === name.toLowerCase()  || channel.title.toString().toLowerCase().includes(name.toLowerCase()) )
+      if ( channel.title.toString().toLowerCase() === name.toLowerCase()  || channel.title.toString().toLowerCase().includes(name.toLowerCase()))
         newChatChannels.push(channel);
     }
 
@@ -217,13 +296,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.chatService.setChatChannels(this.chatService.allActiveChats);
   }
 
-  // Método para cargar las imágenes, en este momento, se usa la misma imagen para el canal de chat
-  // y dentro del chat, es decir, la del participante (cambiar cuando se implementen los chats grupales)
+  // Método para cargar las imágenes, en este momento, para los chats grupales en este momento
+  // se usa una por defecto
   public getImagenChat(channel: ChatChannel) {
-    if (channel.participants[0]) {
-      return (channel.participants[0].imageURL.length > 0)? channel.participants[0].imageURL : this.defaultImage;
+    if (!channel.group || channel.group.toString().length == 0) {
+      // if (channel.participants[0]) {
+        return (channel.participants[0].imageURL.length > 0)? channel.participants[0].imageURL : this.defaultImage;
+      // } else {
+      //   return this.defaultImage;
+      // }
     } else {
-      return this.defaultImage;
+      return this.defaultGroupImage;
     }
   }
 
@@ -234,7 +317,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   // Ajusta el scroll del chat a la parte inferior de este
   moveChatScrollToBottom() {
-    this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+    if (this.scrollBottom) {
+      this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight;
+      this.scrollBottom = false;
+    }
+
+    // Ajustar a la parta inferior si estamos próximos
+    if ((this.scrollMe.nativeElement.scrollHeight - this.scrollMe.nativeElement.scrollTop) <= 1000 ) {
+      this.scrollMe.nativeElement.scrollTop = this.scrollMe.nativeElement.scrollHeight
+    }
   }
 
   // Elimina un chat de la lista y del POD del usuario
@@ -257,8 +348,87 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     await this.auth.solidSignOut();
   }
   
-  analyzeMessage(msg: string): string {
-    return this.chatUtils.analyzeMessage(msg.toString());
+  /**
+   * Busca patrones en el mensaje, si hay alguna coincidencia
+   * la sustituye por el código HTML correspondiente.
+   * 
+   * @param msg 
+   */
+  analyzeMessage(msg: Message): string {
+    return this.chatUtils.analyzeMessage(msg);
+  }
+
+  goToWebProfile() {
+    window.open(this.chatService.webid, "_blank");
+  }
+
+  /**
+   * 
+   */
+  async addParticipantToGroup() {
+    const inputElement: HTMLInputElement = document.getElementById('input_add_part_group_webid') as HTMLInputElement;
+    const webid: string = inputElement.value;
+    if (webid.length > 0 && (this.selectedChatChannel.group
+                            && this.selectedChatChannel.group.toString().length > 0)) {
+
+      await this.rdf.addParticipantToGroup(this.selectedChatChannel.group, webid);
+    }
+  }
+
+  /**
+   * 
+   */
+  async removeParticipantFromGroup() {
+    const inputElement: HTMLInputElement = document.getElementById('input_remove_part_group_webid') as HTMLInputElement;
+    const webid: string = inputElement.value;
+    if (webid.length > 0 && (this.selectedChatChannel.group
+                            && this.selectedChatChannel.group.toString().length > 0)) {
+
+      await this.rdf.removeParticipantFromGroup(this.selectedChatChannel.group, webid);
+    }
+  }
+
+  showAddParticipant() {
+    $(".addParticipantToGroup").fadeIn(180);
+    $(".overlay").fadeIn(180);
+    /* hide others */
+    $(".moreMenu").slideToggle("fast");
+    $(".menuWrap").fadeOut(180);
+  }
+
+  showRemoveParticipant() {
+    $(".removeParticipantFromGroup").fadeIn(180);
+    $(".overlay").fadeIn(180);
+    /* hide others */
+    $(".moreMenu").slideToggle("fast");
+    $(".menuWrap").fadeOut(180);
+  }
+
+  /**
+   * 
+   */
+  isGroupChannel(): boolean {
+    if (this.selectedChatChannel)
+      return (this.selectedChatChannel.group && this.selectedChatChannel.group.toString().length > 0);
+  }
+
+  /**
+   * 
+   * @param webid 
+   */
+  getParticipantUri(webid: string): string {
+    return webid.match(this.chatUtils.regexUrlDomain)[0].split('/').pop();
+  }
+
+  /**
+   * 
+   * @param webid 
+   */
+  getUniqueColorForWebid(webid: string): string {
+    if (!this.assignedColors[webid])
+      this.assignedColors[webid] = this.chatUtils.getRandomDarkColor();
+
+      return this.assignedColors[webid];
   }
 
 }

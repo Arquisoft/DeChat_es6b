@@ -53,7 +53,7 @@
           </div>
           <div class="status normal">
             <p class="date" *ngIf="channel.getLastMessage()">{{ channel.getLastMessage().sendTime | date:'LLL d' }}</p>
-            <p class="count">42</p>
+            <p class="count">{{ channel.getPendingMessages().length }}</p>
             <!--<i class="material-icons read">done_all</i>-->
             <i class="material-icons fixed">loyalty</i>
           </div>
@@ -72,8 +72,10 @@
 			</div>
 			
 			<div class="leftSide">
-			<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
-        <span>{{ selectedChatChannel.participants[0].webId }}</span></p>
+				<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
+					<span *ngIf="!isGroupChannel()">{{ selectedChatChannel.participants[0].webId }}</span>
+					<span *ngIf="isGroupChannel()">{{ selectedChatChannel.group.toString() }}</span>
+				</p>
 			<!--<p class="chatStatus">Online</p>-->
 			</div>
 		</div>
@@ -83,7 +85,10 @@
       
       <ul *ngFor="let msg of getMessagesSelectedChatChannel()">
 		    <div [ngClass]="(msg.makerWebId != getChatService().webid)? 'msg messageReceived' : 'msg messageSent'">
-          <ul [innerHtml]="analyzeMessage(msg.message)"></ul>
+					<p class="participantName" [style.color]="getUniqueColorForWebid(msg.makerWebId)" *ngIf="isGroupChannel() && (msg.makerWebId != getChatService().webid)">
+						{{ getParticipantUri(msg.makerWebId) }}
+					</p>
+          <ul [innerHtml]="analyzeMessage(msg)"></ul>
           <span class="timestamp">{{ msg.sendTime | date:'HH:mm' }}</span>
         </div>
       </ul>
@@ -100,29 +105,29 @@
 			
 			<div class="emojiBar">
 				<div class="emoticonType">
-				<button id="panelEmoji">Emoji</button>
-				<button id="panelStickers">Stickers</button>
-				<button id="panelGIFs">GIFs</button>
-			</div>
+					<button id="panelEmoji">Emoji</button>
+					<!--<button id="panelStickers">Stickers</button>-->
+					<button id="panelGIFs">GIFs</button>
+				</div>
 				
 				<!-- Emoji panel -->
 				<div class="emojiList">
-					<button id="smileface" class="pick">
-				</button>
-					<button id="grinningface" class="pick"></button>
-					<button id="tearjoyface" class="pick"></button>
-					<button id="rofl" class="pick"></button>
-					<button id="somface" class="pick"></button>
-					<button id="swfface" class="pick"></button>
+					<button id="smileface" class="pick" (click)="putTextInInput(':-) ')"></button>
+					<button id="grinningface" class="pick" (click)="putTextInInput(':) ')"></button>
+					<button id="tearjoyface" class="pick" (click)="putTextInInput(':D ')"></button>
+				</div>
+
+				<!-- Gif panel -->
+				<div class="gifList">
+					<button id="gif" class="pick"  (click)="putTextInInput(':angry: ')"></button>
 				</div>
 				
 				<!-- the best part of telegram ever: STICKERS!! -->
-				<div class="stickerList">
-					<button id="smileface" class="pick">
-				</button>
+				<!--<div class="stickerList">
+					<button id="smileface" class="pick"></button>
 					<button id="grinningface" class="pick"></button>
 					<button id="tearjoyface" class="pick"></button>
-				</div>
+				</div>-->
 			</div>
 			
 			<div class="otherTools">
@@ -219,11 +224,46 @@
 	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
 </div>
 
+<!-- NEW GROUP CHANNEL OPTION -->
+<div class="newGroupChannel">
+	<p>Enter the name of the group:</p>
+	<input type="text" class="write_msg" id="input_group_name" placeholder="Type the name of the group"/>
+	<button id="button_add_group_channel" type="button" (click)="addNewGroupChatChannel()">Add Group Channel</button>
+</div>
+
+<!-- ADD PARTICIPANT TO GROUP -->
+<div class="addParticipantToGroup">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_add_part_group_webid" placeholder="Type a friend's webid"/>
+	<button id="button_add_part_group_channel" type="button" (click)="addParticipantToGroup()">Add Participant To Group Channel</button>
+</div>
+
+<!-- REMOVE PARTICIPANT FROM GROUP -->
+<div class="removeParticipantFromGroup">
+	<p>Enter the WebId of the contact:</p>
+	<input type="text" class="write_msg" id="input_remove_part_group_webid" placeholder="Type a friend's webid"/>
+	<button id="button_remove_part_group_channel" type="button" (click)="removeParticipantFromGroup()">Remove Participant From Group Channel</button>
+</div>
+
+<!-- SHOW CONTACTS LIST -->
+<div class="contacts">
+	<p>These are your contacts:</p>
+	<div  *ngFor="let user of userListPopup">
+		<label class="contacts_list" >- {{user.username}}</label>
+</div>
+	<button  id="button_contacts" type="button_contacts">Close</button>
+</div>
+
+
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
+	<!--
 	<button class="option about">See Info</button>
 	<button class="option notify">Disable Notifications</button>
 	<button class="option block">Block User</button>
+	-->
+	<button class="option addParticipant" *ngIf="isGroupChannel()" (click)="showAddParticipant()">Add Participant To Group</button>
+	<button class="option removeParticipant" *ngIf="isGroupChannel()" (click)="showRemoveParticipant()">Remove Participant From Group</button>
 	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
 </div>
 
@@ -251,8 +291,9 @@
 		<p class="pWebId" *ngIf="myProfile">{{ myProfile.webId }}</p>
 		</div>
 			
-		<button class="changePic">Change Profile Picture</button>
-		<button class="edit">Edit Profile Info</button>
+		<button class="changePic" (click)="goToWebProfile()">Edit Profile Info</button>
+		<!--<button class="changePic">Change Profile Picture</button>
+		<button class="edit">Edit Profile Info</button>-->
 	</div>
 	</section>
 	
@@ -262,14 +303,17 @@
 		<p class="confTitle">Your Info</p>
 		
 		<div class="information">
+			<!--
 			<ul>
-				<li>Phone Number: <span class="blue phone">+1 12 1234 5678</span></li>
-				<li>Username: <span class="blue username">@USERNAME</span></li>
-				<li>Profile: <span class="blue">https://t.me/USERNAME</span></li>
+				<li>Phone Number: <span class="blue phone"></span></li>
+				<li>Username: <span class="blue username"></span></li>
+				<li>Profile: <span class="blue"></span></li>
 			</ul>
+			-->
 		</div>
 		
 		<!-- NOTIFICATIONS SECTION -->
+		<!--
 		<p class="confTitle">Notifications</p>
 		
 		<div class="optionWrapper deskNotif">
@@ -319,6 +363,7 @@
 				</label>
 				<p>Night Mode</p>
 			</div>
+		-->
 		
 	</section>
 </section>

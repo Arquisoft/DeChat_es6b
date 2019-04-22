@@ -52,6 +52,9 @@ input[type="checkbox"] {
   display: none;
 }
 
+.newGroupChannel,
+.addParticipantToGroup,
+.removeParticipantFromGroup,
 .newChannel {
   color: #666;
   font: 400 13.3333px Arial;
@@ -71,6 +74,29 @@ input[type="checkbox"] {
   border-radius: 10px;
 }
 
+.contacts {
+  color: #666;
+  font: 400 13.3333px Arial;
+  position: absolute;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  min-width: 400px;
+  max-width: 600px;
+  height: 70%;
+  width: 70%;
+  z-index: 12;
+  display: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.newGroupChannel p,
+.addParticipantToGroup p,
+.removeParticipantFromGroup p,
+.contacts p,
 .newChannel p {
   font-size: 20px;
   font-weight: 600;
@@ -78,6 +104,17 @@ input[type="checkbox"] {
   margin: 10px 0px 15px 5px;
 }
 
+.contacts_list {
+  margin: 25px;
+  font: Arial;
+  font-size: 18px;
+  font-weight:lighter;
+  color: #222;
+}
+
+.newGroupChannel input,
+.addParticipantToGroup input,
+.removeParticipantFromGroup input,
 .newChannel input {
   background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
   margin: 10px 0px 15px 5px;
@@ -89,6 +126,10 @@ input[type="checkbox"] {
   width: 98%;
 }
 
+.newGroupChannel button,
+.addParticipantToGroup button,
+.removeParticipantFromGroup button,
+.contacts button,
 .newChannel button {
   margin-top: 10px;
   margin-left: 5px;
@@ -112,6 +153,10 @@ input[type="checkbox"] {
 	text-shadow:0px 1px 0px #ffffff;
 }
 
+.newGroupChannel button:hover,
+.addParticipantToGroup button:hover,
+.removeParticipantFromGroup button:hover,
+.contacts button:hover,
 .newChannel button:hover {
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed));
 	background:-moz-linear-gradient(top, #dfdfdf 5%, #ededed 100%);
@@ -123,6 +168,9 @@ input[type="checkbox"] {
 	background-color:#dfdfdf;
 }
 
+.newGroupChannel button:active,
+.addParticipantToGroup button:active,
+.removeParticipantFromGroup button:active,
 .newChannel button:active {
 	position:relative;
 	top:1px;
@@ -741,11 +789,20 @@ div[class~="onTop"] > .count {
   cursor: default;
 }
 
+.chatName {
+  width: 5px; /* añadido */
+}
+
 .chatName > span {
   font-size: 12px;
   font-weight: 500;
   color: #bbb;
   margin-left: 10px;
+
+  /* añadido */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .leftSide .chatStatus {
@@ -853,6 +910,13 @@ div[class~="onTop"] > .count {
   right: 12px;
 }
 
+.participantName {
+  margin-top: -12px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  
+}
+
 /* THE REPLY BAR CSS */
 
 .replyBar {
@@ -927,6 +991,7 @@ div[class~="onTop"] > .count {
 }
 
 .emojiList,
+.gifList,
 .stickerList {
   width: 100%;
   height: 150px;
@@ -951,6 +1016,7 @@ div[class~="onTop"] > .count {
   background-size: 70%;
 }
 
+.gifList .pick,
 .stickerList .pick {
   width: 80px;
   height: 80px;
@@ -961,6 +1027,7 @@ div[class~="onTop"] > .count {
   transition: all 0.15s ease-in-out;
 }
 
+.gifList .pick,
 .stickerList .pick:hover {
   background: #ddd;
   background-repeat: no-repeat;
@@ -968,7 +1035,8 @@ div[class~="onTop"] > .count {
   background-size: 65%;
 }
 
-/* hidden, while not complete */
+/* hidden */
+.gifList,
 .stickerList {
   display: none;
 }
@@ -987,17 +1055,12 @@ div[class~="onTop"] > .count {
   background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png);
 }
 
-#rofl {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/rolling-on-the-floor-laughing_1f923.png);
+/* CSS FOR THE EMOJI IMAGES, JUST SOME */
+
+#gif {
+  background-image: url(http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif);
 }
 
-#somface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth_1f603.png);
-}
-
-#swfface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png);
-}
 
 /* SOLVING RESPONSIVE DESIGN ISSUES */
 
@@ -1094,7 +1157,7 @@ div[class~="onTop"] > .count {
   }
 }
 
-@media screen and (max-width: 540px) {
+/* @media screen and (max-width: 540px) {
   .switchMobile {
     display: block;
   }
@@ -1106,10 +1169,10 @@ div[class~="onTop"] > .count {
   .overlay {
     display: none;
   }
-}
+} */
 
-@media screen and (max-width: 300px) {
+/* @media screen and (max-width: 300px) {
   .switchMobile {
     width: calc(220px - 20px);
   }
-}
+} */
