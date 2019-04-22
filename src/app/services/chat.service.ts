@@ -205,7 +205,7 @@ export class ChatService {
         let message = new Message(this.webid, msg);
  
         // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
-        let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name.replace(" ", "_"), file);
+        let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name.replace(/[^a-zA-Z0-9-_\.]/g, '_'), file);
         message.message = urlFile;
         
         // Guardamos el mensaje (url)

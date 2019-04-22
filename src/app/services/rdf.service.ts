@@ -476,7 +476,7 @@ export class RdfService {
    * @param groupFileUri 
    * @param newParticipant 
    */
-  public async addParticipantToGroup(groupFileUri: string, newParticipant: string) {
+  public addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
 
     let participant = this.store.sym(newParticipant);
