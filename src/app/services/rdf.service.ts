@@ -393,7 +393,7 @@ export class RdfService {
       let part = this.store.sym(element.webId);
       this.store.add(channel, FLOW("participation"), part, channel.doc());
     });
-    this.store.add(channel, DC("group"), (newChatChannel.group)? newChatChannel.group: "", channel.doc());
+    this.store.add(channel, DC("group"), (newChatChannel.group)? this.store.sym(newChatChannel.group) : "", channel.doc());
 
     this.fetcher.putBack(channel);
   }
@@ -416,7 +416,7 @@ export class RdfService {
 
       this.fetcher.putBack(msg);
       console.log("Message saved! (" + msgUri + ")");
-      return msgUri["value"];
+      return msgUri;
     } catch (err) {
       console.error("An error occurred while saving the message (" + msgUri + ")");
     }
@@ -454,17 +454,19 @@ export class RdfService {
     console.log("Creating a group...");
     
     let participant = this.store.sym(makerWebId);
-    let chatGroup = await this.generateUniqueUrlForResource(folderGroupUri + "/");
-    this.store.add(chatGroup, TYPE(), MEE("ChatGroup"), chatGroup.doc());
-    this.store.add(chatGroup, DC("title"), title, chatGroup.doc());
-    this.store.add(chatGroup, FLOW("participation"), participant, chatGroup.doc());
-    await this.fetcher.putBack(chatGroup);
+    let fileGroup = await this.generateUniqueUrlForResource(folderGroupUri + "/");
+
+    let group = this.store.sym(fileGroup);
+    this.store.add(group, TYPE(), MEE("ChatGroup"), group.doc());
+    this.store.add(group, DC("title"), title, group.doc());
+    this.store.add(group, FLOW("participation"), participant, group.doc());
+    await this.fetcher.putBack(group);
 
     // Creamos el fichero .acl (permisos) y le asignamos el Owner (makerWebId)
-    await this.updateFile(chatGroup["value"] + ".acl", "");
-    await this.addOwnerToACL(chatGroup["value"], participant);
+    await this.updateFile(fileGroup + ".acl", "");
+    await this.addOwnerToACL(fileGroup, participant);
 
-    return chatGroup["value"];
+    return fileGroup;
   }
 
   /**
@@ -474,11 +476,12 @@ export class RdfService {
    * @param groupFileUri 
    * @param newParticipant 
    */
-  public addParticipantToGroup(groupFileUri: string, newParticipant: string) {
+  public async addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
 
     let participant = this.store.sym(newParticipant);
     let group = this.store.sym(groupFileUri.toString());
+    
     this.fetcher.load(group.doc()).then(async res => {
       let d = await this.store.each(null, FLOW("participation"), null, group.doc());
       let w = await this.store.each(null, FLOW("participation"), participant, group.doc());
@@ -486,10 +489,15 @@ export class RdfService {
       // Si contiene "participation" suponemos que es un grupo de chat válido
       // Si no contiene ya al participante lo añadimos
       if (d.length != 0 && w.length == 0) {
-        this.store.add(group, FLOW("participation"), participant, group.doc());
-        this.fetcher.putBack(group);
+        let ins = $rdf.st(group, FLOW("participation"), participant, group.doc());
+        let del = [];
+        
+        this.updateManager.update(del, ins, (uri, ok, message) => {
+          if (ok) console.log('Participant added to the group successfully!');
+          else console.error("An error occurred when trying to add the participant to the group.")
+        });
 
-        // Asignamos permisos al nuevo participante
+        // // Asignamos permisos al nuevo participante
         this.addOwnerToACL(groupFileUri.toString(), participant);
       } else {
         console.error("Invalid group or participant already exists")
@@ -757,16 +765,21 @@ export class RdfService {
     let aclFile = this.store.sym(uniqueUri);
 
     this.fetcher.load(aclFile.doc()).then(response => {
+      let ins = [];
+      ins.push($rdf.st(aclFile, TYPE(), ACL("Authorization"), aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("agent"), owner, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("accessTo"), file, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("defaultForNew"), file, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("mode"), ACL("Read"), aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("mode"), ACL("Write"), aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("mode"), ACL("Control"), aclFile.doc()));
 
-      this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
-      this.store.add(aclFile, ACL("agent"), owner, aclFile.doc());
-      this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
-      this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
-      this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
-      this.store.add(aclFile, ACL("mode"), ACL("Write"), aclFile.doc());
-      this.store.add(aclFile, ACL("mode"), ACL("Control"), aclFile.doc());
-
-      this.fetcher.putBack(aclFile);
+      let del = [];
+      
+      this.updateManager.update(del, ins, (uri, ok, message) => {
+        if (ok) console.log('Read-Write-Control permissions successfully added!');
+        else console.error("An error occurred when adding Read-Write-Control permissions.")
+      });
     });
   }
 
@@ -793,17 +806,26 @@ export class RdfService {
     let aclFile = this.store.sym(uniqueUri);
 
     this.fetcher.load(aclFile.doc()).then(response => {
+      let ins = [];
+      ins.push($rdf.st(aclFile, TYPE(), ACL("Authorization"), aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("agent"), other, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("accessTo"), file, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("defaultForNew"), file, aclFile.doc()));
+      ins.push($rdf.st(aclFile, ACL("mode"), ACL("Read"), aclFile.doc()));
 
-      this.store.add(aclFile, TYPE(), ACL("Authorization"), aclFile.doc());
-      this.store.add(aclFile, ACL("agent"), other, aclFile.doc());
-      this.store.add(aclFile, ACL("accessTo"), file, aclFile.doc());
-      this.store.add(aclFile, ACL("defaultForNew"), file, aclFile.doc());
-      this.store.add(aclFile, ACL("mode"), ACL("Read"), aclFile.doc());
-
-      this.fetcher.putBack(aclFile);
+      let del = [];
+      
+      this.updateManager.update(del, ins, (uri, ok, message) => {
+        if (ok) console.log('Reading permissions added successfully!');
+        else console.error("An error occurred when adding the read permissions.")
+      });
     });
   }
 
+  /**
+   * 
+   * @param webid 
+   */
   async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let name = "";
@@ -817,6 +839,10 @@ export class RdfService {
     return name;
   }
 
+  /**
+   * 
+   * @param webid 
+   */
   async getVCardImage(webid: string): Promise<string> {
     let me = this.store.sym(webid);
     let image = "";
@@ -829,6 +855,10 @@ export class RdfService {
     return image;
   }
 
+  /**
+   * 
+   * @param webid 
+   */
   async loadParticipantData(webid: string): Promise<Participant> {
     try {
       let imageURL = await this.getVCardImage(webid);
@@ -1090,35 +1120,38 @@ export class RdfService {
   }
 
   /**
-   * Genera una URL única para un recurso (POSIBLEMENTE NECESARIO CAMBIAR EL NAMESPACE)
+   * Genera una URL única para un recurso.
    * Concatena a la URL pasada por parámetro un código aleatorio, formando una URL única.
    * 
    * @param baseurl 
    */
-  async generateUniqueUrlForResource(baseurl) {
-    let url = this.store.sym(baseurl + uuid.v4());
+  async generateUniqueUrlForResource(baseurl): Promise<string> {
+    if (!this.session) {
+      await this.getSession();
+    }
 
     try {
-      await this.fetcher.load(url.doc()).then(async response => {
-        //var d = this.store.each(url, RDF('type'));
-        var d = this.store.each(url);
+      let storeG = $rdf.graph();
+      let timeout = 5000; // 5000 ms timeout
+      let fetcherG = new $rdf.Fetcher(storeG, timeout);
+      let url = storeG.sym(baseurl + uuid.v4());
 
-        // We assume that if this url doesn't have a type, the url is unused.
-        // Ok, this is not the most fail-safe thing.
-        // TODO: check if there are any triples at all.
+      fetcherG.load(url.doc()).then(async response => {
+        var d = await storeG.each(url);
+
+        // Check if there are triples in the generated URL, if there are any we generate 
+        // a new one and check again if it is free
         while (d.length != 0) {
-          url = this.store.sym(baseurl + '#' + uuid.v4());
-          //d = this.store.each(url, RDF('type'));
-          d = await this.store.each(url);
+          url = storeG.sym(baseurl + '#' + uuid.v4());
+          d = await storeG.each(url);
         }
       }, err => {
-        console.log("Load failed " +  err);
+        console.error("Load failed " +  err);
       });
-    } catch (e) {
-      // this means that response of data[url] returns a 404
-      // TODO might be called when you have no access, should check
-    } finally {
-      return url;
+
+      return url["value"];
+    } catch (err) {
+      console.error("An error occurred when generating the unique URL: " +  err);
     }
   }
   

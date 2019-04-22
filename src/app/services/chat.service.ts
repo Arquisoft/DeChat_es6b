@@ -205,7 +205,7 @@ export class ChatService {
         let message = new Message(this.webid, msg);
  
         // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
-        let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name, file);
+        let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name.replace(" ", "_"), file);
         message.message = urlFile;
         
         // Guardamos el mensaje (url)
@@ -410,9 +410,10 @@ export class ChatService {
   /**
    * Crea un nuevo grupo de chat y el canal de chat grupal
    */
-  public async createNewChatGroup(title: string) {
+  public async createNewChatGroup(title: string): Promise<ChatChannel> {
     let groupURI = await this.rdf.addNewChatGroupToFile(this.uri + GROUPS_FOLDER, this.webid, title);
-    return await this.createNewGroupChatChannel(groupURI, title);
+    let groupChannel = await this.createNewGroupChatChannel(groupURI, title);
+    return groupChannel
   }
 
   /**
