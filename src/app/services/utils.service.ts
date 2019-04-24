@@ -78,13 +78,13 @@ export class UtilsService {
    */
   public convertEmoteToHtml(emote: string, p1, p2, offset, s): string {
     let emotes = {
-      ':-)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png'],
-      ':)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png'],
-      ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png']
+      ':-)':['/assets/images/emojis/grinning-face_1f600.png'],
+      ':)':['/assets/images/emojis/grinning-face-with-smiling-eyes_1f601.png'],
+      ':D':['/assets/images/emojis/face-with-tears-of-joy_1f602.png']
     }
 
     let gifs = {
-      ':angry:':['http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif']
+      ':angry:':['/assets/images/gifs/0012.gif']
     }
 
 

@@ -6,6 +6,7 @@ import { Message } from '../models/message.model';
 
 import * as uuid from 'uuid';
 import * as manager from 'solid-file-client';
+import { Participant } from '../models/participant.model';
 
 
 const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
@@ -477,6 +478,10 @@ export class ChatService {
     return id;
   }
 
+  /**
+   * 
+   * @param chat 
+   */
   public async delete(chat: ChatChannel) {
     // Comprobamos que el canal exista
     let channel: ChatChannel = this.searchChatChannelById(chat.id);
@@ -485,6 +490,20 @@ export class ChatService {
     // Si existe lo borramos
     if (channel != null)
       this.rdf.deleteFile(this.uri + CHAT_FOLDER + "/" + chat.id);
+  }
+
+  /**
+   * 
+   * @param channel 
+   */
+  public async getUserListGroup(channel: ChatChannel): Promise<Participant[]> {
+    let list: Participant[] = [];
+
+    if (channel.group && channel.group.length > 0) {
+      list = await this.rdf.getGroupChatParticipants(channel.group);
+    }
+
+    return list;
   }
 
 }

@@ -20,6 +20,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   scrollBottom = false;
 
   userListPopup;
+  userListGroup: Participant[] = [];
 
   defaultImage = "assets/images/default.jpg";
   defaultGroupImage = "assets/images/groups.png";
@@ -99,6 +100,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       $(".overlay, .contacts").fadeOut(180);
     });
 
+    /* close contacts option after showing them */
+    $("#button_show_participants").click(function () {
+      $(".overlay, .groupParticipants").fadeOut(180);
+    });
+
     // Show/Hide the other notification options
     $(".deskNotif").click(function(){
       $(".showSName, .showPreview, .playSounds").toggle();
@@ -106,7 +112,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     /* close all overlay elements */
     $(".overlay").click(function () {
-      $(".overlay, .menuWrap, .newChannel, .newGroupChannel, .contacts, .addParticipantToGroup, .removeParticipantFromGroup").fadeOut(180);
+      $(".overlay, .menuWrap, .newChannel, .newGroupChannel, .contacts, .addParticipantToGroup, .removeParticipantFromGroup, .groupParticipants").fadeOut(180);
       $(".menu").animate({opacity: '0', left: '-320px'}, 180);
       $(".config").animate({opacity: '0', right: '-200vw'}, 180);
     });
@@ -402,6 +408,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     /* hide others */
     $(".moreMenu").slideToggle("fast");
     $(".menuWrap").fadeOut(180);
+  }
+
+  async showListParticipants() {
+    if (this.selectedChatChannel) {
+      this.userListGroup = await this.chatService.getUserListGroup(this.selectedChatChannel);
+      $(".groupParticipants").fadeIn(180);
+      $(".overlay").fadeIn(180);
+      /* hide others */
+      $(".moreMenu").slideToggle("fast");
+      $(".menuWrap").fadeOut(180);
+    }
   }
 
   /**

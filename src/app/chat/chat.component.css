@@ -6,7 +6,7 @@
 body {
   overflow: hidden;
   background: #419fd9;
-  background-image: url(https://s-media-cache-ak0.pinimg.com/originals/51/ed/c0/51edc046eb80046ee4755ee71d0f19ca.jpg);
+  background-image: url("/assets/images/web_background.jpg");
   font-family: "Open Sans", "Roboto", "Ubuntu", sans-serif;
   font-size: 16px;
 }
@@ -74,6 +74,7 @@ input[type="checkbox"] {
   border-radius: 10px;
 }
 
+.groupParticipants,
 .contacts {
   color: #666;
   font: 400 13.3333px Arial;
@@ -97,6 +98,7 @@ input[type="checkbox"] {
 .addParticipantToGroup p,
 .removeParticipantFromGroup p,
 .contacts p,
+.groupParticipants p,
 .newChannel p {
   font-size: 20px;
   font-weight: 600;
@@ -104,6 +106,7 @@ input[type="checkbox"] {
   margin: 10px 0px 15px 5px;
 }
 
+.list_participants_group,
 .contacts_list {
   margin: 25px;
   font: Arial;
@@ -130,6 +133,7 @@ input[type="checkbox"] {
 .addParticipantToGroup button,
 .removeParticipantFromGroup button,
 .contacts button,
+.groupParticipants button,
 .newChannel button {
   margin-top: 10px;
   margin-left: 5px;
@@ -157,6 +161,7 @@ input[type="checkbox"] {
 .addParticipantToGroup button:hover,
 .removeParticipantFromGroup button:hover,
 .contacts button:hover,
+.groupParticipants button:hover,
 .newChannel button:hover {
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed));
 	background:-moz-linear-gradient(top, #dfdfdf 5%, #ededed 100%);
@@ -851,7 +856,7 @@ div[class~="onTop"] > .count {
 }
 
 .userBg {
-  background: url("https://3dprinterchat.com/wp-content/uploads/2016/01/HD-Background-Wallpapers-8.jpg")
+  background: url("/assets/images/background.jpg")
     100% center;
 }
 
@@ -1044,21 +1049,21 @@ div[class~="onTop"] > .count {
 /* CSS FOR THE EMOJI IMAGES, JUST SOME */
 
 #smileface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png);
+  background-image: url("/assets/images/emojis/grinning-face_1f600.png");
 }
 
 #grinningface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png);
+  background-image: url("/assets/images/emojis/grinning-face-with-smiling-eyes_1f601.png");
 }
 
 #tearjoyface {
-  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png);
+  background-image: url("/assets/images/emojis/face-with-tears-of-joy_1f602.png");
 }
 
 /* CSS FOR THE EMOJI IMAGES, JUST SOME */
 
 #gif {
-  background-image: url(http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif);
+  background-image: url("/assets/images/gifs/0012.gif");
 }
 
 

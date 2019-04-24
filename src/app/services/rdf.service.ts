@@ -1013,43 +1013,6 @@ export class RdfService {
 
   // ----------------------------------------------------------------
   // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
-
- 
-  // Actualizar
-  public async updateTest() {
-
-    const me = this.store.sym('https://dcarballob01.solid.community/public/chat_' + new Date().getTime() + '.ttl');
-    const doc = me.doc();
-
-    var ins = $rdf.st("PERSONA", FLOW("message"), "Mensaje_Nuevo", doc)
-    var del = []
-    
-    this.updateManager.update(del, ins, (uri, ok, message) => {
-      if (ok) console.log('Name changed to '+ "DAVID")
-      else alert(message)
-    })
-  }
-
-  // ----------------------------------------------------------------
-
-  
-  public test() {
-    //solid.auth.fetch("https://dcarballob01.solid.community/public/",{headers: {accept: "image/*;q=0.9, */*;q=0.1, application/rdf+xml;q=0.9, application/xhtml+xml, text/xml;q=0.5, application/xml;q=0.5, text/html;q=0.9, text/plain;q=0.5, text/n3;q=1.0, text/turtle;q=1"}}).
-
-    solid.auth.fetch("https://dcarballob01.solid.community/inbox/",{headers: {accept: DEFAULT_ACCEPT}}).
-    then(function(response){return response.text();}).
-    then(function(data){ console.log(data);})
-  }
-
-
-
-  // ------------ FUNCIONES VÁLIDAS ------------------
-
-  public uniqid(): string {
-    return '#' + Math.random().toString(36).substr(2, 9);
-  }
 
   /**
    * This method creates an empty file for the given url. It overwrites existing files.

@@ -254,6 +254,15 @@
 	<button  id="button_contacts" type="button_contacts">Close</button>
 </div>
 
+<!-- SHOW PARTICIPANTS GROUP CHAT -->
+<div class="groupParticipants">
+	<p>These are the participants:</p>
+	<div *ngFor="let user of userListGroup">
+		<label class="list_participants_group">- {{user.name}} <br/></label>
+		<label class="list_participants_group">{{user.webId}}<br/><br/></label>
+	</div>
+	<button id="button_show_participants" type="button">Close</button>
+</div>
 
 <!-- CONVERSATION OPTIONS MENU -->
 <div class="moreMenu">
@@ -264,7 +273,10 @@
 	-->
 	<button class="option addParticipant" *ngIf="isGroupChannel()" (click)="showAddParticipant()">Add Participant To Group</button>
 	<button class="option removeParticipant" *ngIf="isGroupChannel()" (click)="showRemoveParticipant()">Remove Participant From Group</button>
-	<button class="option delete" (click)="deleteChat()">Delete chat channel</button>
+	<button class="option showListParticipants" *ngIf="isGroupChannel()" (click)="showListParticipants()">Show list of group participants</button>
+	<button class="option delete" *ngIf="selectedChatChannel" (click)="deleteChat()">Delete chat channel</button>
+	<!-- If no channel is selected -->
+	<button class="option" *ngIf="!selectedChatChannel">Select a channel to view options</button>
 </div>
 
 <!-- MOBILE OVERLAY -->
@@ -303,6 +315,7 @@
 		<p class="confTitle">Your Info</p>
 		
 		<div class="information">
+			<p>Under construction...</p>
 			<!--
 			<ul>
 				<li>Phone Number: <span class="blue phone"></span></li>
