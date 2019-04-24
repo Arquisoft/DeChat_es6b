@@ -1049,21 +1049,21 @@ div[class~="onTop"] > .count {
 /* CSS FOR THE EMOJI IMAGES, JUST SOME */
 
 #smileface {
-  background-image: url("../../assets/images/emojis/grinning-face_1f600.png");
+  background-image: url("https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png");
 }
 
 #grinningface {
-  background-image: url("../../assets/images/emojis/grinning-face-with-smiling-eyes_1f601.png");
+  background-image: url("https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png");
 }
 
 #tearjoyface {
-  background-image: url("../../assets/images/emojis/face-with-tears-of-joy_1f602.png");
+  background-image: url("https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png");
 }
 
 /* CSS FOR THE EMOJI IMAGES, JUST SOME */
 
 #gif {
-  background-image: url("../../assets/images/gifs/0012.gif");
+  background-image: url("http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif");
 }
 
 
