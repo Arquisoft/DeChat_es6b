@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewChild, AfterViewChecked, ElementRef} from '@angular/core';
+import { Router } from '@angular/router';
 import * as $ from 'jquery';
 
 import { ChatService } from '../services/chat.service';
@@ -32,11 +33,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
 
   constructor(private chatService: ChatService, private rdf: RdfService, 
-				private auth: AuthService, private chatUtils: UtilsService) {
+				private auth: AuthService, private chatUtils: UtilsService, private router: Router) {
 
   }
 
   ngOnInit() {
+    // Si no estamos autenticados vamos al login
+    if (!localStorage.getItem('solid-auth-client')) {
+      this.router.navigateByUrl('/login');
+    }
+
+    // Si estamos autenticados iniciamos el chat
     this.init();
 
     /* make side menu show up */
