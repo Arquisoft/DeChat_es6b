@@ -4,7 +4,11 @@
 
 
 ****
-TBD
+In this document we describe the main process of our application, since the user enter to the login window till the same user send a message to the chat (group chat or individual chat).
+
+
+image::images/Runtime view.jpg["Runtime view of the chat"]
+
 ****
 
 
