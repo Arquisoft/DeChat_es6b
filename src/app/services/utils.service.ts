@@ -78,13 +78,13 @@ export class UtilsService {
    */
   public convertEmoteToHtml(emote: string, p1, p2, offset, s): string {
     let emotes = {
-      ':-)':['../../assets/images/emojis/grinning-face_1f600.png'],
-      ':)':['../../assets/images/emojis/grinning-face-with-smiling-eyes_1f601.png'],
-      ':D':['../../assets/images/emojis/face-with-tears-of-joy_1f602.png']
+      ':-)':['grinning-face_1f600.png'],
+      ':)':['grinning-face-with-smiling-eyes_1f601.png'],
+      ':D':['face-with-tears-of-joy_1f602.png']
     }
 
     let gifs = {
-      ':angry:':['../../assets/images/gifs/0012.gif']
+      ':angry:':['0012.gif']
     }
 
 
