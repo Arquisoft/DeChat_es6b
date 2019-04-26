@@ -12,5 +12,5 @@ script:
   - npm run gulp
   - npm run e2e
 after_success:
-  # - npm run cucumber
-  - bash <(curl -s https://codecov.io/bash)
+  - npm run coverage
+  - npm run coveralls

@@ -9,7 +9,10 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "gulp": "gulp",
-    "cucumber": "./node_modules/.bin/cucumber-js ./test/cucumber/*.feature"
+    "cucumber": "./node_modules/.bin/cucumber-js ./test/cucumber/*.feature",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+
   },
   "browser": {
     "crypto": false,
