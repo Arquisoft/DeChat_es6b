@@ -6,9 +6,21 @@ var assert = require('assert');
 const timeout = 2100;
 const webID = "https://pruebases6b.solid.community/profile/card#me";
 const mywebID = "https://gomezivann.inrupt.net"
-//const password = "Podpruebas_6b";
 
 describe('Chat service logic', function() {
+    beforeEach( async () => {
+        TestBed.configureTestingModule({
+            declarations: [],    
+            providers: [ChatService]
+         }).compileComponents();
+    });
+   
+    beforeEach( () => {
+        chatService = TestBed.get(ChatService);
+    });
+
+    beforeEach(() => TestBed.configureTestingModule({}));
+
     it ('new chat', async function() {
         this.timeout(timeout);
         let channel = ChatService.createNewChatChannel(this.webId, "chat de pruebas");
@@ -43,6 +55,6 @@ describe('Chat service logic', function() {
         let channel = ChatService.createNewChatChannel(this.webId, "chat de pruebas");
         let file = new File(['foo', 'bar'], 'foobar.txt')
         this.ChatService.sendFile(channel, "pruebas", file);
-        //channel.messages
+        assert.notEqual(ChatService.readFile(channel.messages[0]), null);
     });
 });
