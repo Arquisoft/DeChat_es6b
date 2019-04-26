@@ -8,7 +8,6 @@ before_script:
   - npm install 
 script: 
   - npm run gulp
-  - npm run test
 after_success:
   - npm run coverage
   - npm run coveralls
