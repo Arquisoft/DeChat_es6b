@@ -4,8 +4,6 @@ sudo: false
 language: node_js
 node_js:
    - "10.15"
-addons:
-  chrome: stable
 before_script:
   - npm install 
 script: 
