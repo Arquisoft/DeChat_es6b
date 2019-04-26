@@ -115,11 +115,13 @@
 					<button id="smileface" class="pick" (click)="putTextInInput(':-) ')"></button>
 					<button id="grinningface" class="pick" (click)="putTextInInput(':) ')"></button>
 					<button id="tearjoyface" class="pick" (click)="putTextInInput(':D ')"></button>
+					<button id="redheart" class="pick" (click)="putTextInInput('<3 ')"></button>
 				</div>
 
 				<!-- Gif panel -->
 				<div class="gifList">
-					<button id="gif" class="pick"  (click)="putTextInInput(':angry: ')"></button>
+					<button id="gifAngry" class="pick"  (click)="putTextInInput(':angry: ')"></button>
+					<button id="gifSmile" class="pick" (click)="putTextInInput(':smile: ')"></button>
 				</div>
 				
 				<!-- the best part of telegram ever: STICKERS!! -->
@@ -220,7 +222,7 @@
 <!-- NEW CHANNEL OPTION -->
 <div class="newChannel">
 	<p>Enter the WebId of the contact:</p>
-	<input type="text" class="write_msg" id="input_add_webid" placeholder="Type a friend's webid"/>
+	<input type="text" class="write_msg" id="input_add_webid" placeholder="Type the WebId of a friend's pod"/>
 	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
 </div>
 

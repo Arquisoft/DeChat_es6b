@@ -7,6 +7,16 @@ import { Message } from '../models/message.model';
 export class UtilsService {
   regexUrlFiles: RegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gi;
   regexUrlDomain: RegExp = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/im;
+  /*
+  :( :) :P :p :O :3 :| :/ :\ :$ :* :@
+  :-( :-) :-P :-p :-O :-3 :-| :-/ :-\ :-$ :-* :-@
+  :^( :^) :^P :^p :^O :^3 :^| :^/ :^\ :^$ :^* :^@
+  ): (: $: *:
+  )-: (-: $-: *-:
+  )^: (^: $^: *^:
+  </3 <\3
+  :hug: :pencil:
+  */
   regexEmotes: RegExp = /(\:\w+\:|\<[\/\\]?3|[\(\)\\\D|\*\$][\-\^]?[\:\;\=]|[\:\;\=B8][\-\^]?[3DOPp\@\$\*\\\)\(\/\|])(?=\s|[\!\.\?]|$)/gi;
 
 
@@ -80,11 +90,13 @@ export class UtilsService {
     let emotes = {
       ':-)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png'],
       ':)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png'],
-      ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png']
+      ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png'],
+      '<3':['https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/198/heavy-black-heart_2764.png']
     }
 
     let gifs = {
-      ':angry:':['http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif']
+      ':angry:':['http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif'],
+      ':smile:':['http://peep.s.free.fr/lostmarble/082915emoji_test02.gif']
     }
 
 

@@ -1060,10 +1060,18 @@ div[class~="onTop"] > .count {
   background-image: url("https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png");
 }
 
-/* CSS FOR THE EMOJI IMAGES, JUST SOME */
+#redheart {
+  background-image: url('https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/198/heavy-black-heart_2764.png');
+}
 
-#gif {
+/* CSS FOR THE .GIF, JUST SOME */
+
+#gifAngry {
   background-image: url("http://www.animated-gifs.eu/category_emoticons/smilies-3d-3/0012.gif");
+}
+
+#gifSmile {
+  background-image: url("http://peep.s.free.fr/lostmarble/082915emoji_test02.gif");
 }
 
 
