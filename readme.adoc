@@ -16,7 +16,6 @@ This project is done by a team of 5 members:
 * Cristina Ruiz de Bucesta Crespo.
 * David Carballo Baz.
 * Iván Gómez Pinta.
-* Sara García Rodríguez.
 
 == Generating documentation
 
