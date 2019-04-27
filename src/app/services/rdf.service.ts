@@ -871,9 +871,11 @@ export class RdfService {
    * Example result: https://yourpod.solid.community
    */
   async getWebId(): Promise<string> {
-    var sess = await solid.auth.currentSession();
-    if (sess) return sess.webId;
-    else throw new Error("No current session!");
+    if (!this.session) {
+      await this.getSession();
+    }
+
+    return this.session.webId;
   }
 
 

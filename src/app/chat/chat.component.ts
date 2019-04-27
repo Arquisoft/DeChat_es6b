@@ -166,11 +166,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  async loadFriends(){
-    this.userListPopup = [];
-    await this.chatService.getFriends(this.userListPopup);
-  }
-
   ngAfterViewChecked() {
     this.moveChatScrollToBottom();
   }
@@ -178,6 +173,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   async init() {
     await this.chatService.startChat();
     this.myProfile = await this.rdf.loadParticipantData(this.chatService.webid);
+  }
+
+  
+  // ADD THE NEW CODE FROM HERE PLEASE
+
+  async loadFriends(){
+    this.userListPopup = [];
+    await this.chatService.getFriends(this.userListPopup);
   }
 
   getChatService() {
