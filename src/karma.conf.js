@@ -7,6 +7,7 @@ module.exports = function (config) {
     frameworks: ["jasmine", "@angular-devkit/build-angular"],
           
     plugins: [
+      require("karma-coverage"),
       require("karma-jasmine"),
       require("karma-chrome-launcher"),
       require("karma-jasmine-html-reporter"),
@@ -14,26 +15,30 @@ module.exports = function (config) {
       require("@angular-devkit/build-angular/plugins/karma")
 
     ],
-	// list of files / patterns to load in the browser
     files:[
-		'app/**/*.spec.ts',
-		'app/**/*.ts'
-	],
-	// list of files / patterns to exclude
+      'app/**/*.ts',
+      'assets/js/libs/rdflib.min.js'
+    ],
     exclude: [
     ],
+    preprocessors: {
+      'app/**/*.ts': ['coverage']  
+    },
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
-    coverageIstanbulReporter: {
+
+    reporters: ["progress", "kjhtml" , "coverage-istanbul"],
+    
+    coverageIstanbulReporter : {
       dir: require("path").join(__dirname, "../coverage"),
-      reports: ["html", "lcovonly", "text"],
+      reports: ["html", "lcovonly", "text-summary"],
       fixWebpackSourcePaths: true,
       combineBrowserReports: true,
       skipFilesWithNoCoverage: true,
       verbose: false
     },
-    reporters: ["progress", "kjhtml" , "coverage-istanbul"],
+    
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
