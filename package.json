@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test --code-coverage",
+    "coverage": "",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "gulp": "gulp"
@@ -78,6 +79,7 @@
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage": "^1.1.2",
     "karma-coverage-istanbul-reporter": "~2.0.0",
+    "karma-coveralls": "^2.1.0",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "^5.4.1",

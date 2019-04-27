@@ -8,6 +8,7 @@ module.exports = function (config) {
           
     plugins: [
       require("karma-coverage"),
+      require("karma-coveralls"),
       require("karma-jasmine"),
       require("karma-chrome-launcher"),
       require("karma-jasmine-html-reporter"),
@@ -28,9 +29,10 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
 
-    reporters: ["progress", "kjhtml" , "coverage-istanbul"],
+    reporters: ["progress", "kjhtml" , "coverage-istanbul", 'coveralls'],
     
     coverageIstanbulReporter : {
+      type: 'lcov',
       dir: require("path").join(__dirname, "../coverage"),
       reports: ["html", "lcovonly", "text-summary"],
       fixWebpackSourcePaths: true,
