@@ -18,6 +18,7 @@ module.exports = function (config) {
     ],
     files:[
       'app/**/*.ts',
+      "../node_modules/solid-auth-client/dist-lib/solid-auth-client.bundle.js",
       'assets/js/libs/rdflib.min.js'
     ],
     exclude: [

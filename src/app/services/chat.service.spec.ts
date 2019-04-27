@@ -36,11 +36,11 @@ describe('ChatService', () => {
     expect(chatService).toBeTruthy();
   });
 
-  // it ('new chat', async function() {
-  //   // this.timeout(timeout);
-  //   // let channel = await chatService.createNewChatChannel(webID, "chat de pruebas");
-  //   // assert.notEqual(chatService.getRdfService().readFile(mywebID+"/private/dechat_es6b/"+channel.id), null);
-  // });
+  it ('new chat', async function() {
+    // this.timeout(timeout);
+    // let channel = await chatService.createNewChatChannel(webID, "chat de pruebas");
+    // assert.notEqual(chatService.getRdfService().readFile(mywebID+"/private/dechat_es6b/"+channel.id), null);
+  });
 
 });
 
