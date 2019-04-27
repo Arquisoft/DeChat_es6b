@@ -40,14 +40,10 @@ npm run gulp
 Run development server with:
 
 ----
-ng serve
+npm start
 ----
 
-Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files. If you don't have Angular installed you can use Node Package Manager:
-
-----
-npm run ng serve
-----
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 Node modules aren't in the project, so before running the development server you need to generate them with:
 
@@ -61,10 +57,4 @@ Run unit tests via https://karma-runner.github.io[Karma]:
 
 ----
 npm test
-----
-
-If you don't have Angular installed, use Node Package Manager:
-
-----
-npm run npm test
 ----
