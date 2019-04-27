@@ -6,7 +6,7 @@ image:https://api.codacy.com/project/badge/Grade/fc7dc1da60ee4e9fb67ccff78262579
 
 == What is DeChat?
 
-DeDhat is a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. Read the documentation for more accurate information about the project.
+DeChat is a descentralized chat app based on the https://solid.mit.edu/[solid] specifications. Read the documentation for more accurate information about the project.
 
 == Development Team
 
@@ -60,11 +60,11 @@ npm install
 Run unit tests via https://karma-runner.github.io[Karma]:
 
 ----
-ng test
+npm test
 ----
 
 If you don't have Angular installed, use Node Package Manager:
 
 ----
-npm run ng test
+npm run npm test
 ----
