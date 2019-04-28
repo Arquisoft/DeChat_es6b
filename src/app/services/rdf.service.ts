@@ -34,10 +34,10 @@ const LDP = $rdf.Namespace("http://www.w3.org/ns/ldp#");
 const ACL = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
 const TYPE = $rdf.Namespace("https://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
+
 // const JSONLD_CONTENT_TYPE = 'application/ld+json'
 const JSONLD_CONTENT_TYPE = 'http://www.w3.org/ns/iana/media-types/application/ld+json#Resource'
-const DEFAULT_ACCEPT = 'application/ld+json;q=0.9,text/turtle;q=0.8'
-const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
+
 
 /**
  * A service layer for RDF data manipulation using rdflib.js
@@ -83,8 +83,10 @@ export class RdfService {
   }
 
   /**
-   * @param folderUri Example: https://yourpod.solid.community/private/
-   * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
+   * Method that will save via RDF in the folder specified by parameter, the chat specified by parameter.
+   * 
+   * @param folderUri Uri of the folder where you will save the chat. Example: https://yourpod.solid.community/private/
+   * @param newChatChannel Chat channel to be saved on the POD (the chat id will be used for the URL, so it must be unique)
    */
   async saveNewChatChannel(folderUri: String, newChatChannel: ChatChannel) {
     let chatUri = folderUri + newChatChannel.id;
@@ -103,10 +105,11 @@ export class RdfService {
   }
 
   /**
-   * Guarda un mensaje en el POD, devuelve la URI asignada al mensaje.
+   * Adds a message via RDF to the chat channel specified by parameter via its URI.
+   * Returns the URI assigned to the message.
    * 
-   * @param chatUri Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
-   * @param msg Mensaje a guardar en el POD
+   * @param chatUri Uri of the chat channel where the message will be saved. Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc
+   * @param msg Message to be added to the chat channel.
    */
   async saveMessage(chatUri: String, message: Message): Promise<string> {
     let msgUri = await this.generateUniqueUrlForResource(chatUri + "#");
@@ -127,9 +130,9 @@ export class RdfService {
   }
 
   /**
-   * Actualiza el estado de un mensaje en el POD a READ.
+   * Update the status of the messages in the POD to READ.
    * 
-   * @param msgsUris Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc#aaaaa-bbbbb-ccccc
+   * @param msgsUris List of messages. Example: https://yourpod.solid.community/private/aaaaa-bbbbb-ccccc#aaaaa-bbbbb-ccccc
    */
   async updateMessageToRead(msgsUris: string[]) {
     let ins = [];
@@ -148,11 +151,11 @@ export class RdfService {
   }
   
   /**
-   * Crea un nuevo grupo de chat, devuelve su URI si se creo correctamente, 
-   * null en caso contrario.
+   * Create a new chat group. Returns its URI if it was created correctly, NULL otherwise.
    * 
-   * @param folderGroupUri Example: /private/dechat_groups
-   * @param makerWebId 
+   * @param folderGroupUri Folder where the group files are stored. Example: /private/dechat_groups
+   * @param makerWebId WebId of the group creator.
+   * @param title Name of the group.
    */
   public async addNewChatGroupToFile(folderGroupUri: string, makerWebId: string, title: string): Promise<string> {
     console.log("Creating a group...");
@@ -166,7 +169,7 @@ export class RdfService {
     this.store.add(group, FLOW("participation"), participant, group.doc());
     await this.fetcher.putBack(group);
 
-    // Creamos el fichero .acl (permisos) y le asignamos el Owner (makerWebId)
+    // Create the file .acl (permissions) and assign the Owner (makerWebId)
     await this.updateFile(fileGroup + ".acl", "");
     await this.addOwnerToACL(fileGroup, participant);
 
@@ -174,11 +177,11 @@ export class RdfService {
   }
 
   /**
-   * Añade un nuevo participante al grupo de chat especificado por parámetro, si el
-   * grupo no existe o el participante ya pertenece al grupo no se hace nada.
+   * Add a new participant to the chat group specified by parameter, if the group does not exist 
+   * or the participant already belongs to the group, nothing is done.
    * 
-   * @param groupFileUri 
-   * @param newParticipant 
+   * @param groupFileUri Uri from the group file.
+   * @param newParticipant New participant to add to the group.
    */
   public async addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
@@ -190,8 +193,8 @@ export class RdfService {
       let d = await this.store.each(null, FLOW("participation"), null, group.doc());
       let w = await this.store.each(null, FLOW("participation"), participant, group.doc());
 
-      // Si contiene "participation" suponemos que es un grupo de chat válido
-      // Si no contiene ya al participante lo añadimos
+      // If it contains "participation" we assume that it is a valid chat group
+      // If it does not already contain the participant, we add it
       if (d.length != 0 && w.length == 0) {
         let ins = $rdf.st(group, FLOW("participation"), participant, group.doc());
         let del = [];
@@ -201,7 +204,7 @@ export class RdfService {
           else console.error("An error occurred when trying to add the participant to the group.")
         });
 
-        // // Asignamos permisos al nuevo participante
+        // Assign permits to the new participant
         this.addOwnerToACL(groupFileUri.toString(), participant);
       } else {
         console.error("Invalid group or participant already exists")
@@ -210,17 +213,16 @@ export class RdfService {
   }
 
   /**
-   * Elimina un participante del grupo de chat especificado por parámetro y sus permisos
-   * sobre el grupo de chat.
+   * Remove a participant from the chat group specified by parameter and its permissions on the chat group.
    * 
-   * @param groupFileUri 
-   * @param oldParticipant 
+   * @param groupFileUri Uri from the group file.
+   * @param oldParticipant Participant to be removed from the group.
    */
   public async removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
     console.log("Removing participant from the group...");
     
     let participant = this.store.sym(oldParticipant);
-    // Eliminar participante del grupo
+    // Remove Group Participant
     let group = this.store.sym(groupFileUri.toString());
     await this.fetcher.load(group.doc()).then(res => {
       let ins = [];
@@ -232,7 +234,7 @@ export class RdfService {
       });
     });
 
-    // Eliminar permisos del participante sobre el grupo
+    // Remove participant permissions on the group
     let groupPermissions = this.store.sym(groupFileUri.toString() + ".acl");
     
     await this.fetcher.load(groupPermissions.doc()).then(async res => {
@@ -250,9 +252,9 @@ export class RdfService {
   }
 
   /**
-   * Devuelve todos los participantes de un grupo de chat.
+   * Returns all participants of a chat group.
    * 
-   * @param groupFileUri 
+   * @param groupFileUri Uri from the group file.
    */
   public async getGroupChatParticipants(groupFileUri: string): Promise<Participant[]> {
     let participants: Participant[] = new Array();
@@ -264,17 +266,17 @@ export class RdfService {
       }));
     });
 
-    // Guardamos los participantes en un array
+    // Save the participants in an array
     await promises.then(parts => { parts.forEach(part => { participants.push(part); })});
 
-    // Devolvemos el array de participantes (son promesas)
+    // Return the array of participants (they are promises)
     return participants;
   }
 
   /**
-   * Devuelve el título de un grupo de chat
+   * Returns the title of a chat group.
    * 
-   * @param groupFileUri 
+   * @param groupFileUri Uri from the group file.
    */
   public async getChatGroupTitle(groupFileUri: string): Promise<string> {
     let group = this.store.sym(groupFileUri.toString());
@@ -289,13 +291,14 @@ export class RdfService {
   }
 
   /**
-   * Método que obtiene los mensajes en jsonld recibidos en el inbox especificado,
-   * una vez obtenidos los elimina del inbox.
+   * Method that obtains the messages in json received in the specified inbox,
+   * once obtained deletes them from the inbox.
    * 
-   * Devuelve un array con dichos mensajes.
-   * (Puede devolver objetos "undefined" en dicho array, intentar arreglar)
+   * Returns an array with the messages retrieved from the Inbox.
    * 
-   * @param inboxUri 
+   * << METHOD TO BE MODIFIED >>
+   * 
+   * @param inboxUri Inbox Folder Uri.
    */
   public async getInboxMessages(inboxUri: string): Promise<any[]> {
     let messages: Message[] = new Array();
@@ -303,12 +306,12 @@ export class RdfService {
         
     let promises = this.fetcher.load(fileUri.doc()).then(async response => {
       return Promise.all(this.store.match(null, RDF('type'), null, fileUri.doc()).map(async st => {
-        // Verificamos que sea JSONLD
+        // Verify that it is JSONLD
         if (st.object.value == JSONLD_CONTENT_TYPE) {
-          let jsonld = await this.readFile(st.subject.value); // st.subject.value -> URL del jsonld
+          let jsonld = await this.readFile(st.subject.value); // st.subject.value -> jsonld URL
           try {
             let jsonMessage: any = JSON.parse(jsonld);
-            // Verificamos que sea un mensaje válido
+            // Verify that it is a valid message
             if (jsonMessage.makerWebId && jsonMessage.message && jsonMessage.sendTime) {
               this.deleteFile(st.subject.value);
               return jsonMessage;
@@ -320,49 +323,52 @@ export class RdfService {
       }));
     });
 
-    // Guardamos los mensajes en un array
+    // Save the messages in an array
     await promises.then(msgs => { msgs.forEach(msg => { messages.push(msg); })});
 
-    // Devolvemos el array de mensajes (son promesas)
+    // Return the array of messages (they are promises)
+    // The array can contain "undefined" objects, so we remove them.
     return messages.filter(msg => { return msg != undefined });
   }
 
   /**
-   * Método para recuperar los canales de chat almacenados en el POD.
-   * (El método ordenará los mensajes de cada canal de chat en función de la fecha de envío)
+   * Method for retrieving chat channels stored on the POD.
+   * Returns an array with the chat channels.
+   * (The method will sort the messages of each chat channel according to the sending date)
    * 
-   * @param chatChannelsFolderUri Example: https://yourpod.solid.community/private/dechat_es6b/
+   * @param chatChannelsFolderUri Uri of the folder where the chat channels are stored.
+   * Example: https://yourpod.solid.community/private/dechat_es6b/
    */
   public async loadChatChannels(chatChannelsFolderUri: string): Promise<ChatChannel[]> {
     let chatChannels: ChatChannel[] = new Array();
     let chatFolder = this.store.sym(chatChannelsFolderUri);
 
     let promises = this.fetcher.load(chatFolder.doc()).then(response => {
-      // Obtenemos los canales de chat
+      // get the chat channels
       return Promise.all(this.store.match(chatFolder, LDP('contains'), null, chatFolder.doc()).map(async st => {
-        let fileUri = this.store.sym(st.object.value); // st.object.value -> URI del canal
+        let fileUri = this.store.sym(st.object.value); // st.object.value -> Channel URI
         
-        // Obtenemos los datos del canal de chat
+        // get the data from the chat channel
         return this.fetcher.load(fileUri.doc()).then(async response => {
           var d = await this.store.each(null, TYPE(), MEE("LongChat"), fileUri.doc()); 
-          // Comprobamos que sea un canal de chat válido
+          // check that it's a valid chat channel
           if (d.length != 0) {
             let id = st.object.value.split('/').pop();
             let title = this.store.match(fileUri, DC("title"), null, fileUri.doc()).map(st => { return (st.object.value) });
             let created = this.store.match(fileUri, DC("created"), null, fileUri.doc()).map(st => { return (st.object.value) });
             let group = await this.store.match(fileUri, DC("group"), null, fileUri.doc()).map(st => { return (st.object.value) });
 
-            // FETCHEAMOS todos los participantes del chat grupal
+            // "FETCH" all group chat participants
             if (group && group.toString().trim().length > 0) {
               let participants = await this.getGroupChatParticipants(group.toString());
               participants.forEach(async p => { await this.fetchNewParticipant(p.webId.toString()) });
             }
             
-            // Obtenemos participantes y mensajes del canal de chat
+            // get participants and messages from the chat channel
             let messages = await this.getMessagesChatChannel(st.object.value);
             let participants = await this.getParticipantsChatChannel(st.object.value);
 
-            // Retornamos el canal de chat con los datos obtenidos
+            // return the chat channel with the data obtained
             return new ChatChannel(id, title, group.toString(), new Date(created), messages, participants);
           } else {
             console.error(st.object.value + " is not a valid chat channel");
@@ -371,17 +377,18 @@ export class RdfService {
       }));
     });
 
-    // Guardamos los canales de chat en un array
+    // save the chat channels in an array
     await promises.then(channels => { channels.forEach(channel => { chatChannels.push(channel) })});
 
-    // Devolvemos el array de canales de chat (son promesas)
+    // return the array of chat channels (they are promises)
     return chatChannels.filter(channel => { return channel != undefined });
   }
 
   /**
-   * Método para obtener los datos de todos los participantes del canal de chat
+   * Method to obtain the data of all the participants of a chat channel.
+   * Returns an array with the participants.
    * 
-   * @param chatChannelUri 
+   * @param chatChannelUri Chat channel file Uri.
    */
   public async getParticipantsChatChannel(chatChannelUri: string): Promise<Participant[]> {
     let participants: Participant[] = new Array();
@@ -398,23 +405,24 @@ export class RdfService {
           let nameNAME = this.store.match(me, FOAF("name"), null, me.doc()).map(st => { return (st.object.value) });
           let imageURL = this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { return (st.object.value) });
           let selectedName = (nameFN != undefined && nameFN.length != 0)? nameFN.toString() : nameNAME.toString();
-          let selectedImageURL = (imageURL.length > 0)? imageURL[0].toString() : ""; // Seleccionamos la primera imagen (si la hay)
+          let selectedImageURL = (imageURL.length > 0)? imageURL[0].toString() : ""; // Select the first image (if any)
           return new Participant(st.object.value.toString(), selectedImageURL.toString(), selectedName.toString());
         });
       }));
     });
 
-    // Guardamos los participantes en un array
+    // save the participants in an array
     await promises.then(parts => { parts.forEach(part => { participants.push(part) })});
 
-    // Devolvemos el array de participantes (son promesas)
+    // return the array of participants (they are promises)
     return participants;
   }
 
   /**
-   * Método para obtener los datos de todos los mensajes de un canal de chat
+   * Method for obtaining the data of all messages in a chat channel.
+   * Returns an array with the messages from the chat channel.
    * 
-   * @param chatChannelUri 
+   * @param chatChannelUri Chat channel file Uri.
    */
   public async getMessagesChatChannel(chatChannelUri: string): Promise<Message[]> {
     let messages: Message[] = new Array();
@@ -435,18 +443,18 @@ export class RdfService {
       }));
     });
 
-    // Guardamos los mensajes en un array
+    // save the messages in an array
     await promises.then(msgs => { msgs.forEach(msg => { messages.push(msg); })});
 
-    // Ordenamos los mensajes del canal de chat (llegan desordenados)
+    // order the messages of the chat channel (they arrive in a disordered way)
     messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
-    // Devolvemos el array de mensajes (son promesas)
+    // return the array of messages (they are promises)
     return messages;
   }
 
   /**
-   * Métodos para asignar un propietario a un fichero
+   * Method for assigning owner permissions to a file (Read, Write and Control).
    * 
    * '@prefix  acl:     <http://www.w3.org/ns/auth/acl#>.\n'+
    *     
@@ -457,9 +465,8 @@ export class RdfService {
    *     'acl:defaultForNew  <'+fileURI+'>;\n'+
    *     'acl:mode           acl:Read, acl:Write, acl:Control.\n'+
    * 
-   * @param fileURI 
-   * @param ownerWebId 
-   * @param otherWebId 
+   * @param fileURI Uri of the file to which the permissions will be assigned.
+   * @param ownerWebId WebId of the user to whom the permissions will be assigned.
    */
   public async addOwnerToACL(fileURI: string, ownerWebId: string) {
     let file = this.store.sym(fileURI);
@@ -488,8 +495,7 @@ export class RdfService {
   }
 
   /**
-   * Métodos para añadir un lector a un fichero.
-   * (permisos de lectura)
+   * Method to add reading permissions to a file.
    * 
    * '<#reader>\n'+
    *     'a                  acl:Authorization;\n'+
@@ -498,9 +504,8 @@ export class RdfService {
    *     'acl:defaultForNew  <'+fileURI+'>;\n'+
    *     'acl:mode           acl:Read.'
    * 
-   * @param fileURI 
-   * @param string 
-   * @param otherWebId 
+   * @param fileURI Uri of the file to which the permissions will be assigned.
+   * @param otherWebId WebId of the user to whom the permissions will be assigned.
    */
   public async addReaderToACL(fileURI: string, otherWebId: string) {
     let file = this.store.sym(fileURI);
@@ -527,8 +532,10 @@ export class RdfService {
   }
 
   /**
+   * Returns the name of the WebId specified by parameter.
+   * If it exists, it returns VCARD("fn"), otherwise FOAF("name").
    * 
-   * @param webid 
+   * @param webid WebId from which you want to get the name.
    */
   async getVCardName(webid: string): Promise<string> {
     let me = this.store.sym(webid);
@@ -544,8 +551,9 @@ export class RdfService {
   }
 
   /**
+   * Returns the url of the WebId image specified by parameter. If it does not have an image, it returns an empty string.
    * 
-   * @param webid 
+   * @param webid WebId from which you want to obtain the url of the image.
    */
   async getVCardImage(webid: string): Promise<string> {
     let me = this.store.sym(webid);
@@ -553,15 +561,16 @@ export class RdfService {
     
     await this.fetcher.load(me.doc()).then(response => {
       let imageURL = this.store.match(me, VCARD("hasPhoto"), null, me.doc()).map(st => { return (st.object.value) });
-      image = (imageURL.length > 0)? imageURL[0].toString() : ""; // Seleccionamos la primera imagen (si la hay)
+      image = (imageURL.length > 0)? imageURL[0].toString() : ""; // Select the first image (if any)
     });
 
     return image;
   }
 
   /**
+   * Loads the data of the WebId specified by parameter. Returns the participant.
    * 
-   * @param webid 
+   * @param webid WebId of the participant from whom you want to obtain the data.
    */
   async loadParticipantData(webid: string): Promise<Participant> {
     try {
@@ -572,7 +581,7 @@ export class RdfService {
   }
 
   /**
-   * Example result: https://yourpod.solid.community
+   * Returns the WebId of the current session.
    */
   async getWebId(): Promise<string> {
     if (!this.session) {
@@ -586,9 +595,11 @@ export class RdfService {
   /******************************* SOLID-FILE-CLIENT METHODS ********************************/
 
   /**
-   * Crea un fichero vacío
-   *
-   * @param newFile
+   * Creates in the POD, in the url specified by parameter, a file with the specified content and type of content (optional).
+   * 
+   * @param newFile Uri of the fichero to create. Example: https://yourpod.solid.community/private/newFile.txt
+   * @param content Contents of the file.
+   * @param contentType Type of content of the file.
    */
   async createFile(newFile, content?, contentType?): Promise<string> {
     return fileClient.createFile(newFile, content, contentType)
@@ -596,18 +607,20 @@ export class RdfService {
   }
 
   /**
+   * Returns the contents of the POD file specified by parameter.
    *
-   * @param file
+   * @param file Uri of the file to read.
    */
   async readFile(file) {
     return fileClient.readFile(file).then(body => { return(body) }, err => console.log(err) );
   }
 
   /**
+   * Updates in the POD the file specified by parameter with the new content. If the file does not exist, it creates it.
    *
-   * @param url
-   * @param newContent
-   * @param contentType
+   * @param url Uri of the file to be updated.
+   * @param newContent New file content.
+   * @param contentType File type of the new content.
    */
   async updateFile(url, newContent, contentType?: string) {
     await fileClient.updateFile( url, newContent, contentType )
@@ -615,8 +628,9 @@ export class RdfService {
   }
 
   /**
+   * Deletes the file specified by parameter from the POD.
    *
-   * @param url
+   * @param url Uri of the file to be deleted.
    */
   async deleteFile(url) {
     await fileClient.deleteFile(url)
@@ -624,10 +638,11 @@ export class RdfService {
   }
 
   /**
-   * URL FICHERO ORIGEN ---> URL FICHERO DESTINO
+   * Copies the specified file to the specified destination path.
+   * URL SOURCE FILE ---> URL DESTINATION FILE
    *
-   * @param oldFile
-   * @param newFile
+   * @param oldFile Uri of the source file.
+   * @param newFile  Uri of the destination file.
    */
   async copyFile(oldFile,newFile) {
     fileClient.readFile(oldFile).then( content => {
@@ -638,8 +653,9 @@ export class RdfService {
   }
 
   /**
+   * Creates a new folder on the POD in the specified url.
    *
-   * @param url
+   * @param url Uri from the new folder. Example: https://yourpod.solid.community/newFolder
    */
   async createFolder(url: string) {
     await fileClient.createFolder(url)
@@ -647,6 +663,8 @@ export class RdfService {
   }
 
   /**
+   * Returns the contents of a POD folder:
+   * 
    * {
           type : "folder",
           name : // folder name (without path),
@@ -667,15 +685,14 @@ export class RdfService {
   }
 
   /**
-   * 
+   * Closes the current session.
    */
   async logout() {
     await fileClient.logout().then( console.log( `Bye now!` ), err => console.log(err) );
   }
 
   /**
-   * 
-   * @param url 
+   *
    */
   async fetch(url) {
     fileClient.fetch(url).then( results => {
@@ -687,10 +704,10 @@ export class RdfService {
 
   
   /**
-   * Genera una URL única para un recurso.
-   * Concatena a la URL pasada por parámetro un código aleatorio, formando una URL única.
+   * Generates a unique URL for a resource. Concatena to the URL passed by parameter a random code, forming a unique URL.
+   * Returns a unique URL.
    * 
-   * @param baseurl 
+   * @param baseurl Base URL from which the unique URL will be generated.
    */
   async generateUniqueUrlForResource(baseurl): Promise<string> {
     if (!this.session) {
@@ -723,7 +740,7 @@ export class RdfService {
   }
   
   /**
-   * Método que devuelve la lista de contactos de un usuario.
+   * Method that returns a user's contact list.
    */
   getFriends = async (list: { username: string; id: string }[]) => {
     if (!this.session) {
@@ -763,10 +780,10 @@ export class RdfService {
   };
 
   /*******************************************************************************
-   * Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
-   * de la cuenta con la que hemos iniciado sesión
+   * (Temporary) solution for accessing files from a provider other than the 
+   * account you logged in with.
    * 
-   * Usado en:
+   * Used in:
    *  - loadChatChannels() [rdf.service.ts]
    *  - getParticipantsChatChannel() [rdf.service.ts]
    *  - processGroupMessage() [chat.service.ts]
