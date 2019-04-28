@@ -493,8 +493,10 @@ export class ChatService {
     console.log(channel.created);
 
     // Si existe lo borramos
-    if (channel != null)
-      this.rdf.deleteFile(this.uri + CHAT_FOLDER + "/" + chat.id);
+    if (channel != null) {
+      await this.rdf.deleteFile(this.uri + CHAT_FOLDER + "/" + chat.id);
+      this.chatChannels = this.chatChannels.filter(channel => channel.id != chat.id);
+    }
   }
 
   /**

@@ -60,7 +60,68 @@ describe('ChatService', () => {
     // Remove new channel
     await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
     assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
-  }); 
+  });
+
+  it ('search chat by chat id', async function() {
+    // this.timeout(timeout);
+    let newChannel = await chatService.createNewChatChannel(other.webid, "chat de pruebas");
+    let channel = chatService.searchChatChannelById(newChannel.id);
+    assert.notStrictEqual(channel.title.toString().toLowerCase(), "pruebases6b"); // Use the account name
+
+    // Remove new channel
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+  });
+
+  it ('delete chat', async function() {
+    // this.timeout(timeout);
+    let newChannel = await chatService.createNewChatChannel(other.webid, "chat de pruebas");
+
+    let channel = chatService.searchChatChannelByParticipantWebid(other.webid);
+    await chatService.delete(channel);
+    channel = chatService.searchChatChannelByParticipantWebid(other.webid);
+
+    assert.equal(channel, null);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + newChannel.id), null);
+  });
+
+  it ('send message', async function() {
+    // this.timeout(timeout);
+    let channel = await chatService.createNewChatChannel(other.webid, "chat de pruebas");
+
+    await chatService.sendMessage(channel, "pruebas");
+    assert.equal(channel.messages[0].message, "pruebas");
+    
+    // Remove new channel
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+  });
+
+  it ('send file', async function() {
+    // this.timeout(timeout);
+    let channel = await chatService.createNewChatChannel(other.webid, "chat de pruebas");
+    let image = await rdfService.readFile("https://dechates6b.solid.community/private/inrupt.png");
+
+    let spyUpdateFile = spyOn(rdfService, 'updateFile').and.callFake(() => {});
+    let spyAddOwnerToACL = spyOn(rdfService, 'addOwnerToACL').and.callFake(() => {});
+    let spyAddReaderToACL = spyOn(rdfService, 'addReaderToACL').and.callFake(() => {});
+
+    let file: File = new File([image], 'inrupt.png', { lastModified: 0, type: 'image/png' });
+    await chatService.sendFile(channel, "pruebas", file);
+
+    assert.notEqual(await rdfService.readFile(channel.messages[0].message), null);
+    expect(spyUpdateFile).toHaveBeenCalled();
+    expect(spyAddOwnerToACL).toHaveBeenCalled();
+    expect(spyAddReaderToACL).toHaveBeenCalled();
+
+    // Remove send image
+    await rdfService.deleteFile(channel.messages[0].message);
+    assert.equal(await rdfService.readFile(channel.messages[0].message), null);
+
+    // Remove new channel
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+  });
 
 });
 
