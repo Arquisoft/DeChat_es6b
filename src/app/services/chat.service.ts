@@ -92,7 +92,7 @@ export class ChatService {
   /**
    *
    */
-  private async loadChatChannels() {
+  public async loadChatChannels() {
     console.log("Loading chat channels...");
     this.chatChannels = await this.rdf.loadChatChannels(this.uri + CHAT_FOLDER + "/");
     this.sortChatChannels();
@@ -277,7 +277,7 @@ export class ChatService {
   /**
    * Busca nuevas notificaciones de mensajes en el inbox propio
    */
-  private async checkInbox() {
+  public async checkInbox() {
     console.log("Checking inbox...");
     let msgs = await this.rdf.getInboxMessages(this.uri + INBOX_FOLDER);
 
