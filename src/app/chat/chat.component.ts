@@ -208,6 +208,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     let inputElement: HTMLInputElement = document.getElementById('input_text') as HTMLInputElement;
     inputElement.value += text;
   }
+
+
+  async userInfo() {
+      var popup = document.getElementById("userName");
+      popup.classList.toggle("show");
+    }
   
   async sendFile(event) {
     if (this.selectedChatChannel != null) {

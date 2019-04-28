@@ -70,12 +70,16 @@
 					<i class="material-icons">more_vert</i>
 				</button>
 			</div>
-			
+
 			<div class="leftSide">
-				<p class="chatName" *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
-					<span *ngIf="!isGroupChannel()">{{ selectedChatChannel.participants[0].webId }}</span>
-					<span *ngIf="isGroupChannel()">{{ selectedChatChannel.group.toString() }}</span>
-				</p>
+				<div class="username" click="userInfo()">
+					<span class="usernametext" id="username"  *ngIf="selectedChatChannel">{{ selectedChatChannel.title }}
+					</span>
+				</div>
+				<p></p>
+				<span *ngIf="!isGroupChannel()">{{ selectedChatChannel.participants[0].webId }}</span>
+				<span *ngIf="isGroupChannel()">{{ selectedChatChannel.group.toString() }}</span>
+			
 			<!--<p class="chatStatus">Online</p>-->
 			</div>
 		</div>
