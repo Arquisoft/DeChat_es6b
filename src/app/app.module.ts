@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import {LoginPopupComponent} from './login-popup/login-popup.component';
 import {LoginComponent} from './login/login.component';
-import { CardComponent } from './card/card.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ChatComponent } from './chat/chat.component';
 
@@ -42,11 +41,6 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'card',
-    component: CardComponent,
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'register',
     component: RegisterComponent
   },
@@ -62,7 +56,6 @@ const routes: Routes = [
     LoginComponent,
     LoginPopupComponent,
     DashboardComponent,
-    CardComponent,
     RegisterComponent,
     ChatComponent
   ],
