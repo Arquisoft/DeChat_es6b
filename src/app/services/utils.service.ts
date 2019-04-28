@@ -91,7 +91,10 @@ export class UtilsService {
       ':-)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face_1f600.png'],
       ':)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/grinning-face-with-smiling-eyes_1f601.png'],
       ':D':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/face-with-tears-of-joy_1f602.png'],
-      '<3':['https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/198/heavy-black-heart_2764.png']
+      '<3':['https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/198/heavy-black-heart_2764.png'],
+      ':^)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/rolling-on-the-floor-laughing_1f923.png'],
+      '(-:':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png'],
+      '=)':['https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/smiling-face-with-open-mouth_1f603.png']
     }
 
     let gifs = {
