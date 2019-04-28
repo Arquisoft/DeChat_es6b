@@ -7,7 +7,7 @@
 ****
 
 
-image::images/05_building_blocks-EN.png["Hierarchy of building blocks"]
+image::05_building_blocks-EN.png["Hierarchy of building blocks"]
 
 *Level 1* is the white box description of the overall system together with black
 box descriptions of all contained building blocks.

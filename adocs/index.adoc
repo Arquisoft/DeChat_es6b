@@ -3,7 +3,7 @@
 //
 // ====================================
 
-= image:LogoASW.png[arc42] deChat - Decentralized Chat 6b
+= image:images/LogoASW.png[arc42] deChat - Decentralized Chat 6b
 // toc-title definition MUST follow document title without blank line!
 :toc-title: Table of Contents
 
@@ -38,8 +38,6 @@ Authors:
 Carlos Álvarez Rábano
 
 David Carballo Baz
-
-Sara García Rodríguez
 
 Iván Gómez Pinta
 

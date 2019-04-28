@@ -62,7 +62,7 @@ The channel and transmission between a user and their partner is somehow direct,
 In the following diagram we can find represented the input/output and their relationship with the communication channel in out system of the decentralized chat:
 
 
-image::images/03_scope_and_context_diagram.PNG["Technical diagram of the system"]
+image::03_scope_and_context_diagram.png[Technical diagram of the system]
 
 We also can see that there is a direct connection between the PODs, as descripted previously, and there are no external servers.
 

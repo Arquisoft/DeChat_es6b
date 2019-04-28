@@ -25,7 +25,7 @@ Angular tries to increase the number of browser-based applications with apabilit
 
 * The *controllers* are responsible for offering the catalog of actions that the web application is capable of (and that will correspond to the business logic implemented), when the user selects one of these actions the controller must execute the logic of the associate business and generate a response, in many cases these responses will generate a change in the current view of the application.
 
-image::images/angularJS_MVC1.png[Modelo Vista Controlador con Angular]
+image::angularJS_MVC1.png[Modelo Vista Controlador con Angular]
 ****
 
 === Organizational decisions

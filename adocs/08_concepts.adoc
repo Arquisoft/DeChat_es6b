@@ -6,4 +6,4 @@
 TBD
 ****
 
-image::images/08-Crosscutting-Concepts-Structure-EN.png["Possible topics for crosscutting concepts"]
+image::08-Crosscutting-Concepts-Structure-EN.png["Possible topics for crosscutting concepts"]
