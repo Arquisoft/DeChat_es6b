@@ -18,6 +18,7 @@ import { Participant } from '../models/participant.model';
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private scrollMe: ElementRef;
+  @ViewChild('send_file') private send_file: ElementRef;
   scrollBottom = false;
 
   userListPopup;
@@ -213,6 +214,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     if (this.selectedChatChannel != null) {
       const file: File = event.target.files[0];
       this.chatService.sendFile(this.selectedChatChannel, '', file);
+      this.send_file.nativeElement.value = ""; // restart input file
       this.scrollBottom = true;
     }
   }

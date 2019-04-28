@@ -69,8 +69,8 @@ export class UtilsService {
       urlInHtml += '</audio>';
     }
     else {
-      urlInHtml = 'Link: ';
-      urlInHtml += '<a class="chat_file" target="_blank" rel="noopener noreferrer" href="' + url + '">';
+      // urlInHtml = 'Link: ';
+      urlInHtml = '<a class="chat_file" target="_blank" rel="noopener noreferrer" href="' + url + '">';
       urlInHtml += url.split("/").pop();
       urlInHtml += '</a>';
     }

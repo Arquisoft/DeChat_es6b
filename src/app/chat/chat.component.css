@@ -64,7 +64,7 @@ input[type="checkbox"] {
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -50%);
-  width: 30%;
+  width: 32%;
   min-width: 400px;
   max-width: 600px;
   height: 200px;
