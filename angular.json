@@ -88,6 +88,10 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
+            ],
+            "codeCoverageExclude": [
+              "src/app/services/solid.auth.service.ts",
+              "src/app/chat/chat.component.ts"
             ]
           }
         },

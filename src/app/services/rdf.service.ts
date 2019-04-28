@@ -83,302 +83,6 @@ export class RdfService {
   }
 
   /**
-   * Gets a node that matches the specified pattern using the VCARD onthology
-   *
-   * any() can take a subject and a predicate to find Any one person identified by the webId
-   * that matches against the node/predicated
-   *
-   * @param {string} node VCARD predicate to apply to the $rdf.any()
-   * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me)
-   * @return {string} The value of the fetched node or an emtpty string
-   * @see https://github.com/solid/solid-tutorial-rdflib.js
-   */
-  getValueFromVcard = (node: string, webId?: string): string | any => {
-    return this.getValueFromNamespace(node, VCARD, webId);
-  };
-
-  /**
-   * Gets a node that matches the specified pattern using the FOAF onthology
-   * @param {string} node FOAF predicate to apply to the $rdf.any()
-   * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me)
-   * @return {string} The value of the fetched node or an emtpty string
-   */
-  getValueFromFoaf = (node: string, webId?: string) => {
-    return this.getValueFromNamespace(node, FOAF, webId);
-  };
- 
-  transformDataForm = (form: NgForm, me: any, doc: any) => {
-    const insertions = [];
-    const deletions = [];
-    const fields = Object.keys(form.value);
-    const oldProfileData = JSON.parse(localStorage.getItem('oldProfileData')) || {};
-
-    // We need to split out into three code paths here:
-    // 1. There is an old value and a new value. This is the update path
-    // 2. There is no old value and a new value. This is the insert path
-    // 3. There is an old value and no new value. Ths is the delete path
-    // These are separate codepaths because the system needs to know what to do in each case
-    fields.map(field => {
-
-      let predicate = VCARD(this.getFieldName(field));
-      let subject = this.getUriForField(field, me);
-      let why = doc;
-
-      let fieldValue = this.getFieldValue(form, field);
-      let oldFieldValue = this.getOldFieldValue(field, oldProfileData);
-
-      // if there's no existing home phone number or email address, we need to add one, then add the link for hasTelephone or hasEmail
-      if(!oldFieldValue && fieldValue && (field === 'phone' || field==='email')) {
-        this.addNewLinkedField(field, insertions, predicate, fieldValue, why, me);
-      } else {
-
-        //Add a value to be updated
-        if (oldProfileData[field] && form.value[field] && !form.controls[field].pristine) {
-          deletions.push($rdf.st(subject, predicate, oldFieldValue, why));
-          insertions.push($rdf.st(subject, predicate, fieldValue, why));
-        }
-
-        //Add a value to be deleted
-        else if (oldProfileData[field] && !form.value[field] && !form.controls[field].pristine) {
-          deletions.push($rdf.st(subject, predicate, oldFieldValue, why));
-        }
-
-        //Add a value to be inserted
-        else if (!oldProfileData[field] && form.value[field] && !form.controls[field].pristine) {
-          insertions.push($rdf.st(subject, predicate, fieldValue, why));
-        }
-      }
-    });
-
-    return {
-      insertions: insertions,
-      deletions: deletions
-    };
-  };
-
-  private addNewLinkedField(field, insertions, predicate, fieldValue, why, me: any) {
-    //Generate a new ID. This id can be anything but needs to be unique.
-    let newId = field + ':' + Date.now();
-
-    //Get a new subject, using the new ID
-    let newSubject = $rdf.sym(this.session.webId.split('#')[0] + '#' + newId);
-
-    //Set new predicate, based on email or phone fields
-    let newPredicate = field === 'phone' ? $rdf.sym(VCARD('hasTelephone')) : $rdf.sym(VCARD('hasEmail'));
-
-    //Add new phone or email to the pod
-    insertions.push($rdf.st(newSubject, predicate, fieldValue, why));
-
-    //Set the type (defaults to Home/Personal for now) and insert it into the pod as well
-    //Todo: Make this dynamic
-    let type = field === 'phone' ? $rdf.literal('Home') : $rdf.literal('Personal');
-    insertions.push($rdf.st(newSubject, VCARD('type'), type, why));
-
-    //Add a link in #me to the email/phone number (by id)
-    insertions.push($rdf.st(me, newPredicate, newSubject, why));
-  }
-
-  private getUriForField(field, me): string {
-    let uriString: string;
-    let uri: any;
-
-    switch(field) {
-      case 'phone':
-        uriString = this.getValueFromVcard('hasTelephone');
-        if(uriString) {
-          uri = $rdf.sym(uriString);
-        }
-        break;
-      case 'email':
-        uriString = this.getValueFromVcard('hasEmail');
-        if(uriString) {
-          uri = $rdf.sym(uriString);
-        }
-        break;
-      default:
-        uri = me;
-        break;
-    }
-
-    return uri;
-  }
-
-  /**
-   * Extracts the value of a field of a NgForm and converts it to a $rdf.NamedNode
-   * @param {NgForm} form
-   * @param {string} field The name of the field that is going to be extracted from the form
-   * @return {RdfNamedNode}
-   */
-  private getFieldValue(form: NgForm, field: string): any {
-    let fieldValue: any;
-
-    if(!form.value[field]) {
-      return;
-    }
-
-    switch(field) {
-      case 'phone':
-        fieldValue = $rdf.sym('tel:+'+form.value[field]);
-        break;
-      case 'email':
-        fieldValue = $rdf.sym('mailto:'+form.value[field]);
-        break;
-      default:
-        fieldValue = form.value[field];
-        break;
-    }
-
-    return fieldValue;
-  }
-
-  private getOldFieldValue(field, oldProfile): any {
-    let oldValue: any;
-
-    if(!oldProfile || !oldProfile[field]) {
-      return;
-    }
-
-    switch(field) {
-      case 'phone':
-        oldValue = $rdf.sym('tel:+'+oldProfile[field]);
-        break;
-      case 'email':
-        oldValue = $rdf.sym('mailto:'+oldProfile[field]);
-        break;
-      default:
-        oldValue = oldProfile[field];
-        break;
-    }
-
-    return oldValue;
-  }
-
-  private getFieldName(field): string {
-    switch (field) {
-      case 'company':
-        return 'organization-name';
-      case 'phone':
-      case 'email':
-        return 'value';
-      default:
-        return field;
-    }
-  }
-
-  updateProfile = async (form: NgForm) => {
-    const me = $rdf.sym(this.session.webId);
-    const doc = $rdf.NamedNode.fromValue(this.session.webId.split('#')[0]);
-    const data = this.transformDataForm(form, me, doc);
-
-    //Update existing values
-    if(data.insertions.length > 0 || data.deletions.length > 0) {
-      this.updateManager.update(data.deletions, data.insertions, (response, success, message) => {
-        if(success) {
-          this.toastr.success('Your Solid profile has been successfully updated', 'Success!');
-          form.form.markAsPristine();
-          form.form.markAsTouched();
-        } else {
-          this.toastr.error('Message: '+ message, 'An error has occurred');
-        }
-      });
-    }
-  };
-
-  getAddress = () => {
-    const linkedUri = this.getValueFromVcard('hasAddress');
-
-    if (linkedUri) {
-      return {
-        locality: this.getValueFromVcard('locality', linkedUri),
-        country_name: this.getValueFromVcard('country-name', linkedUri),
-        region: this.getValueFromVcard('region', linkedUri),
-        street: this.getValueFromVcard('street-address', linkedUri),
-      };
-    }
-
-    return {};
-  };
-
-  //Function to get email. This returns only the first email, which is temporary
-  getEmail = () => {
-    const linkedUri = this.getValueFromVcard('hasEmail');
-
-    if (linkedUri) {
-      return this.getValueFromVcard('value', linkedUri).split('mailto:')[1];
-    }
-
-    return '';
-  }
-
-  //Function to get phone number. This returns only the first phone number, which is temporary. It also ignores the type.
-  getPhone = () => {
-    const linkedUri = this.getValueFromVcard('hasTelephone');
-
-    if(linkedUri) {
-      return this.getValueFromVcard('value', linkedUri).split('tel:+')[1];
-    }
-  };
-
-  getProfile = async () => {
-
-    if (!this.session) {
-      await this.getSession();
-    }
-
-    try {
-      await this.fetcher.load(this.session.webId);
-
-      return {
-        fn : this.getValueFromVcard('fn'),
-        company : this.getValueFromVcard('organization-name'),
-        phone: this.getPhone(),
-        role: this.getValueFromVcard('role'),
-        image: this.getValueFromVcard('hasPhoto'),
-        address: this.getAddress(),
-        email: this.getEmail(),
-      };
-    } catch (error) {
-      console.log(`Error fetching data: ${error}`);
-    }
-  };
-
-  /**
-   * Gets any resource that matches the node, using the provided Namespace
-   * @param {string} node The name of the predicate to be applied using the provided Namespace 
-   * @param {$rdf.namespace} namespace The RDF Namespace
-   * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me) 
-   */
-  private getValueFromNamespace(node: string, namespace: any, webId?: string): string | any {
-    const store = this.store.any($rdf.sym(webId || this.session.webId), namespace(node));
-    if (store) {
-      return store.value;
-    }
-    return '';
-  }
-
-  /* getFriends = () =>
-  {
-    const user = this.session.webId;
-    const amigos = this.store.each($rdf.sym(user), FOAF('knows'));
-    const lista_amigos = [];
-    try {
-      let i=0;
-      for (i=0; i<amigos.length; i++)
-      {
-        lista_amigos.push(amigos[i].value);
-      }
-      return lista_amigos;
-    } catch (error) {
-      console.log(`Error fetching data: ${error}`);
-    }
-  }
-
-
-  /*********************************/
-  /* CÓDIGO NUEVO A PARTIR DE AQUÍ */
-  /*********************************/
-
-  /**
    * @param folderUri Example: https://yourpod.solid.community/private/
    * @param newChatChannel Chat a guardar en el POD (se usará el id del chat para la URL, por tanto, debe ser único)
    */
@@ -879,8 +583,7 @@ export class RdfService {
   }
 
 
-
-   /***************************************************************/
+  /******************************* SOLID-FILE-CLIENT METHODS ********************************/
 
   /**
    * Crea un fichero vacío
@@ -980,110 +683,9 @@ export class RdfService {
     }, err => {} ); // console.log(err) );
   }
 
-  /*******************************************************************************
-   * Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
-   * de la cuenta con la que hemos iniciado sesión
-   * 
-   * Usado en:
-   *  - loadChatChannels() [rdf.service.ts]
-   *  - getParticipantsChatChannel() [rdf.service.ts]
-   *  - processGroupMessage() [chat.service.ts]
-  ********************************************************************************/
- fetcheatedParticipants = [];
- async fetchNewParticipant(webid: string) {
-   if (!this.fetcheatedParticipants.includes(webid)) {
-    this.fetcheatedParticipants.push(webid);
-    this.store.sym(webid);
-    // let uri = webid.match(this.chatUtils.regexUrlDomain)[0];
-    // await fileClient.fetch(uri).then( results => {}, err => {} );
-   }
- }
+  /***************************************************************/
+
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ----------------------------------------------------------------
-  // ----------------------------------------------------------------
-
-  /**
-   * This method creates an empty file for the given url. It overwrites existing files.
-   * @param url: the url of the empty file
-   * @returns {Promise}: the promise from auth.fetch().
-   */
-  createEmptyFileForUser(url) {
-    var request = {
-      method: 'PUT',
-      body: ''
-    };
-    return solid.auth.fetch( url, request );
-  }
-
-  /**
-   * This method sends a notification to an inbox.
-   * @param url: the url of the inbox.
-   * @param data: the RDF data representing the notification.
-   * @returns {Promise}: the promise from auth.fetch().
-   */
-  sendToUserInbox(urlInbox, data) {
-    var request = {
-      method: 'POST',
-      body: data
-    }
-    return solid.auth.fetch( urlInbox, request );
-  }
-
-  /**
-   * This method deletes a file.
-   * @param url: the url of the file that needs to be deleted.
-   * @returns {Promise}: the promise from auth.fetch().
-   */
-  deleteFileForUser(urlFile) {
-    var request = {
-      method: 'DELETE'
-    }
-    return solid.auth.fetch( urlFile, request );
-  }
-
-  /**
-   * This method executes an SPARQL update on a file.
-   * @param url: the url of the file that needs to be updated.
-   * @param query: the SPARQL update query that needs to be executed.
-   * @returns {Promise}: the promise from auth.fetch().
-   */
-  executeSPARQLUpdateForUser(url, query) {
-    var request = {
-      method: 'PATCH',
-      body: query,
-      headers: {
-        'Content-Type': 'application/sparql-update'
-      }
-    };
-    return solid.auth.fetch( url, request );
-  }
-
-  /**
-   * This method checks if the current user has write access to a file.
-   * @param url: the url of the file to check.
-   * @returns {Promise<boolean>}: a promise that resolves with true if the user has write access, else false.
-   */
-  async writePermission(url) {
-    // TODO We should probably check the ACL of the parent folder to see if we can write if the file doesn't exist and
-    // if the file exists, we check the ACL of the file.
-    const response = await this.executeSPARQLUpdateForUser(url, 'INSERT DATA {}');
-    return response.status === 200;
-  }
-
   /**
    * Genera una URL única para un recurso.
    * Concatena a la URL pasada por parámetro un código aleatorio, formando una URL única.
@@ -1158,5 +760,25 @@ export class RdfService {
     } catch (error) {
         console.log(error);
     }
-};
+  };
+
+  /*******************************************************************************
+   * Solución (temporal) para poder acceder a ficheros de un proveedor distinto al
+   * de la cuenta con la que hemos iniciado sesión
+   * 
+   * Usado en:
+   *  - loadChatChannels() [rdf.service.ts]
+   *  - getParticipantsChatChannel() [rdf.service.ts]
+   *  - processGroupMessage() [chat.service.ts]
+  ********************************************************************************/
+  fetcheatedParticipants = [];
+  async fetchNewParticipant(webid: string) {
+    if (!this.fetcheatedParticipants.includes(webid)) {
+      this.fetcheatedParticipants.push(webid);
+      this.store.sym(webid);
+      // let uri = webid.match(this.chatUtils.regexUrlDomain)[0];
+      // await fileClient.fetch(uri).then( results => {}, err => {} );
+    }
+  }
+
 }

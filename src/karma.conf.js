@@ -22,6 +22,7 @@ module.exports = function (config) {
       'assets/js/libs/rdflib.min.js'
     ],
     exclude: [
+      // Right place: angular.json --> test --> "codeCoverageExclude"
     ],
     preprocessors: {
       'app/**/*.ts': ['coverage']  
