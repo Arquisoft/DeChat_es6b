@@ -3,7 +3,15 @@
 
 == Deployment View
 
+In the following table it is described the way it is related the technical infraestructure with the environment, the hardware given, processors, channels and so, as well as the mapping of software building blocks to that infraestructure elements:
 
-****
-TBD
-****
+image::07_deployment_view.jpg[Deployment view of the chat system.]
+
+
+[options="header"]
+|===
+| Node/Element         | Description
+| User workspace | The computer which the user is going to chat from as well as their environment.
+| Browser | Any recent browser to access the DeChat page application. Almost every single browser, such as Chrome, Firefox, Safari, Opera or Edge should work.
+| SOLID (environment) | The SOLID server which the user interacts with. Here the user is allowed to access the inbox of his SOLID POD as well as his friend's one, and in the same way the main user has no permission to enter to the private folder of the friend's POD, though he does for his own.
+|===

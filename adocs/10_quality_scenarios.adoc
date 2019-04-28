@@ -1,18 +1,9 @@
 [[section-quality-scenarios]]
 == Quality Requirements
 
+As a way of sumarizing in a graphical form the requirements of the system with less priority, which is, those ones that will not create high risks if they are not fully achieved is the following kind of *quality tree*:
 
-
-****
-TBD
-****
-
-=== Quality Tree
-
-
-****
-TBD
-****
+image::10_quality_req.png[Here is the representation of the non-functional requirements of the system]
 
 === Quality Scenarios
 

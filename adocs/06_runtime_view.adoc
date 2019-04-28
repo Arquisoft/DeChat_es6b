@@ -4,9 +4,10 @@
 
 
 ****
-In this document we describe the main process of our application, since the user enter to the login window till the same user send a message to the chat (group chat or individual chat).
+In this document we describe the main process of our application, since the user enter to the login window till the same user sends a message to the chat (group chat or individual chat).
 
 ****
+Here we can find a general view of the full process of a user jorney:
 
 image::Runtime_view.jpg["Runtime view of the chat"]
 
