@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
 import { RdfService } from '../services/rdf.service';
-
 import { ChatChannel } from '../models/chat-channel.model';
 import { Message } from '../models/message.model';
-
-import * as uuid from 'uuid';
-import * as manager from 'solid-file-client';
 import { Participant } from '../models/participant.model';
+import * as uuid from 'uuid';
 
 
-const CHAT_CHANNEL_CONTENT_TYPE = 'application/ld+json';
 const MESSAGE_CONTENT_TYPE = 'application/ld+json';
 const BASE_NAME_MESSAGES = 'dechat_msg';
-const MESSAGE_FILE_FORMAT = 'jsonld';
 
 const PRIVATE_FOLDER = '/private';
 const FILES_FOLDER = '/private/files'
@@ -28,7 +23,7 @@ const GROUPS_FOLDER = '/private/dechat_groups';
 export class ChatService {
 
   chatChannels: ChatChannel[] = new Array();
-  allActiveChats: ChatChannel[] = new Array(); // todos los chats activos del usuario
+  allActiveChats: ChatChannel[] = new Array(); // all active user chats
   uri: string;
   webid: string
 
@@ -39,7 +34,10 @@ export class ChatService {
   }
 
   /**
-   * Método para iniciar la ejecución del chat
+   * Method to start chat execution. Checks if the necessary folders exist, loads the chats of the 
+   * current session, and checks the inbox for new messages.
+   * 
+   * You then subscribe to the POD of the current session to detect new messages.
    */
   public async startChat() {
     this.webid = await this.rdf.getWebId();
@@ -52,16 +50,16 @@ export class ChatService {
       .then(async () => { await this.loadChatChannels() })
       .then(async () => { await this.checkInbox() });
 
-    // Abrimos WebSocket, cualquier modificación en nuestro POD provocará la ejecución de "checkInbox()"
+    // We open WebSocket, any modification in our POD will cause the execution of "checkInbox()".
     let updateUri = this.rdf.store.sym(this.uri + INBOX_FOLDER);
     await this.rdf.fetcher.load(updateUri.doc());
     this.rdf.updateManager.addDownstreamChangeListener(updateUri.doc(), async () => {
-      // Esperar si ya hay otra comprobación en funcionamiento
+      // Wait if there is already another test in operation (IMPROVE)
       while (this.waitForCheckInbox) { 
         await this.delay(Math.random() * (400 - 250) + 250); 
       }
 
-      // Comprobar que no se esté ejecutando ya otra comprobación
+      // Check that another check is not already running (IMPROVE)
       if (!this.waitForCheckInbox) {
         this.waitForCheckInbox = true;
         await this.checkInbox();
@@ -71,13 +69,12 @@ export class ChatService {
   }
 
   /**
-   * Comprobar si existe la carpeta especificada por parámetro, si no existe
-   * se crea la carpeta
+   * Checks if the folder specified by parameter exists, if it does not exist create the folder.
    * 
-   * @param folder Example: '/private'
+   * @param folder Folder to check. Example: '/private'
    */
   private async checkFolder(folder: string) {
-    // Si no esta creada la carpeta la creamos
+    // If the folder is not created we create it
     let checkFolder = await this.rdf.readFolder(this.uri + folder);
     if (checkFolder === undefined) {
       console.log("The '"+folder+"' folder does not exist, creating it...");
@@ -85,12 +82,16 @@ export class ChatService {
     }
   }
 
+  /**
+   * Returns the service object with RDF operations
+   */
   getRdfService() {
     return this.rdf;
   }
 
   /**
-   *
+   * Loads the chats stored in the POD of the current session and sorts them according to the last message of each chat.
+   * It also creates a copy of the chats in "allActiveChats".
    */
   public async loadChatChannels() {
     console.log("Loading chat channels...");
@@ -100,9 +101,11 @@ export class ChatService {
   }
 
   /**
+   * Adds the message specified by parameter to the channel specified by parameter, and reorders the 
+   * channel list according to the last message of each chat.
    * 
-   * @param channel 
-   * @param msg 
+   * @param channel Channel to which the message will be added
+   * @param msg Message to be added to the channel
    */
   private addNewMessageToChannel(channel: ChatChannel, msg: Message) {
     channel.messages.push(msg);
@@ -110,7 +113,7 @@ export class ChatService {
   }
 
   /**
-   * Ordena los canales de canal de chat por fecha de envío del último mensaje
+   * Sorts the chat channels based on the date of the last message sent by each one.
    */
   sortChatChannels() {
     this.chatChannels.sort(function(a, b) { 
@@ -126,53 +129,57 @@ export class ChatService {
   }
 
   /**
+   * Used to modify the channel list.
    * 
-   * @param chatChannels 
+   * @param chatChannels New channel list
    */
   setChatChannels(chatChannels: ChatChannel[]) {
     this.chatChannels = chatChannels;
   }
 
   /**
+   * Allows you to set asynchronous waiting.
    * 
-   * @param ms 
+   * @param ms Waiting time (milliseconds)
    */
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
-   * Guarda el mensaje en el objeto chat, actualiza el chat en el POD propio 
-   * y envía el mensaje al Inbox de los participantes del chat
+   * Allows you to send a message to a contact.
+   * 
+   * Saves the message in the chatChannel object, adds the message to the chat channel on your own POD
+   * and sends the message to the Inbox of the participants of the chat channel.
    *
-   * @param chatChannel
-   * @param msg
+   * @param chatChannel Chat channel to which the message will be sent
+   * @param msg Message (content) to be sent
    */
   public async sendMessage(chatChannel: ChatChannel, msg: string) {
-    // Comprobamos que el canal exista
+    // We check that the channel exists
     try {
       let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
-        // Creamos y guardamos el mensaje
+        // We create and save the message
         let message = new Message(this.webid, msg);
         this.addNewMessageToChannel(chatChannel, message);
 
-        // Si es un canal grupal actualizamos los participantes
-        // y añadimos el grupo al mensaje en una nueva propiedad
+        // If it is a group channel we update the participants
+        // and add the group to the message in a new property
         if (chatChannel.group && chatChannel.group.toString().length > 0) {
           chatChannel.participants = await this.rdf.getGroupChatParticipants(chatChannel.group.toString());
           message["group"] = chatChannel.group.toString();
         }
 
-        // Actualizamos canal de chat en POD propio
+        // We update chat channel in own POD
         message.markMessageAsRead();
         let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
         message.id = msgUri;
 
-        // Enviamos el mensaje a todos los participantes del chat
+        // We send the message to all chat participants
         message.markMessageAsPending();
         let newMsg = JSON.stringify(message);
-        message.markMessageAsRead(); // En memoria debe quedar en READ (mensaje propio)
+        message.markMessageAsRead(); // In memory it must remain in READ (own message)
 
         chatChannel.participants.forEach(async participant => { 
           if (participant.webId != this.webid) {
@@ -187,64 +194,65 @@ export class ChatService {
   }
 
   /**
+   * Allows you to get the user's contact list for the current session.
    * 
-   * @param users Obtener la lista de contactos del usuario.
+   * @param users Object in which the user's contact list will be stored.
    */
-  async getFriends(users){
-    await manager.popupLogin().then((webId) => {
-      this.rdf.getFriends(users);
-  });
+  async getFriends(users) {
+    await this.rdf.getFriends(users);
   }
   
- /**
-   * Guarda la url del fichero en el chat, actualiza el chat en el POD propio y envía la url del fichero a los participantes del chat
+  /**
+   * Allows you to send a file to a contact.
    * 
-   * @param chatChannel
-   * @param file
+   * Upload the file to your own POD, assign the appropriate permissions to the file and send a message with 
+   * the URL to the chat channel participants.
+   * 
+   * @param chatChannel Chat channel to which the file will be sent
+   * @param file File to be sent
    */
   public async sendFile(chatChannel: ChatChannel, msg: string, file: File) {
     try {
-      // Comprobamos que el canal exista
+      // We check that the channel exists
       let channel: ChatChannel = this.searchChatChannelById(chatChannel.id);
       if (channel != null) {
-        // Creamos el mensaje
+        // We create the message
         let message = new Message(this.webid, msg);
  
-        // Guardamos el fichero en el pod y actualizamos el mensaje con la url del fichero
+        // Save the file in the pod and update the message with the url of the file
         let urlFile = await this.rdf.createFile(this.uri + FILES_FOLDER + "/" + "file_" + file.name.replace(/[^a-zA-Z0-9-_\.]/g, '_'), file);
         message.message = urlFile;
         
-        // Guardamos el mensaje (url)
+        // We save the message (url)
         this.addNewMessageToChannel(chatChannel, message);
 
-        // Si es un canal grupal actualizamos los participantes
-        // y añadimos el grupo al mensaje en una nueva propiedad
+        // If it is a group channel we update the participants and add the group to the message in a new property
         if (chatChannel.group && chatChannel.group.toString().length > 0) {
           chatChannel.participants = await this.rdf.getGroupChatParticipants(chatChannel.group.toString());
           message["group"] = chatChannel.group.toString();
         }
 
-        // Creamos el fichero .acl (permisos) y le asignamos el Owner (webid actual)
+        // Create the file .acl (permissions) and assign the Owner (current webid)
         await this.rdf.updateFile(urlFile + ".acl", "");
         await this.rdf.addOwnerToACL(urlFile, this.webid);
 
-        // Actualizamos canal de chat en POD propio
+        // We update chat channel in own POD
         message.markMessageAsRead();
         let msgUri = await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + chatChannel.id, message);
         message.id = msgUri;
 
 
-        // Enviamos el mensaje a todos los participantes del chat
+        // We send the message to all chat participants
         message.markMessageAsPending();
         let newMsg = JSON.stringify(message);
-        message.markMessageAsRead(); // En memoria debe quedar en READ (mensaje propio)
+        message.markMessageAsRead(); // In memory it must remain in READ (own message)
 
         chatChannel.participants.forEach(async participant => {
           if (participant.webId != this.webid) {
             let uriParticipant = participant.webId.toString().replace(PROFILE_CARD_FOLDER, "");
-            // Añadimos permisos de lectura al fichero para el participante
+            // We add reading permissions to the file for the participant
             await this.rdf.addReaderToACL(urlFile, participant.webId.toString());
-            // Enviamos al inbox del participante el mensaje con la url del fichero
+            // We send to the inbox of the participant the message with the url of the file
             this.rdf.createFile(uriParticipant + INBOX_FOLDER + BASE_NAME_MESSAGES, newMsg, MESSAGE_CONTENT_TYPE);
           }
         });
@@ -256,15 +264,16 @@ export class ChatService {
   }
 
   /**
+   * Used to set the status of all messages of the chat channel specified by parameter to "PENDING".
    * 
-   * @param channel 
+   * @param channel Chat channel in which all messages are set to "PENDING" status.
    */
   async markPendingMessagesAsRead(channel: ChatChannel) {
     let pendingMessages = channel.getPendingMessages();
 
     if (pendingMessages.length > 0) {
       pendingMessages.forEach(m => {
-        m.status = Message.Status.READ; // En este punto no parece detectar "m.markMessageAsRead()"
+        m.status = Message.Status.READ; // At this point it doesn't seem to detect "m.markMessageAsRead()"
       });
 
       await this.rdf.updateMessageToRead(pendingMessages.map(m => {
@@ -275,7 +284,7 @@ export class ChatService {
   }
 
   /**
-   * Busca nuevas notificaciones de mensajes en el inbox propio
+   * Searches for new messages in the inbox itself, if there is one it processes it.
    */
   public async checkInbox() {
     console.log("Checking inbox...");
@@ -287,10 +296,10 @@ export class ChatService {
   }
 
   /**
-   * - Si ya existe canal de chat con el participante añade el nuevo mensaje al canal existente
-   * - Si no existe canal de chat con el participante crea el canal correspondiente y lo añade al nuevo canal
+   * Checks whether the message is regular or group, and then processes it using the 
+   * "processRegularMessage" and "processGroupMessage" methods.
    *
-   * @param urlFile
+   * @param newMessage Message to be processed.
    */
   private async processNewMessage(newMessage: any) {
     let msgId: string;
@@ -305,72 +314,80 @@ export class ChatService {
   }
 
   /**
-   * Procesa un mensaje regular y devuelve la ID asignada al mensaje.
+   * Processes a regular message and returns the ID assigned to the message.
+   * Returns the URI assigned to the message
    * 
-   * @param newMessage 
+   * - If there is already a chat channel with the participant, add the new message to the existing channel.
+   * - If there is no chat channel with the participant, create the corresponding channel and add it to the new channel.
+   * 
+   * @param newMessage Message to be processed.
    */
   private async processRegularMessage(newMessage: any): Promise<string> {
     let channel:ChatChannel = this.searchChatChannelByParticipantWebid(newMessage.makerWebId);
     
       
-    // Añadimos el mensaje al canal correspondiente si ya existe
+    // Add the message to the corresponding channel if it already exists
     if (channel != null) {
       this.addNewMessageToChannel(channel, newMessage);
       channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
-      // Guardamos el mensaje en el chat en el POD propio
+      // We save the message in the chat on our own POD
       return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
       
     } else {
-      // Si no hay canal asociado creamos uno
+      // If there is no associated channel we create one
       let newChannel = await this.createNewChatChannel(newMessage.makerWebId);
       
       this.addNewMessageToChannel(newChannel, newMessage);
-      // Guardamos el mensaje en el chat en el POD propio
+      // We save the message in the chat on our own POD
       return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
     }
   }
 
   /**
-   * Procesa un mensaje grupal y devuelve la ID asignada al mensaje.
+   * Processes a group message and returns the ID assigned to the message.
+   * Returns the URI assigned to the message
    * 
-   * @param newMessage 
+   * - If there is already a chat channel with the participant, add the new message to the existing channel.
+   * - If there is no chat channel with the participant, create the corresponding channel and add it to the new channel.
+   * 
+   * @param newMessage Message to be processed.
    */
   private async processGroupMessage(newMessage: any): Promise<string> {
     let channel:ChatChannel = this.searchChatChannelByGroup(newMessage.group.toString());
     let validParticipant = (await this.rdf.getGroupChatParticipants(newMessage.group))
                             .filter(p => { return p.webId == newMessage.makerWebId });
 
-    // Si no existe el participante en el grupo entendemos que ha sido expulsado, por tanto ignorar
+    // If the participant does not exist in the group we understand that he has been expelled, therefore ignore
     if (validParticipant.length != 0) {
       await this.rdf.fetchNewParticipant(newMessage.makerWebId);
 
-      // Añadimos el mensaje al canal correspondiente si ya existe
+      // Add the message to the corresponding channel if it already exists
       if (channel != null) {
         this.addNewMessageToChannel(channel, newMessage);
         channel.messages.sort(function(a, b) { return  +new Date(a.sendTime) - +new Date(b.sendTime) });
 
-        // Guardamos el mensaje en el chat en el POD propio
+        // We save the message in the chat on our own POD
         return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + channel.id, newMessage);
 
       } else {
-        // Si no hay canal asociado creamos uno
+        // If there is no associated channel we create one
         let newChannel = await this.createNewGroupChatChannel(newMessage.group.toString(),
                               await this.rdf.getChatGroupTitle(newMessage.group.toString()));
 
         this.addNewMessageToChannel(newChannel, newMessage);
-        // Guardamos el mensaje en el chat en el POD propio
+        // We save the message in the chat on our own POD
         return await this.rdf.saveMessage(this.uri + CHAT_FOLDER + "/" + newChannel.id, newMessage);
       }
     }
   }
 
   /**
-   * Método para crear nuevos canales, el nuevo canal será creado en el POD propio y añadido a la
-   * lista de canales de chat.
+   * Method to create new channels, the new channel will be created on the own POD and added to the list of chat channels.
+   * Returns the channel if it is created correctly, if it does not return null.
    *
-   * @param webId WebId del contacto (Example: https://yourpod.solid.community/profile/card#me)
-   * @param title
+   * @param webId Contact WebId (Example: https://yourpod.solid.community/profile/card#me)
+   * @param title Chat title (deprecated), currently ignored
    */
   public async createNewChatChannel(webId: string, title: string = "Chat Channel"): Promise<ChatChannel> {
     let channel: ChatChannel = this.searchChatChannelByParticipantWebid(webId);
@@ -380,11 +397,11 @@ export class ChatService {
       title = (participant.name != undefined && participant.name.length > 0) ? participant.name.toString() : title;
       let newChatChannel = new ChatChannel(this.getUniqueChatChannelID(), title);
 
-      // Añadimos el chat a la lista de chats en memoria
+      // We add chat to the list of memory chats
       newChatChannel.participants.push(participant);
       this.chatChannels.push(newChatChannel);
 
-      // Guardamos el chat en nuestro POD
+      // We save the chat on our POD
       await this.rdf.saveNewChatChannel(this.uri + CHAT_FOLDER + "/", newChatChannel);
 
       return newChatChannel;
@@ -394,7 +411,11 @@ export class ChatService {
   }
 
   /**
-   * Crea un nuevo canal de chat grupal
+   * Create a new group chat channel, the new channel will be created on the own POD and added to the list of chat channels.
+   * Returns the channel if it is created correctly, if it does not return null.
+   * 
+   * @param groupURI Chat group file URI.
+   * @param title Title of the group chat.
    */
   public async createNewGroupChatChannel(groupURI: string, title: string = "Group channel"): Promise<ChatChannel> {
     let channel: ChatChannel = this.searchChatChannelByGroup(groupURI);
@@ -404,7 +425,7 @@ export class ChatService {
       newChatChannel.participants.push(await this.rdf.loadParticipantData(this.webid));
       this.chatChannels.push(newChatChannel);
 
-      // Guardamos el chat en nuestro POD
+      // We save the chat on our POD
       await this.rdf.saveNewChatChannel(this.uri + CHAT_FOLDER + "/", newChatChannel);
       
       return newChatChannel;
@@ -414,7 +435,10 @@ export class ChatService {
   }
 
   /**
-   * Crea un nuevo grupo de chat y el canal de chat grupal
+   * Method for creating a new chat group and the corresponding group chat channel.
+   * Returns the channel if it is created correctly, if it does not return null.
+   * 
+   * @param title Title of the group chat.
    */
   public async createNewChatGroup(title: string): Promise<ChatChannel> {
     let groupURI = await this.rdf.addNewChatGroupToFile(this.uri + GROUPS_FOLDER, this.webid, title);
@@ -423,9 +447,12 @@ export class ChatService {
   }
 
   /**
-   * <<MÉTODO SOLO VÁLIDO PARA CHATS INDIVIDUALES - IGNORA LOS CHATS GRUPALES>>
+   * Allows you to search for a chat channel through the participant's webId.
+   * If it finds it, it returns the channel, if not NULL.
+   * 
+   * << METHOD ONLY VALID FOR INDIVIDUAL CHATS - IGNORES GROUP CHATS >>
    *
-   * @param webId
+   * @param webId WebId of the participant of the chat channel.
    */
   public searchChatChannelByParticipantWebid(webId: string): ChatChannel {
     for (const channel of this.chatChannels) {
@@ -439,8 +466,10 @@ export class ChatService {
   }
 
   /**
+   * Method to search for a chat channel by its ID.
+   * Returns the channel if it finds it, if it does not return NULL.
    *
-   * @param id
+   * @param id ID of the channel to search.
    */
   public searchChatChannelById(id: string): ChatChannel {
     for (const channel of this.chatChannels) {
@@ -452,8 +481,10 @@ export class ChatService {
   }
 
   /**
+   * Method to search for a chat channel through the URI of the group.
+   * Returns the channel if it finds it, if it does not return NULL.
    *
-   * @param group
+   * @param group URI of the chat group.
    */
   public searchChatChannelByGroup(groupURI: string): ChatChannel {
     for (const channel of this.chatChannels) {
@@ -465,7 +496,8 @@ export class ChatService {
   }
 
   /**
-   *
+   * Method to generate a unique ID to create a chat channel.
+   * Returns the generated ID.
    */
   private getUniqueChatChannelID(): string {
     let isUnique: boolean = false;
@@ -484,15 +516,17 @@ export class ChatService {
   }
 
   /**
+   * Method that allows you to delete a chat channel.
+   * It removes it from memory and POD.
    * 
-   * @param chat 
+   * @param chat Chat channel to be deleted.
    */
   public async delete(chat: ChatChannel) {
-    // Comprobamos que el canal exista
+    // We check that the channel exists
     let channel: ChatChannel = this.searchChatChannelById(chat.id);
     console.log(channel.created);
 
-    // Si existe lo borramos
+    // If there is, we delete it
     if (channel != null) {
       await this.rdf.deleteFile(this.uri + CHAT_FOLDER + "/" + chat.id);
       this.chatChannels = this.chatChannels.filter(channel => channel.id != chat.id);
@@ -500,8 +534,10 @@ export class ChatService {
   }
 
   /**
+   * Method to obtain all the participants of a group chat channel.
+   * Returns a list of participants.
    * 
-   * @param channel 
+   * @param channel Group chat channel from which participants want to obtain.
    */
   public async getUserListGroup(channel: ChatChannel): Promise<Participant[]> {
     let list: Participant[] = [];
