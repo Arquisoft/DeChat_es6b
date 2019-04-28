@@ -59,8 +59,7 @@ describe('UtilsService', () => {
     let url = "http://testurlfile.com/file.zip";
     let msg: Message = new Message(webID, url);
 
-    let expected = 'Link: ';
-    expected += '<a class="chat_file" target="_blank" rel="noopener noreferrer" href="' + url + '">';
+    let expected = '<a class="chat_file" target="_blank" rel="noopener noreferrer" href="' + url + '">';
     expected += url.split("/").pop();
     expected += '</a>';
 

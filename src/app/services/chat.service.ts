@@ -264,9 +264,9 @@ export class ChatService {
   }
 
   /**
-   * Used to set the status of all messages of the chat channel specified by parameter to "PENDING".
+   * Sets the status of all "PENDING" messages from a chat to the "READ.
    * 
-   * @param channel Chat channel in which all messages are set to "PENDING" status.
+   * @param channel Chat channel.
    */
   async markPendingMessagesAsRead(channel: ChatChannel) {
     let pendingMessages = channel.getPendingMessages();

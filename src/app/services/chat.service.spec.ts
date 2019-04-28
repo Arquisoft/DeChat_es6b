@@ -169,4 +169,30 @@ describe('ChatService', () => {
     assert.equal(await rdfService.readFile(me.base + "/private/dechat_groups/" + chatService.chatChannels[0].group), null);
   });
 
+  it ('mark chat messages as read', async function() {
+    let msg1: Message = new Message(other.webid, "Prueba1");
+    let msg2: Message = new Message(other.webid, "Prueba2");
+    let msg3: Message = new Message(other.webid, "Prueba3");
+
+    await rdfService.createFile(me.base + "/inbox/test", JSON.stringify(msg1), "application/ld+json");
+    await rdfService.createFile(me.base + "/inbox/test", JSON.stringify(msg2), "application/ld+json");
+    await rdfService.createFile(me.base + "/inbox/test", JSON.stringify(msg3), "application/ld+json");
+
+    await chatService.checkInbox();
+    assert.equal(chatService.chatChannels[0].messages[0].status, Message.Status.PENDING);
+    assert.equal(chatService.chatChannels[0].messages[1].status, Message.Status.PENDING);
+    assert.equal(chatService.chatChannels[0].messages[2].status, Message.Status.PENDING);
+
+    let spyUpdateMessageToRead = spyOn(rdfService, 'updateMessageToRead').and.callFake(() => {});
+    await chatService.markPendingMessagesAsRead(chatService.chatChannels[0]);
+    assert.equal(chatService.chatChannels[0].messages[0].status, Message.Status.READ);
+    assert.equal(chatService.chatChannels[0].messages[1].status, Message.Status.READ);
+    assert.equal(chatService.chatChannels[0].messages[2].status, Message.Status.READ);
+    expect(spyUpdateMessageToRead).toHaveBeenCalled();
+    
+    // // Delete new channel
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id), null);
+  });
+
 });
