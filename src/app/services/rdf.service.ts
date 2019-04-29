@@ -181,7 +181,7 @@ export class RdfService {
    * or the participant already belongs to the group, nothing is done.
    * 
    * @param groupFileUri Uri from the group file.
-   * @param newParticipant New participant to add to the group.
+   * @param newParticipant WebId of the new participant to add to the group.
    */
   public async addParticipantToGroup(groupFileUri: string, newParticipant: string) {
     console.log("Adding a participant to the group...");
@@ -216,7 +216,7 @@ export class RdfService {
    * Remove a participant from the chat group specified by parameter and its permissions on the chat group.
    * 
    * @param groupFileUri Uri from the group file.
-   * @param oldParticipant Participant to be removed from the group.
+   * @param oldParticipant WebId of the new participant to be removed from the group.
    */
   public async removeParticipantFromGroup(groupFileUri: string, oldParticipant: string) {
     console.log("Removing participant from the group...");

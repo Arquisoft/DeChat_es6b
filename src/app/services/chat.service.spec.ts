@@ -6,6 +6,7 @@ import { ChatService } from '../services/chat.service';
 import { RdfService } from './rdf.service';
 import * as assert from 'assert';
 import { Message } from '../models/message.model';
+import { Participant } from '../models/participant.model';
 
 
 describe('ChatService', () => {
@@ -164,9 +165,9 @@ describe('ChatService', () => {
 
     // Delete new channel and new group
     await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id);
-    await rdfService.deleteFile(me.base + "/private/dechat_groups/" + chatService.chatChannels[0].group);
+    await rdfService.deleteFile(chatService.chatChannels[0].group);
     assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id), null);
-    assert.equal(await rdfService.readFile(me.base + "/private/dechat_groups/" + chatService.chatChannels[0].group), null);
+    assert.equal(await rdfService.readFile(chatService.chatChannels[0].group), null);
   });
 
   it ('mark chat messages as read', async function() {
@@ -190,9 +191,74 @@ describe('ChatService', () => {
     assert.equal(chatService.chatChannels[0].messages[2].status, Message.Status.READ);
     expect(spyUpdateMessageToRead).toHaveBeenCalled();
     
-    // // Delete new channel
+    // Delete new channel
     await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id);
     assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + chatService.chatChannels[0].id), null);
+  });
+
+  it ('add participant to a group', async function() {
+    let participants:Participant[] = [];
+
+    let spyUpdateFile = spyOn(rdfService, 'updateFile').and.callFake(() => {});
+    let spyAddOwnerToACL = spyOn(rdfService, 'addOwnerToACL').and.callFake(() => {});
+
+    let channel = await chatService.createNewChatGroup("TEST");
+    participants = await rdfService.getGroupChatParticipants(channel.group);
+    assert.equal(participants.length, 1);
+
+    await rdfService.addParticipantToGroup(channel.group, other.webid);
+    await chatService.delay(timeout); // wait a while for the update to be done on the POD
+    participants = await rdfService.getGroupChatParticipants(channel.group);
+    assert.equal(participants.length, 2);
+
+    expect(spyUpdateFile).toHaveBeenCalled();
+    expect(spyAddOwnerToACL).toHaveBeenCalled();
+
+    // Delete new channel and new group
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    await rdfService.deleteFile(channel.group);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+    assert.equal(await rdfService.readFile(channel.group), null);
+  });
+
+  it ('get title from a group chat', async function() {
+    let spyUpdateFile = spyOn(rdfService, 'updateFile').and.callFake(() => {});
+    let spyAddOwnerToACL = spyOn(rdfService, 'addOwnerToACL').and.callFake(() => {});
+
+    let channel = await chatService.createNewChatGroup("TEST");
+    let title = await rdfService.getChatGroupTitle(channel.group);
+    assert.equal(title, "TEST");
+
+    expect(spyUpdateFile).toHaveBeenCalled();
+    expect(spyAddOwnerToACL).toHaveBeenCalled();
+
+    // Delete new channel and new group
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    await rdfService.deleteFile(channel.group);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+    assert.equal(await rdfService.readFile(channel.group), null);
+  });
+
+  it ('send message to group', async function() {
+    let spyUpdateFile = spyOn(rdfService, 'updateFile').and.callFake(() => {});
+    let spyAddOwnerToACL = spyOn(rdfService, 'addOwnerToACL').and.callFake(() => {});
+
+    let channel = await chatService.createNewChatGroup("TEST");
+    await chatService.sendMessage(channel, "pruebasss");
+
+    chatService.setChatChannels([]);
+    await chatService.loadChatChannels();
+    let loadChannel = chatService.searchChatChannelById(channel.id);
+    assert.equal(loadChannel.messages[0].message, "pruebasss");
+
+    expect(spyUpdateFile).toHaveBeenCalled();
+    expect(spyAddOwnerToACL).toHaveBeenCalled();
+    
+    // Delete new channel and new group
+    await rdfService.deleteFile(me.base + "/private/dechat_es6b/" + channel.id);
+    await rdfService.deleteFile(channel.group);
+    assert.equal(await rdfService.readFile(me.base + "/private/dechat_es6b/" + channel.id), null);
+    assert.equal(await rdfService.readFile(channel.group), null);
   });
 
 });
