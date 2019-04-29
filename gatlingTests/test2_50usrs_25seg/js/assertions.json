@@ -1,0 +1,10 @@
+{
+  "simulation": "DeChatTestESB6",
+  "simulationId": "dechattestesb6",
+  "start": 1556538858508,
+  "description": "",
+  "scenarios": ["DeChatTestESB6"],
+  "assertions": [
+
+  ]
+}
