@@ -13,18 +13,18 @@ gulp.task('puml', () => {
 gulp.task('svg2png', (done) => {
   gulp.src('adocs/images/diagrams/*.svg')
     .pipe(svg2png())
-    .pipe(gulp.dest('docs/images/diagrams'))
+    .pipe(gulp.dest('docs/docs/images/diagrams'))
   done()
 })
 
 gulp.task('copyImages', (done) => {
   gulp.src('adocs/images/**/*')
-    .pipe(gulp.dest('docs/images'))
+    .pipe(gulp.dest('docs/docs/images'))
   done()
 })
 
 gulp.task('adoc2html', function (cb) {
-  const command = `${path.resolve('node_modules/.bin/asciidoctorjs')} adocs/index.adoc -a toc=left --destination-dir docs`
+  const command = `${path.resolve('node_modules/.bin/asciidoctorjs')} adocs/index.adoc -a toc=left --destination-dir docs/docs`
   exec(command, function (err, stdout, stderr) {
     console.log(stdout)
     console.log(stderr)

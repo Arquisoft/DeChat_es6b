@@ -432,7 +432,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><span class="image"><img src="LogoASW.png" alt="arc42"></span> deChat - Decentralized Chat 6b</h1>
+<h1><span class="image"><img src="images/LogoASW.png" alt="arc42"></span> deChat - Decentralized Chat 6b</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -470,8 +470,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#section-design-decisions">9. Design Decisions</a></li>
 <li><a href="#section-quality-scenarios">10. Quality Requirements</a>
 <ul class="sectlevel2">
-<li><a href="#_quality_tree">10.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">10.2. Quality Scenarios</a></li>
+<li><a href="#_quality_scenarios">10.1. Quality Scenarios</a></li>
 </ul>
 </li>
 <li><a href="#section-technical-risks">11. Risks and Technical Debts</a></li>
@@ -509,9 +508,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>David Carballo Baz</p>
-</div>
-<div class="paragraph">
-<p>Sara García Rodríguez</p>
 </div>
 <div class="paragraph">
 <p>Iván Gómez Pinta</p>
@@ -848,7 +844,7 @@ Apart from this, on the chat the users will also be able to share text messages,
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/images/03_scope_and_context_diagram.PNG" alt="Technical diagram of the system">
+<img src="./images/03_scope_and_context_diagram.png" alt="Technical diagram of the system">
 </div>
 </div>
 <div class="paragraph">
@@ -904,7 +900,7 @@ Apart from this, on the chat the users will also be able to share text messages,
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/images/angularJS_MVC1.png" alt="Modelo Vista Controlador con Angular">
+<img src="./images/angularJS_MVC1.png" alt="Modelo Vista Controlador con Angular">
 </div>
 </div>
 </div>
@@ -937,7 +933,7 @@ After this we also began with the main project, giving the first steps with the 
 <div class="content">
 <div class="imageblock">
 <div class="content">
-<img src="./images/images/05_building_blocks-EN.png" alt="Hierarchy of building blocks">
+<img src="./images/05_building_blocks-EN.png" alt="Hierarchy of building blocks">
 </div>
 </div>
 <div class="paragraph">
@@ -1022,8 +1018,16 @@ Thus it contains the white box description of selected building blocks of level 
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p>TBD</p>
+<p>In this document we describe the main process of our application, since the user enter to the login window till the same user sends a message to the chat (group chat or individual chat).</p>
 </div>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we can find a general view of the full process of a user jorney:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/Runtime_view.jpg" alt="Runtime view of the chat">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1032,13 +1036,40 @@ Thus it contains the white box description of selected building blocks of level 
 <div class="sect1">
 <h2 id="section-deployment-view">7. Deployment View</h2>
 <div class="sectionbody">
-<div class="sidebarblock">
-<div class="content">
 <div class="paragraph">
-<p>TBD</p>
+<p>In the following table it is described the way it is related the technical infraestructure with the environment, the hardware given, processors, channels and so, as well as the mapping of software building blocks to that infraestructure elements:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/07_deployment_view.jpg" alt="Deployment view of the chat system.">
 </div>
 </div>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Node/Element</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The computer which the user is going to chat from as well as their environment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Browser</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any recent browser to access the DeChat page application. Almost every single browser, such as Chrome, Firefox, Safari, Opera or Edge should work.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SOLID (environment)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The SOLID server which the user interacts with. Here the user is allowed to access the inbox of his SOLID POD as well as his friend&#8217;s one, and in the same way the main user has no permission to enter to the private folder of the friend&#8217;s POD, though he does for his own.</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1054,7 +1085,7 @@ Thus it contains the white box description of selected building blocks of level 
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/images/08-Crosscutting-Concepts-Structure-EN.png" alt="Possible topics for crosscutting concepts">
+<img src="./images/08-Crosscutting-Concepts-Structure-EN.png" alt="Possible topics for crosscutting concepts">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1066,7 +1097,27 @@ Thus it contains the white box description of selected building blocks of level 
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p>TBD</p>
+<p>In this section we will talk about all the decisions made for the implementation of our project.
+Unlike section 4 of the documentation, here we explain possible advantages and disadvantages of these decisions on the development of our decentralized chat.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, we would like to point out that our practice follows the architectural pattern of the MVC (model view controller). We have made this decision because we believe it is a good enough pattern to separate the layers of business logic from the persistence layer with Solid pods, for example. Even though it is not the best architectural pattern, this decision is made because it is a pattern we all know, which counteracts the possible drawbacks with a great advantage that is the convenience and speed up the coding process.</p>
+</li>
+<li>
+<p>For the interface it was decided to start from a design already created, which allowed us to save time and focus on functionality, also getting a professional look in the chat. The design we used was made by <strong>Renan Mayrinck</strong>. His github is <a href="https://github.com/mayrinck" class="bare">https://github.com/mayrinck</a>.</p>
+</li>
+<li>
+<p>Also, note that our practice is almost entirely developed in TypeScript and using a framework called Angular. This decision has been made on the basis that they can be a framework and a language that will facilitate the implementation process of our project with respect to other programming languages and / or other frameworks. Although it may have negative consequences such as, at this moment, our project is too dependent on Angular (some functionality depends a lot on the libraries provided by Angular), which would make it very difficult to migrate this project to other languages, such as Java.</p>
+</li>
+<li>
+<p>In order to save the data of our chat conversations, we have been recommended to use SOLID. The great advantage that it has over other databases is that it is one of the best decentralized databases, which helps us to save the data without needing a main database and that helps to improve the privacy of individual conversations between two users or in group chats between several. But it also has the disadvantage that being a very "young" software, has some difficulties of use (in terms of user interface refers) which makes rather cumbersome implementation tasks and check that the application works properly and that the POD saves the data correctly.</p>
+</li>
+<li>
+<p>Finally, to perform the acceptance tests that check the correct functioning of the practice, we will use Cucumber. It has been decided to use it because it is one of the best programs to perform unit tests (or in this case, acceptance tests) and it will greatly facilitate the process of carrying them out. The "problem" that it has is that it can be quite difficult at first to carry out such tests, either for inexperience with the tool or for being quite tedious the implementation of tests in Cucumber on applications of Angular.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1076,25 +1127,16 @@ Thus it contains the white box description of selected building blocks of level 
 <div class="sect1">
 <h2 id="section-quality-scenarios">10. Quality Requirements</h2>
 <div class="sectionbody">
-<div class="sidebarblock">
-<div class="content">
 <div class="paragraph">
-<p>TBD</p>
+<p>As a way of sumarizing in a graphical form the requirements of the system with less priority, which is, those ones that will not create high risks if they are not fully achieved is the following kind of <strong>quality tree</strong>:</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/10_quality_req.png" alt="Here is the representation of the non-functional requirements of the system">
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">10.1. Quality Tree</h3>
-<div class="sidebarblock">
-<div class="content">
-<div class="paragraph">
-<p>TBD</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_quality_scenarios">10.2. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">10.1. Quality Scenarios</h3>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -1210,11 +1252,19 @@ Order alphabetically A-Z.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Template for architecture communication and documentation.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code Coverage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A measure (percentage) in software tests that measures the degree to which a program&#8217;s source code has been tested. It serves to determine the quality of the test that is performed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cucumber</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a software tool used by computer programmers for testing other software. It runs automated acceptance tests written in a behavior-driven development (BDD) style.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Decentralized</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">To keep data with yourself and not in an external server.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integration testing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integration Testing</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Is a level of software testing where individual units are combined and tested as a group. The purpose of this level of testing is to expose faults in the interaction between integrated units.</p></td>
 </tr>
 <tr>
@@ -1222,12 +1272,32 @@ Order alphabetically A-Z.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The company risponsible of the Solid project, launched by Tim Berners-Lee.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Jasmine</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a javascript testing framework that supports a software development practice called Behaviour Driven Development, or BDD for short. It’s a specific flavour of Test Driven Development (TDD).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Karma</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a tool which lets us spawn browsers and run jasmine tests inside of them all from the command line. The results of the tests are also displayed on the command line.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Node.js</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Solid POD</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">[Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protractor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protractor is an end-to-end test framework for Angular and AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RDF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[Resource Description Framework] Is a standard model for data interchange on the Web.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rdflib.js</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Javascript RDF library for browsers and Node.js.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">React</p></td>
@@ -1246,9 +1316,17 @@ Order alphabetically A-Z.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">High level structures of a software system and the discipline of creating such structures and systems.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Travis CI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It is a distributed and hosted continuous integration service that is used to create and test software projects hosted on GitHub.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">TypeScript</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A free and open source programming language developed and maintained by Microsoft. It is a superset of JavaScript, which has added optional types
 to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a method for internet services and members to know who they are communicating with.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1277,7 +1355,7 @@ Created by Dr. Peter Hruschka &amp; Dr. Gernot Starke.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-12 03:41:27 +0100
+Last updated 2019-04-28 11:21:05 +0200
 </div>
 </div>
 </body>
