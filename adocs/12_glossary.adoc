@@ -20,7 +20,7 @@ Order alphabetically A-Z.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
 | Solid POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
 | Protractor | Protractor is an end-to-end test framework for Angular and AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would.
-| RDF | Is a standard model for data interchange on the Web.
+| RDF | [Resource Description Framework] Is a standard model for data interchange on the Web.
 | rdflib.js | Javascript RDF library for browsers and Node.js.
 | React | JavaScript library for bulding user interfaces.
 | Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee, the inventor of the World Wide Web.
