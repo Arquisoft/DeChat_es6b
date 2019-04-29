@@ -225,7 +225,9 @@
 <!-- NEW CHANNEL OPTION -->
 <div class="newChannel">
 	<p>Enter the <u>WebId</u> of the contact:</p>
-	<input type="text" class="write_msg" id="input_add_webid" placeholder="Example: https://friendpod.solid.community/profile/card#me"/>
+	<input type="text" class="write_msg" id="input_add_webid" placeholder="Example: https://friendpod.provider.com/profile/card#me"/>
+	<span><strong>Important</strong>: The new chat channel will appear in the contact after the first message has been sent.</span>
+	<br/><br/>
 	<button id="button_add_channel" type="button" (click)="addNewChatChannel()">Add Channel</button>
 </div>
 
@@ -239,14 +241,16 @@
 <!-- ADD PARTICIPANT TO GROUP -->
 <div class="addParticipantToGroup">
 	<p>Enter the <u>WebId</u> of the contact:</p>
-	<input type="text" class="write_msg" id="input_add_part_group_webid" placeholder="Example: https://friendpod.solid.community/profile/card#me"/>
+	<input type="text" class="write_msg" id="input_add_part_group_webid" placeholder="Example: https://friendpod.provider.com/profile/card#me"/>
+	<span><strong>Important</strong>: The group chat channel will appear in the new contact after the first message has been sent after adding the new contact.</span>
+	<br/><br/>
 	<button id="button_add_part_group_channel" type="button" (click)="addParticipantToGroup()">Add Participant To Group Channel</button>
 </div>
 
 <!-- REMOVE PARTICIPANT FROM GROUP -->
 <div class="removeParticipantFromGroup">
 	<p>Enter the <u>WebId</u> of the contact:</p>
-	<input type="text" class="write_msg" id="input_remove_part_group_webid" placeholder="Example: https://friendpod.solid.community/profile/card#me"/>
+	<input type="text" class="write_msg" id="input_remove_part_group_webid" placeholder="Example: https://friendpod.provider.com/profile/card#me"/>
 	<button id="button_remove_part_group_channel" type="button" (click)="removeParticipantFromGroup()">Remove Participant From Group Channel</button>
 </div>
 

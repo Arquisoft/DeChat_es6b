@@ -84,4 +84,10 @@ describe('UtilsService', () => {
     assert.equal(utilsService.analyzeMessage(msg), expected);
   });
   
+  it ('is valid color', async function() {
+    let color = utilsService.getRandomDarkColor();
+    var isValidColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color)
+    assert.equal(isValidColor, true);
+  });
+
 });
