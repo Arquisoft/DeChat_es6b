@@ -10,15 +10,24 @@ Order alphabetically A-Z.
 | Term         | Definition
 | Angular | TypeScript based open source web application framework.
 | Arc42 |  Template for architecture communication and documentation.
+| Code Coverage | A measure (percentage) in software tests that measures the degree to which a program's source code has been tested. It serves to determine the quality of the test that is performed.
+| Cucumber | Is a software tool used by computer programmers for testing other software. It runs automated acceptance tests written in a behavior-driven development (BDD) style.
 | Decentralized | To keep data with yourself and not in an external server.
-| Integration testing | Is a level of software testing where individual units are combined and tested as a group. The purpose of this level of testing is to expose faults in the interaction between integrated units.
+| Integration Testing | Is a level of software testing where individual units are combined and tested as a group. The purpose of this level of testing is to expose faults in the interaction between integrated units.
 | Inrupt | The company risponsible of the Solid project, launched by Tim Berners-Lee.
+| Jasmine | Is a javascript testing framework that supports a software development practice called Behaviour Driven Development, or BDD for short. It’s a specific flavour of Test Driven Development (TDD).
+| Karma | Is a tool which lets us spawn browsers and run jasmine tests inside of them all from the command line. The results of the tests are also displayed on the command line.
 | Node.js | Open source, JavaScript runtime environment that executes JavaScript code outside of a browser.
-| POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
+| Solid POD | [Personal Own Data] Personal storage space which you can give people as well as apps access to write or read data from.
+| Protractor | Protractor is an end-to-end test framework for Angular and AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would.
+| RDF | Is a standard model for data interchange on the Web.
+| rdflib.js | Javascript RDF library for browsers and Node.js.
 | React | JavaScript library for bulding user interfaces.
 | Solid | [Social Linked Data] Web decentralization project led by Tim Berners-Lee, the inventor of the World Wide Web.
 | Stakeholders | All the people that, for certain reasons, are interested in a project.
 | Software Architecture | High level structures of a software system and the discipline of creating such structures and systems.
+| Travis CI | It is a distributed and hosted continuous integration service that is used to create and test software projects hosted on GitHub.
 | TypeScript | A free and open source programming language developed and maintained by Microsoft. It is a superset of JavaScript, which has added optional types
 to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS
+| WebID | Is a method for internet services and members to know who they are communicating with.
 |===
