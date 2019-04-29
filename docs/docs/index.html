@@ -457,24 +457,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_organizational_decisions">4.3. Organizational decisions</a></li>
 </ul>
 </li>
-<li><a href="#section-building-block-view">5. Building Block View</a>
+<li><a href="#section-runtime-view">5. Runtime View</a></li>
+<li><a href="#section-deployment-view">6. Deployment View</a></li>
+<li><a href="#section-concepts">7. Cross-cutting Concepts</a></li>
+<li><a href="#section-design-decisions">8. Design Decisions</a></li>
+<li><a href="#section-quality-scenarios">9. Quality Requirements</a>
 <ul class="sectlevel2">
-<li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
-<li><a href="#_level_2">5.2. Level 2</a></li>
-<li><a href="#_level_3">5.3. Level 3</a></li>
+<li><a href="#_quality_scenarios">9.1. Quality Scenarios</a></li>
 </ul>
 </li>
-<li><a href="#section-runtime-view">6. Runtime View</a></li>
-<li><a href="#section-deployment-view">7. Deployment View</a></li>
-<li><a href="#section-concepts">8. Cross-cutting Concepts</a></li>
-<li><a href="#section-design-decisions">9. Design Decisions</a></li>
-<li><a href="#section-quality-scenarios">10. Quality Requirements</a>
-<ul class="sectlevel2">
-<li><a href="#_quality_scenarios">10.1. Quality Scenarios</a></li>
-</ul>
-</li>
-<li><a href="#section-technical-risks">11. Risks and Technical Debts</a></li>
-<li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#section-technical-risks">10. Risks and Technical Debts</a></li>
+<li><a href="#section-glossary">11. Glossary</a></li>
 </ul>
 </div>
 </div>
@@ -923,97 +916,12 @@ After this we also began with the main project, giving the first steps with the 
 </div>
 </div>
 <div style="page-break-after: always;"></div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="section-building-block-view">5. Building Block View</h2>
-<div class="sectionbody">
-<div class="sidebarblock">
-<div class="content">
-<div class="imageblock">
-<div class="content">
-<img src="./images/05_building_blocks-EN.png" alt="Hierarchy of building blocks">
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Level 1</strong> is the white box description of the overall system together with black
-box descriptions of all contained building blocks.</p>
-</div>
-<div class="paragraph">
-<p><strong>Level 2</strong> zooms into some building blocks of level 1.
-Thus it contains the white box description of selected building blocks of level 1, together with black box descriptions of their internal building blocks.</p>
-</div>
-<div class="paragraph">
-<p><strong>Level 3</strong> zooms into selected building blocks of level 2, and so on.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_whitebox_overall_system">5.1. Whitebox Overall System</h3>
-<div class="sidebarblock">
-<div class="content">
-<div class="paragraph">
-<p>TBD</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Motivation</dt>
-<dt class="hdlist1">Contained Building Blocks</dt>
-<dt class="hdlist1">Important Interfaces</dt>
-</dl>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_2">5.2. Level 2</h3>
-<div class="sidebarblock">
-<div class="content">
-<div class="paragraph">
-<p>TBD</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_1">5.2.1. White Box <em>&lt;building block 1&gt;</em></h4>
-
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_2">5.2.2. White Box <em>&lt;building block 2&gt;</em></h4>
-
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_m">5.2.3. White Box <em>&lt;building block m&gt;</em></h4>
-
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_3">5.3. Level 3</h3>
-<div class="sidebarblock">
-<div class="content">
-<div class="paragraph">
-<p>TBD</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_x_1">5.3.1. White Box &lt;_building block x.1_&gt;</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_x_2">5.3.2. White Box &lt;_building block x.2_&gt;</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_y_1">5.3.3. White Box &lt;_building block y.1_&gt;</h4>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="section-runtime-view">6. Runtime View</h2>
+<h2 id="section-runtime-view">5. Runtime View</h2>
 <div class="sectionbody">
 <div class="sidebarblock">
 <div class="content">
@@ -1034,7 +942,7 @@ Thus it contains the white box description of selected building blocks of level 
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-deployment-view">7. Deployment View</h2>
+<h2 id="section-deployment-view">6. Deployment View</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the following table it is described the way it is related the technical infraestructure with the environment, the hardware given, processors, channels and so, as well as the mapping of software building blocks to that infraestructure elements:</p>
@@ -1074,7 +982,7 @@ Thus it contains the white box description of selected building blocks of level 
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-concepts">8. Cross-cutting Concepts</h2>
+<h2 id="section-concepts">7. Cross-cutting Concepts</h2>
 <div class="sectionbody">
 <div class="sidebarblock">
 <div class="content">
@@ -1092,7 +1000,7 @@ Thus it contains the white box description of selected building blocks of level 
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-design-decisions">9. Design Decisions</h2>
+<h2 id="section-design-decisions">8. Design Decisions</h2>
 <div class="sectionbody">
 <div class="sidebarblock">
 <div class="content">
@@ -1125,7 +1033,7 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">9. Quality Requirements</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>As a way of sumarizing in a graphical form the requirements of the system with less priority, which is, those ones that will not create high risks if they are not fully achieved is the following kind of <strong>quality tree</strong>:</p>
@@ -1136,7 +1044,7 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_scenarios">10.1. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">9.1. Quality Scenarios</h3>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -1149,7 +1057,7 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-technical-risks">11. Risks and Technical Debts</h2>
+<h2 id="section-technical-risks">10. Risks and Technical Debts</h2>
 <div class="sectionbody">
 <div class="sidebarblock">
 <div class="content">
@@ -1225,7 +1133,7 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-glossary">12. Glossary</h2>
+<h2 id="section-glossary">11. Glossary</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The most important domain and technical terms used in the system itself.
