@@ -1,9 +1,6 @@
 [[section-concepts]]
 == Cross-cutting Concepts
 
-
-****
-TBD
-****
+Here we find a diagram about the cross-cutting elements about the environment of the chat:
 
 image::08-Crosscutting-Concepts-Structure-EN.png["Possible topics for crosscutting concepts"]

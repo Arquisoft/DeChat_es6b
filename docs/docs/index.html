@@ -984,12 +984,8 @@ After this we also began with the main project, giving the first steps with the 
 <div class="sect1">
 <h2 id="section-concepts">7. Cross-cutting Concepts</h2>
 <div class="sectionbody">
-<div class="sidebarblock">
-<div class="content">
 <div class="paragraph">
-<p>TBD</p>
-</div>
-</div>
+<p>Here we find a diagram about the cross-cutting elements about the environment of the chat:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1011,19 +1007,20 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 <div class="ulist">
 <ul>
 <li>
-<p>First, we would like to point out that our practice follows the architectural pattern of the MVC (model view controller). We have made this decision because we believe it is a good enough pattern to separate the layers of business logic from the persistence layer with Solid pods, for example. Even though it is not the best architectural pattern, this decision is made because it is a pattern we all know, which counteracts the possible drawbacks with a great advantage that is the convenience and speed up the coding process.</p>
+<p>First, we would like to point out that our practice follows the <strong>architectural pattern of the MVC</strong> (model view controller). We have made this decision because we believe it is a good enough pattern to separate the layers of business logic from the persistence layer with <strong>Solid pods</strong>, for example. Even though it is not the best architectural pattern, this decision is made because it is a pattern we all know, which counteracts the possible drawbacks with a great advantage that is the convenience and speed up the coding process.</p>
 </li>
 <li>
-<p>For the interface it was decided to start from a design already created, which allowed us to save time and focus on functionality, also getting a professional look in the chat. The design we used was made by <strong>Renan Mayrinck</strong>. His github is <a href="https://github.com/mayrinck" class="bare">https://github.com/mayrinck</a>.</p>
+<p>For the <strong>interface</strong> it was decided to start from a design already created, which allowed us to save time and focus on functionality, also getting a professional look in the chat. The design we used was made by <strong>Renan Mayrinck</strong>. His github is <a href="https://github.com/mayrinck" class="bare">https://github.com/mayrinck</a>.</p>
 </li>
 <li>
-<p>Also, note that our practice is almost entirely developed in TypeScript and using a framework called Angular. This decision has been made on the basis that they can be a framework and a language that will facilitate the implementation process of our project with respect to other programming languages and / or other frameworks. Although it may have negative consequences such as, at this moment, our project is too dependent on Angular (some functionality depends a lot on the libraries provided by Angular), which would make it very difficult to migrate this project to other languages, such as Java.</p>
+<p>Also, note that our application is almost entirely developed in <strong>TypeScript</strong> and using a framework called <strong>Angular</strong>. This decision has been made on the basis that they can be a framework and a language that will facilitate the implementation process of our project with respect to other programming languages and / or other frameworks. Although it may have negative consequences such as, at this moment, our project is too dependent on Angular (some functionality depends a lot on the libraries provided by Angular), which would make it very <strong>difficult to migrate</strong> this project to other languages, such as Java.</p>
 </li>
 <li>
-<p>In order to save the data of our chat conversations, we have been recommended to use SOLID. The great advantage that it has over other databases is that it is one of the best decentralized databases, which helps us to save the data without needing a main database and that helps to improve the privacy of individual conversations between two users or in group chats between several. But it also has the disadvantage that being a very "young" software, has some difficulties of use (in terms of user interface refers) which makes rather cumbersome implementation tasks and check that the application works properly and that the POD saves the data correctly.</p>
+<p>In order to <strong>save the data of our chat conversations</strong>, we have been recommended to use <strong>SOLID</strong>. The great advantage that it has over other databases is that it is one of the best <strong>decentralized databases</strong>, which helps us to save the data without needing a main database and that helps to improve the privacy of individual conversations between two users or in group chats between several. But it also has the disadvantage that being a very "young" software, has some difficulties of use (in terms of user interface refers) which makes rather cumbersome implementation tasks and check that the application works properly and that the POD saves the data correctly.</p>
 </li>
 <li>
-<p>Finally, to perform the acceptance tests that check the correct functioning of the practice, we will use Cucumber. It has been decided to use it because it is one of the best programs to perform unit tests (or in this case, acceptance tests) and it will greatly facilitate the process of carrying them out. The "problem" that it has is that it can be quite difficult at first to carry out such tests, either for inexperience with the tool or for being quite tedious the implementation of tests in Cucumber on applications of Angular.</p>
+<p>Finally, to perform the <strong>acceptance tests</strong> that check the correct functioning of the practice, we will use <strong>Cucumber</strong>. It has been decided to use it because it is one of the best programs to perform unit tests (or in this case, acceptance tests) and it will greatly facilitate the process of carrying them out. The "problem" that it has is that it can be quite difficult at first to carry out such tests, either for inexperience with the tool or for being quite tedious the implementation of tests in Cucumber on applications of Angular.
+We also used in the end for testing the <strong>Gatling Tests</strong> tool, since we have found it is also good for the subject.</p>
 </li>
 </ul>
 </div>
@@ -1048,7 +1045,23 @@ Unlike section 4 of the documentation, here we explain possible advantages and d
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p>TBD</p>
+<p>On the basis of the previous diagram, although is in some way already explained every case, in this section we are going to put some different situations as examples for the system:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some programmers want to add more functionality to our project: there is needed the <strong>efficiency</strong> as well as the <strong>modifiability</strong>, in order to make it easy to get changed. The one "disadvantage" we can find is that it completely depends on Angular, so if somebody would like to make a modification it would have to be in TypeScriipt. In any case,we have tried to do the code as simple as possible and tried to explain everything.</p>
+</li>
+<li>
+<p>It is wanted to add some tool which, automatically checks the status of a user, verifying if the user is logged - for example - in their POD. Here we will need <strong>interoperability</strong>, which we believe we achieve.</p>
+</li>
+<li>
+<p>Imagine that this thing of decentralization becomes popular faster than the expected and your mother wants to use this chat. Considering your mother as a person non-expert in technology - or not much, at least -, we should make the application easy for her to use. This envolves <strong>usability</strong>.</p>
+</li>
+<li>
+<p>Finally, imagine the same context as previously. We should be able to support numerous users at a time and adequately, which is <strong>scalability</strong>. Of course, we have not been able to try the app with thousands of people, but we believe it should work. Otherwise, it would be an important enhancement.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1263,7 +1276,7 @@ Created by Dr. Peter Hruschka &amp; Dr. Gernot Starke.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-04-28 11:21:05 +0200
+Last updated 2019-04-28 07:16:24 +0200
 </div>
 </div>
 </body>

@@ -7,7 +7,14 @@ image::10_quality_req.png[Here is the representation of the non-functional requi
 
 === Quality Scenarios
 
-
 ****
-TBD
+On the basis of the previous diagram, although is in some way already explained every case, in this section we are going to put some different situations as examples for the system:
+
+- Some programmers want to add more functionality to our project: there is needed the *efficiency* as well as the *modifiability*, in order to make it easy to get changed. The one "disadvantage" we can find is that it completely depends on Angular, so if somebody would like to make a modification it would have to be in TypeScriipt. In any case,we have tried to do the code as simple as possible and tried to explain everything.
+
+- It is wanted to add some tool which, automatically checks the status of a user, verifying if the user is logged - for example - in their POD. Here we will need *interoperability*, which we believe we achieve.
+
+- Imagine that this thing of decentralization becomes popular faster than the expected and your mother wants to use this chat. Considering your mother as a person non-expert in technology - or not much, at least -, we should make the application easy for her to use. This envolves *usability*.
+
+- Finally, imagine the same context as previously. We should be able to support numerous users at a time and adequately, which is *scalability*. Of course, we have not been able to try the app with thousands of people, but we believe it should work. Otherwise, it would be an important enhancement.
 ****
